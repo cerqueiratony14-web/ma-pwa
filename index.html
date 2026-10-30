@@ -89,6 +89,21 @@ button.ghost{background:transparent}
 button:disabled{opacity:.5;cursor:not-allowed}
 button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
 label.file{position:relative;overflow:hidden}
+.pano-ov{position:fixed;inset:0;z-index:70;background:#000;color:#fff;overflow:hidden}
+.pano-ov video,.pano-ghost{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.pano-ghost{opacity:.38;pointer-events:none}
+.pano-top{position:absolute;left:0;right:0;top:0;padding:max(14px,env(safe-area-inset-top)) 18px 26px;background:linear-gradient(rgba(2,6,44,.85),transparent);display:flex;flex-direction:column;gap:6px;text-align:center}
+.pano-top b{font-size:20px}.pano-top span{font-size:15px;line-height:1.35}
+.pano-aim{position:absolute;left:50%;top:50%;width:0;height:0}
+.pano-ring{position:absolute;left:-34px;top:-34px;width:68px;height:68px;border-radius:50%;border:4px solid #fff;box-shadow:0 0 0 2px rgba(0,0,0,.35)}
+.pano-ring.ok{border-color:#F0B00A}
+.pano-dot{position:absolute;left:-14px;top:-14px;width:28px;height:28px;border-radius:50%;background:#F0B00A;box-shadow:0 0 0 3px rgba(2,6,44,.6)}
+.pano-strip{position:absolute;left:0;right:0;bottom:calc(96px + env(safe-area-inset-bottom));display:flex;justify-content:center;gap:3px;padding:0 10px}
+.pano-strip canvas{width:22px;height:auto;border-radius:3px;border:1px solid rgba(255,255,255,.6)}
+.pano-bar{position:absolute;left:0;right:0;bottom:0;display:flex;gap:10px;padding:14px 16px max(16px,env(safe-area-inset-bottom));background:linear-gradient(transparent,rgba(2,6,44,.85))}
+.pano-bar button{flex:1}.pano-bar .ghost{color:#fff;border-color:rgba(255,255,255,.6);background:transparent}
+.pano-flash{position:absolute;inset:0;background:#fff;opacity:0;pointer-events:none}.pano-flash.on{animation:panoFlash .35s}
+@keyframes panoFlash{from{opacity:.75}to{opacity:0}}
 .cliplist{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}.cliplist span{display:inline-flex;align-items:center;gap:6px;background:#EEF0FB;color:#02062C;border-radius:999px;padding:5px 6px 5px 12px;font-size:13px;font-weight:600}
 .cliplist button{border:0;background:#02062C;color:#fff;border-radius:999px;width:24px;height:24px;padding:0;font-size:14px;line-height:24px;min-height:0}
 label.file input{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%}
@@ -423,7 +438,7 @@ hr{border:0;border-top:1px solid var(--line);margin:2px 0}
   <!-- VISITE -->
   <section id="v-visite" data-view="visite" hidden>
     <h2>Visite virtuelle 360°</h2>
-    <p class="lede">Ajoutez une photo 360° par pièce (caméra 360) ou un panorama pris avec l'iPhone. Placez ensuite des flèches pour passer d'une pièce à l'autre, puis exportez la visite en une page à mettre en ligne.</p>
+    <p class="lede">Pour chaque pièce, touchez « Prise de vue 360° » et tournez sur vous-même : l'application prend les photos et les assemble toute seule. Vous pouvez aussi ajouter une photo de caméra 360. Placez ensuite des flèches pour passer d'une pièce à l'autre, puis exportez la visite en une page à mettre en ligne.</p>
     <div class="grid">
       <div class="stage">
         <div class="tour" id="tour"><div class="roomname" id="roomName">Séjour</div><div class="hint" id="tourHint">Glissez pour regarder autour</div><div class="fade" id="tourFade"></div></div>
@@ -431,7 +446,8 @@ hr{border:0;border-top:1px solid var(--line);margin:2px 0}
       <div class="panel">
         <div class="row" style="justify-content:space-between"><span class="lbl">Pièces</span><span class="badge ex" id="tourEx">Exemple</span></div>
         <div class="scenes" id="scenes"></div>
-        <label class="btn file">Ajouter une pièce
+        <button class="primary" id="panoGo" type="button">Prise de vue 360°</button>
+        <label class="btn file">Ajouter une photo 360 existante
           <input type="file" id="pick360" accept="image/*,image/heic,image/heif" multiple>
         </label>
         <hr>
@@ -1047,13 +1063,13 @@ function mountTour(el, tour, opts) {
       new THREE.TextureLoader().load(sc.src, tex => {
         if (!alive) return;
         if (mesh) { scene.remove(mesh); mesh.geometry.dispose(); mesh.material.map.dispose(); mesh.material.dispose(); }
-        const ratio = sc.ratio || 2, full = ratio > 1.85 && ratio < 2.15;
+        const ratio = sc.ratio || 2, full = ratio > 1.85 && ratio < 2.15, VFs = sc.vfov || VF;
         let geo;
         if (full) { geo = new THREE.SphereGeometry(500, 64, 40, -Math.PI, 2 * Math.PI); limits = null; }
         else {
-          const vf = VF * Math.PI / 180, pl = Math.min(2 * Math.PI, ratio * vf);
+          const vf = VFs * Math.PI / 180, pl = Math.min(2 * Math.PI, ratio * vf * 1.002);
           geo = new THREE.SphereGeometry(500, 64, 24, -pl / 2, pl, Math.PI / 2 - vf / 2, vf);
-          limits = { lat: VF / 2, lon: pl < 2 * Math.PI ? pl * 90 / Math.PI : null };
+          limits = { lat: VFs / 2, lon: pl < 2 * Math.PI ? pl * 90 / Math.PI : null };
         }
         geo.scale(-1, 1, 1);
         tex.minFilter = THREE.LinearFilter; if (THREE.sRGBEncoding) tex.encoding = THREE.sRGBEncoding;
@@ -1103,9 +1119,9 @@ function mountTour(el, tour, opts) {
 const T = { scenes: [], start: null, isSample: true, viewer: null, editing: false };
 let sid = 0;
 function canvasToDataURL(c, max) { const s = drawToCanvas(c, max); return s.toDataURL("image/jpeg", .86); }
-function addScene(name, canvas) {
+function addScene(name, canvas, vfov) {
   const id = "p" + (++sid);
-  T.scenes.push({ id, name, src: canvasToDataURL(canvas, 4096), thumb: canvasToDataURL(canvas, 160), ratio: canvas.width / canvas.height, hotspots: [] });
+  T.scenes.push({ id, name, src: canvasToDataURL(canvas, 4096), thumb: canvasToDataURL(canvas, 160), ratio: canvas.width / canvas.height, vfov: vfov || null, hotspots: [] });
   return id;
 }
 function initSampleTour() {
@@ -1174,8 +1190,195 @@ $("#pick360").onchange = async e => {
     T.start = T.scenes[0].id; T.viewer.go(first); if (!st.textContent.startsWith("Panorama")) st.textContent = "";
   } catch (_) { st.className = "status err"; st.textContent = "Cette photo n'a pas pu être ouverte. Essayez en JPEG."; }
 };
+/* ============ Prise de vue 360° guidée (caméra + gyroscope + assemblage) ============ */
+const PANO_N = 12, PANO_STEP = 360 / PANO_N;
+// Cap de la caméra arrière (degrés, sens horaire) et inclinaison, à partir de l'orientation du téléphone
+function camHeading(a, b, g) {
+  const r = Math.PI / 180, ca = Math.cos(a * r), sa = Math.sin(a * r), sb = Math.sin(b * r), cb = Math.cos(b * r), cg = Math.cos(g * r), sg = Math.sin(g * r);
+  const vx = -(ca * sg + sa * sb * cg), vy = -(sa * sg - ca * sb * cg), vz = -cb * cg;
+  return { yaw: (Math.atan2(vx, vy) / r + 360) % 360, pitch: Math.asin(Math.max(-1, Math.min(1, vz))) / r };
+}
+const angDiff = (a, b) => ((a - b + 540) % 360) - 180;
+function grayOf(c) {
+  const d = c.getContext("2d").getImageData(0, 0, c.width, c.height).data, n = c.width * c.height, g = new Float32Array(n);
+  for (let i = 0, j = 0; i < n; i++, j += 4) g[i] = .299 * d[j] + .587 * d[j + 1] + .114 * d[j + 2];
+  return { w: c.width, h: c.height, d: g };
+}
+// Projection cylindrique d'une image (gris) à l'échelle s, focale f (pixels de l'image d'origine)
+function cylGray(im, f, s) {
+  const w = im.w, h = im.h, cx = w / 2, cy = h / 2, tmax = Math.atan(cx / f);
+  const W = Math.max(8, Math.round(2 * tmax * f * s)), H = Math.max(8, Math.round(h * s)), out = new Float32Array(W * H), msk = new Uint8Array(W * H);
+  for (let X = 0; X < W; X++) {
+    const th = (X / s - tmax * f) / f, x = f * Math.tan(th) + cx, ic = 1 / Math.cos(th);
+    if (x < 0 || x > w - 2) continue; const x0 = x | 0, fx = x - x0;
+    for (let Y = 0; Y < H; Y++) {
+      const y = (Y / s - cy) * ic + cy; if (y < 0 || y > h - 2) continue; const y0 = y | 0, fy = y - y0, k = y0 * w + x0, d = im.d;
+      out[Y * W + X] = (d[k] * (1 - fx) + d[k + 1] * fx) * (1 - fy) + (d[k + w] * (1 - fx) + d[k + w + 1] * fx) * fy; msk[Y * W + X] = 1;
+    }
+  }
+  return { w: W, h: H, d: out, m: msk };
+}
+// Corrélation normalisée de b décalée de (dx, dy) par rapport à a, sur la zone commune
+function nccAt(a, b, dx, dy, step) {
+  let n = 0, sa = 0, sb = 0, saa = 0, sbb = 0, sab = 0;
+  const x0 = Math.max(0, dx), x1 = Math.min(a.w, b.w + dx), y0 = Math.max(0, dy), y1 = Math.min(a.h, b.h + dy);
+  for (let y = y0; y < y1; y += step) for (let x = x0; x < x1; x += step) {
+    const ia = y * a.w + x, ib = (y - dy) * b.w + (x - dx); if (!a.m[ia] || !b.m[ib]) continue;
+    const u = a.d[ia], v = b.d[ib]; n++; sa += u; sb += v; saa += u * u; sbb += v * v; sab += u * v;
+  }
+  if (n < 200 / step) return -1;
+  const cov = sab - sa * sb / n, va = saa - sa * sa / n, vb = sbb - sb * sb / n;
+  return va > 1e-6 && vb > 1e-6 ? cov / Math.sqrt(va * vb) : -1;
+}
+function bestShift(a, b, xr, yr, cx, cy, step) {
+  let best = -2, bx = cx, by = cy;
+  for (let dy = cy - yr; dy <= cy + yr; dy++) for (let dx = cx - xr; dx <= cx + xr; dx++) { const v = nccAt(a, b, dx, dy, step); if (v > best) { best = v; bx = dx; by = dy; } }
+  return { dx: bx, dy: by, score: best };
+}
+// Décalages entre photos consécutives (boucle fermée), à focale f
+function panoShifts(grays, f, yawSteps) {
+  const n = grays.length, lo = grays.map(g => cylGray(g, f, 1 / 8)), hi = grays.map(g => cylGray(g, f, 1 / 2)), res = [];
+  for (let i = 0; i < n; i++) {
+    const A = lo[i], B = lo[(i + 1) % n], guess = yawSteps ? Math.round(yawSteps[i] * Math.PI / 180 * f / 8) : null;
+    const c = guess && guess > 4 && guess < A.w - 4 ? bestShift(A, B, Math.round(A.w * .18), Math.round(A.h * .06), guess, 0, 1)
+                                                 : bestShift(A, B, Math.round(A.w * .36), Math.round(A.h * .06), Math.round(A.w * .5), 0, 1);
+    const r = bestShift(hi[i], hi[(i + 1) % n], 5, 5, c.dx * 4, c.dy * 4, 2);
+    res.push({ dx: r.dx * 2, dy: r.dy * 2, score: r.score });
+  }
+  return res;
+}
+// Assemblage : renvoie un panorama 360° (cylindrique, latitude linéaire) et son champ vertical
+async function stitchPano(cans, yaws, onProg) {
+  const n = cans.length, w = cans[0].width, h = cans[0].height, grays = cans.map(grayOf);
+  const prog = t => onProg && onProg(t);
+  // focale de départ : gyroscope si disponible, sinon champ horizontal ~ 50° (téléphone en portrait)
+  let f = (w / 2) / Math.tan(25 * Math.PI / 180), steps = null;
+  if (yaws && yaws.length === n) steps = yaws.map((y, i) => { const d = (yaws[(i + 1) % n] - y + 360) % 360; return d || PANO_STEP; });
+  let sh = null;
+  for (let it = 0; it < 3; it++) {
+    prog(.1 + it * .2); await frame();
+    sh = panoShifts(grays, f, steps);
+    const tot = sh.reduce((s, o) => s + o.dx, 0), fNew = tot / (2 * Math.PI);
+    if (!(fNew > w * .3 && fNew < w * 4)) break; const conv = Math.abs(fNew - f) / f < .004; f = fNew; if (conv) break;
+  }
+  const weak = sh.filter(o => o.score < .35).length;
+  // positions : x cumulés (la boucle fait exactement 2πf), dérive verticale répartie
+  const Wout = Math.round(2 * Math.PI * f), ox = [0], oy = [0];
+  for (let i = 0; i < n - 1; i++) { ox.push(ox[i] + sh[i].dx); oy.push(oy[i] + sh[i].dy); }
+  const sumX = ox[n - 1] + sh[n - 1].dx, sumY = oy[n - 1] + sh[n - 1].dy;
+  for (let i = 0; i < n; i++) { ox[i] = ox[i] * Wout / sumX; oy[i] -= sumY * i / n; }
+  // compensation d'exposition à partir des zones communes
+  const lg = [0];
+  for (let i = 0; i < n; i++) {
+    const A = cylGray(grays[i], f, 1 / 8), B = cylGray(grays[(i + 1) % n], f, 1 / 8), dx = Math.round(sh[i].dx / 8), dy = Math.round(sh[i].dy / 8);
+    let sa = 0, sb = 0, k = 0;
+    for (let y = Math.max(0, dy); y < Math.min(A.h, B.h + dy); y++) for (let x = Math.max(0, dx); x < Math.min(A.w, B.w + dx); x++) { const ia = y * A.w + x, ib = (y - dy) * B.w + (x - dx); if (A.m[ia] && B.m[ib]) { sa += A.d[ia]; sb += B.d[ib]; k++; } }
+    const r = k && sb > 0 ? Math.log(sa / sb) : 0; if (i < n - 1) lg.push(lg[i] + r); else { const err = lg[n - 1] + r; for (let j = 0; j < n; j++) lg[j] -= err * j / n; }
+  }
+  const mean = lg.reduce((s, v) => s + v, 0) / n, gain = lg.map(v => Math.exp(v - mean));
+  // bande verticale couverte par toutes les photos (marge pour les bords)
+  const tmax = Math.atan((w / 2) / f), half = Math.atan((h / 2) * Math.cos(tmax * .55) / f);
+  const oyMin = Math.min(...oy), oyMax = Math.max(...oy), latTop = -half + oyMax / f, latBot = half + oyMin / f;
+  const Hout = Math.max(64, Math.round((latBot - latTop) * f));
+  const out = document.createElement("canvas"); out.width = Wout; out.height = Hout;
+  const acc = new Float32Array(Wout * Hout * 3), wsum = new Float32Array(Wout * Hout);
+  for (let i = 0; i < n; i++) {
+    prog(.7 + .25 * i / n); if (i % 3 === 0) await frame();
+    const src = cans[i].getContext("2d").getImageData(0, 0, w, h).data, cx = w / 2, cy = h / 2, g = gain[i];
+    const xs = Math.floor(ox[i] - tmax * f), xe = Math.ceil(ox[i] + tmax * f);
+    for (let X = xs; X <= xe; X++) {
+      const th = (X - ox[i]) / f, a = Math.abs(th) / tmax; if (a >= 1) continue;
+      const x = f * Math.tan(th) + cx; if (x < 0 || x > w - 2) continue; const x0 = x | 0, fx = x - x0, ic = 1 / Math.cos(th), wx = Math.min(1, (1 - a) * 3.2);
+      const Xo = ((X % Wout) + Wout) % Wout;
+      for (let Y = 0; Y < Hout; Y++) {
+        const lat = latTop + Y / f - oy[i] / f, y = f * Math.tan(lat) * ic + cy; if (y < 0 || y > h - 2) continue;
+        const y0 = y | 0, fy = y - y0, k = (y0 * w + x0) * 4, k2 = k + w * 4, wy = Math.min(1, Math.min(y, h - 1 - y) / (h * .06)), wt = wx * wx * wy, o = Y * Wout + Xo;
+        for (let c = 0; c < 3; c++) acc[o * 3 + c] += wt * g * ((src[k + c] * (1 - fx) + src[k + 4 + c] * fx) * (1 - fy) + (src[k2 + c] * (1 - fx) + src[k2 + 4 + c] * fx) * fy);
+        wsum[o] += wt;
+      }
+    }
+  }
+  const ctx = out.getContext("2d"), img = ctx.createImageData(Wout, Hout), d = img.data;
+  for (let o = 0; o < Wout * Hout; o++) { const s = wsum[o] > 1e-4 ? 1 / wsum[o] : 0; d[o * 4] = acc[o * 3] * s; d[o * 4 + 1] = acc[o * 3 + 1] * s; d[o * 4 + 2] = acc[o * 3 + 2] * s; d[o * 4 + 3] = 255; }
+  ctx.putImageData(img, 0, 0); prog(1);
+  return { canvas: out, vfov: (latBot - latTop) * 180 / Math.PI, weak };
+}
+
+// Écran de prise de vue
+async function openPanoCapture() {
+  const st = $("#tStatus"); st.className = "status"; st.textContent = "";
+  // autorisation du gyroscope (iPhone) : à demander tout de suite, dans le geste de l'utilisateur
+  let gyro = false;
+  try { if (window.DeviceOrientationEvent && typeof DeviceOrientationEvent.requestPermission === "function") gyro = (await DeviceOrientationEvent.requestPermission()) === "granted"; else gyro = "DeviceOrientationEvent" in window; } catch (_) { gyro = false; }
+  let stream;
+  try { stream = await navigator.mediaDevices.getUserMedia({ audio: false, video: { facingMode: { ideal: "environment" }, width: { ideal: 1920 }, height: { ideal: 1080 } } }); }
+  catch (_) { st.className = "status err"; st.textContent = "Caméra inaccessible : autorisez l'appareil photo pour Studio Habitat (Réglages), puis réessayez."; return; }
+  const ov = document.createElement("div"); ov.className = "pano-ov"; ov.setAttribute("role", "dialog"); ov.setAttribute("aria-label", "Prise de vue 360°");
+  ov.innerHTML = `<video playsinline muted autoplay></video><canvas class="pano-ghost"></canvas>
+    <div class="pano-top"><b class="pano-count">Photo 1 / ${PANO_N}</b><span class="pano-msg">Placez-vous au centre de la pièce, téléphone droit à hauteur de poitrine.</span></div>
+    <div class="pano-aim"><div class="pano-ring"></div><div class="pano-dot"></div></div>
+    <div class="pano-strip"></div>
+    <div class="pano-bar"><button class="ghost pano-cancel">Annuler</button><button class="primary pano-shot">Commencer</button></div>
+    <div class="pano-flash"></div>`;
+  document.body.appendChild(ov);
+  const vid = ov.querySelector("video"), ghost = ov.querySelector(".pano-ghost"), dot = ov.querySelector(".pano-dot"), ring = ov.querySelector(".pano-ring"), msg = ov.querySelector(".pano-msg"), cnt = ov.querySelector(".pano-count"), shot = ov.querySelector(".pano-shot"), strip = ov.querySelector(".pano-strip");
+  vid.srcObject = stream; try { await vid.play(); } catch (_) {}
+  const shots = [], yaws = []; let cur = null, hist = [], done = false, busy = false, gotGyro = false;
+  const onOri = e => { if (e.alpha == null) return; gotGyro = true; cur = camHeading(e.alpha, e.beta || 0, e.gamma || 0); const t = performance.now(); hist.push([t, cur.yaw]); while (hist.length && t - hist[0][0] > 350) hist.shift(); };
+  if (gyro) window.addEventListener("deviceorientation", onOri);
+  const stop = () => { done = true; window.removeEventListener("deviceorientation", onOri); stream.getTracks().forEach(t => t.stop()); ov.remove(); };
+  ov.querySelector(".pano-cancel").onclick = stop;
+  const grab = () => {
+    const vw = vid.videoWidth, vh = vid.videoHeight, s = 720 / Math.min(vw, vh), c = document.createElement("canvas");
+    c.width = Math.round(vw * s); c.height = Math.round(vh * s); c.getContext("2d").drawImage(vid, 0, 0, c.width, c.height); return c;
+  };
+  const take = async () => {
+    if (busy || done || !vid.videoWidth) return; busy = true;
+    const c = grab(); shots.push(c); yaws.push(cur ? cur.yaw : null);
+    const fl = ov.querySelector(".pano-flash"); fl.classList.remove("on"); void fl.offsetWidth; fl.classList.add("on");
+    if (navigator.vibrate) navigator.vibrate(30);
+    const th = document.createElement("canvas"); th.width = 40; th.height = Math.round(40 * c.height / c.width); th.getContext("2d").drawImage(c, 0, 0, th.width, th.height); strip.appendChild(th);
+    // repère « fantôme » : le bord droit de la photo précédente, pour caler la suivante
+    ghost.width = c.width; ghost.height = c.height; const gx = ghost.getContext("2d"); gx.clearRect(0, 0, c.width, c.height); gx.drawImage(c, c.width * .7, 0, c.width * .3, c.height, 0, 0, c.width * .3, c.height);
+    cnt.textContent = shots.length < PANO_N ? `Photo ${shots.length + 1} / ${PANO_N}` : "Assemblage…";
+    shot.textContent = "Prendre";
+    if (shots.length >= PANO_N) { await finish(); return; }
+    msg.textContent = gotGyro ? "Tournez lentement vers la droite : la photo se prend toute seule quand le point est dans le cercle." : "Tournez un peu vers la droite pour superposer le repère transparent, puis touchez « Prendre ».";
+    setTimeout(() => busy = false, 450);
+  };
+  shot.onclick = take;
+  const loop = () => {
+    if (done) return; requestAnimationFrame(loop);
+    if (!gotGyro || !cur) { dot.style.display = "none"; ring.style.display = shots.length ? "none" : ""; return; }
+    dot.style.display = ""; ring.style.display = "";
+    const tilt = Math.abs(cur.pitch) > 14;
+    if (!shots.length) { dot.style.transform = `translate(0px, ${Math.max(-120, Math.min(120, cur.pitch * 6))}px)`; ring.classList.toggle("ok", !tilt); if (tilt) msg.textContent = "Tenez le téléphone bien droit."; return; }
+    const target = (yaws[0] + shots.length * PANO_STEP) % 360, dd = angDiff(cur.yaw, target);
+    dot.style.transform = `translate(${Math.max(-150, Math.min(150, -dd * 6))}px, ${Math.max(-120, Math.min(120, cur.pitch * 6))}px)`;
+    const steady = hist.length > 3 && Math.abs(angDiff(hist[hist.length - 1][1], hist[0][1])) < 1.6, ok = Math.abs(dd) < 3.5 && !tilt;
+    ring.classList.toggle("ok", ok);
+    if (tilt) msg.textContent = "Tenez le téléphone bien droit.";
+    else if (dd < -3.5) msg.textContent = "Tournez lentement vers la droite…"; else if (dd > 3.5) msg.textContent = "Trop loin : revenez un peu vers la gauche.";
+    else msg.textContent = "Ne bougez plus…";
+    if (ok && steady && !busy) take();
+  };
+  loop();
+  const finish = async () => {
+    busy = true; window.removeEventListener("deviceorientation", onOri); stream.getTracks().forEach(t => t.stop());
+    ov.querySelector(".pano-bar").hidden = true; ring.style.display = dot.style.display = "none"; ghost.style.display = "none";
+    msg.textContent = "Assemblage du panorama… gardez l'application ouverte.";
+    try {
+      const r = await stitchPano(shots, yaws.every(y => y != null) ? yaws : null, p => cnt.textContent = `Assemblage… ${Math.round(p * 100)} %`);
+      if (T.isSample) { T.scenes.length = 0; T.isSample = false; $("#tourEx").hidden = true; }
+      const id = addScene("Pièce " + (T.scenes.length + 1), r.canvas, r.vfov); T.start = T.scenes[0].id; T.viewer.go(id); renderScenes();
+      stop();
+      st.className = "status"; st.textContent = r.weak > 2 ? "Panorama créé. Certains raccords sont imprécis : pour un meilleur résultat, tournez sur place sans avancer, sans personne qui bouge dans la pièce." : "Panorama 360° créé. Renommez la pièce si besoin.";
+    } catch (err) { stop(); st.className = "status err"; st.textContent = "L'assemblage du panorama a échoué. Réessayez en tournant lentement sur place."; }
+  };
+}
+$("#panoGo").onclick = () => { if (!T.viewer) { $("#tStatus").textContent = "La visionneuse se charge, réessayez dans un instant."; return; } openPanoCapture(); };
 $("#exportTour").onclick = async () => {
-  const data = { start: T.start, scenes: T.scenes.map(s => ({ id: s.id, name: s.name, src: s.src, ratio: s.ratio, hotspots: s.hotspots })) };
+  const data = { start: T.start, scenes: T.scenes.map(s => ({ id: s.id, name: s.name, src: s.src, ratio: s.ratio, vfov: s.vfov, hotspots: s.hotspots })) };
   const title = T.scenes[0] ? "Visite virtuelle" : "Visite";
   const html = `<!doctype html><html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>${title}</title>
 <style>html,body{margin:0;height:100%;background:#000;font-family:system-ui,sans-serif}#v{position:fixed;inset:0}#v canvas{width:100%;height:100%;display:block;touch-action:none;cursor:grab}.fade{position:absolute;inset:0;background:#000;opacity:0;pointer-events:none;transition:opacity .35s}
@@ -1765,7 +1968,7 @@ $("#dosSave").onclick = async () => {
   dosMsg("Préparation du dossier…"); await frame();
   try {
     const photos = P.shoot.map(p => ({ name: p.name, data: p.canvas.toDataURL("image/jpeg", .85) }));
-    const tour = (!T.isSample && T.scenes.length) ? { start: T.start, scenes: T.scenes.map(sc => ({ id: sc.id, name: sc.name, src: sc.src, thumb: sc.thumb, ratio: sc.ratio, hotspots: sc.hotspots })) } : null;
+    const tour = (!T.isSample && T.scenes.length) ? { start: T.start, scenes: T.scenes.map(sc => ({ id: sc.id, name: sc.name, src: sc.src, thumb: sc.thumb, ratio: sc.ratio, vfov: sc.vfov, hotspots: sc.hotspots })) } : null;
     const d = { app: "studio-habitat", version: DOS_VERSION, saved: new Date().toISOString(), name: dosName(), photos,
       plan: PL.isSample ? null : { title: $("#planTitle").value, rooms: PL.rooms },
       video: { t: $("#vTitle").value, s: $("#vSub").value, p: $("#vPrice").value, a: $("#vAgent").value, dpe: V.dpe, d: $("#vDesc").value }, tour, fiche: ficheData() };
@@ -1886,8 +2089,9 @@ const BD = {
     ["sky", "Ciel bleu et floutage", [-21, 39], "Façade : cochez « Ciel bleu ». Photo de famille, visage ou plaque : « Flouter une zone », puis touchez l'endroit concerné."],
     ["check", "Enregistrer", [0, 29], "« Ajouter au reportage » pour la vidéo, ou « Enregistrer la photo » puis « Enregistrer l'image »."]] },
   visite: { title: "Créer une visite 360°", steps: [
-    ["pano", "Une photo 360° par pièce", [24, -6], "Prenez une photo 360° de chaque pièce, avec une caméra 360 ou en mode panoramique."],
-    ["list", "Ajouter les pièces", [22, 38], "Touchez « Ajouter une pièce », sélectionnez les photos, puis renommez chaque pièce."],
+    ["pano", "Prise de vue 360°", [24, -6], "Au centre de la pièce, touchez « Prise de vue 360° », autorisez la caméra et les mouvements, puis « Commencer »."],
+    ["camera", "Tourner sur place", [0, 4], "Tournez lentement vers la droite, téléphone droit : quand le point jaune entre dans le cercle, la photo se prend seule (12 photos)."],
+    ["list", "Panorama assemblé", [22, 38], "L'application assemble le tour complet et ajoute la pièce. Renommez-la. Une photo de caméra 360 s'ajoute avec « Ajouter une photo 360 existante »."],
     ["arrow", "Relier les pièces", [0, -2], "« Placer une flèche » : choisissez la pièce de destination, puis touchez la porte sur la photo."],
     ["share", "Exporter la visite", [0, 36], "« Exporter la visite » puis « Enregistrer » : transmettez le fichier à l'acquéreur ou joignez-le à l'annonce."]] },
   video: { title: "Monter la vidéo", steps: [
@@ -2035,8 +2239,10 @@ const KB = [
   { k: "photo penchee droite redresser verticales tordue", q: "Ma photo est penchée", a: "Utilisez le curseur « Redresser » pour remettre les murs bien droits. L'image est recadrée automatiquement.", tab: "photos" },
   { k: "enregistrer sauvegarder photo galerie pellicule telecharger photo", q: "Comment enregistrer une photo dans mon téléphone ?", a: "Touchez « Enregistrer la photo », puis « Enregistrer », puis « Enregistrer l'image ». Elle arrive dans vos Photos, prête pour l'annonce.", tab: "photos" },
   { k: "reportage ajouter photo liste retirer supprimer photo", q: "À quoi sert le reportage ?", a: "Le reportage regroupe les photos du bien. Il sert à créer la vidéo et il est gardé dans le dossier du bien. Pour retirer une photo, touchez-la dans la liste du reportage.", tab: "photos" },
-  { k: "visite 360 virtuelle creer faire", q: "Comment créer une visite 360° ?", a: "Onglet Visite 360°, touchez « Ajouter une pièce » et choisissez une photo 360° par pièce. Renommez les pièces, placez des flèches entre elles, puis exportez la visite.", tab: "visite", guide: "visite" },
-  { k: "camera 360 panorama iphone besoin materiel acheter", q: "Faut-il une caméra 360° ?", a: "Pour une visite complète à 360 degrés, oui. Avec un panorama de l'iPhone, la visite fonctionne mais en vue partielle, sans le plafond ni le sol.", tab: "visite" },
+  { k: "visite 360 virtuelle creer faire", q: "Comment créer une visite 360° ?", a: "Onglet Visite 360°, touchez « Prise de vue 360° » au centre de chaque pièce et tournez sur vous-même : l'application assemble le panorama. Renommez les pièces, placez des flèches entre elles, puis exportez la visite.", tab: "visite", guide: "visite" },
+  { k: "prise vue 360 photo 360 tourner panorama assembler prendre 360 degres", q: "Comment prendre une photo 360° ?", a: "Placez-vous au centre de la pièce et touchez « Prise de vue 360° ». Autorisez la caméra et les mouvements, touchez « Commencer », puis tournez lentement vers la droite, téléphone droit. Les 12 photos se prennent toutes seules quand le point jaune est dans le cercle, puis le panorama est assemblé.", tab: "visite", guide: "visite" },
+  { k: "panorama raccord flou decale fantome rate mauvais assemblage", q: "Le panorama a des raccords visibles", a: "Tournez sur place sans avancer, en gardant le téléphone à la même hauteur, et évitez les personnes qui bougent dans la pièce. Évitez aussi de photographier trop près d'un mur.", tab: "visite" },
+  { k: "camera 360 besoin materiel acheter", q: "Faut-il une caméra 360° ?", a: "Non. La prise de vue 360° de l'application suffit : elle couvre tout le tour de la pièce, sans le plafond ni le sol. Une caméra 360 donne en plus le plafond et le sol ; ses photos s'ajoutent avec « Ajouter une photo 360 existante ».", tab: "visite" },
   { k: "fleche fleches relier lien porte hotspot changer de piece", q: "Comment relier les pièces entre elles ?", a: "Touchez « Placer une flèche », choisissez la pièce de destination, puis touchez l'endroit de la photo, par exemple une porte. En touchant la flèche, on passe dans l'autre pièce.", tab: "visite", guide: "visite" },
   { k: "envoyer visite client acquereur exporter partager", q: "Comment envoyer la visite à un client ?", a: "Touchez « Exporter la visite », puis « Enregistrer ». Vous obtenez une page à envoyer par mail ou message, ou à joindre à l'annonce. Elle s'ouvre sur n'importe quel téléphone ou ordinateur.", tab: "visite" },
   { k: "video creer faire montage film", q: "Comment créer la vidéo ?", a: "Ajoutez d'abord vos photos au reportage. Dans l'onglet Vidéo, vérifiez les textes, choisissez le format, puis touchez « Créer la vidéo » en laissant l'écran allumé.", tab: "video", guide: "video" },
