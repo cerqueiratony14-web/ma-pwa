@@ -89,6 +89,8 @@ button.ghost{background:transparent}
 button:disabled{opacity:.5;cursor:not-allowed}
 button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
 label.file{position:relative;overflow:hidden}
+.cliplist{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}.cliplist span{display:inline-flex;align-items:center;gap:6px;background:#EEF0FB;color:#02062C;border-radius:999px;padding:5px 6px 5px 12px;font-size:13px;font-weight:600}
+.cliplist button{border:0;background:#02062C;color:#fff;border-radius:999px;width:24px;height:24px;padding:0;font-size:14px;line-height:24px;min-height:0}
 label.file input{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%}
 .seg{display:inline-flex;background:var(--sunk);border-radius:14px;padding:4px;gap:4px}
 .seg button{border:0;border-radius:11px;background:transparent;font-weight:600;min-height:38px;padding:8px 14px;font-size:14px}
@@ -453,7 +455,7 @@ hr{border:0;border-top:1px solid var(--line);margin:2px 0}
   <!-- VIDEO -->
   <section id="v-video" data-view="video" hidden>
     <h2>Vidéo du bien</h2>
-    <p class="lede">La vidéo est montée automatiquement à partir des photos du reportage : carton d'ouverture avec la classe énergie, mouvements lents sur chaque photo, carton final avec vos coordonnées.</p>
+    <p class="lede">La vidéo est montée automatiquement à partir des photos du reportage : ouverture avec le logo du réseau, présentation du bien et classe énergie, description qui défile sur les photos, fin avec le logo et vos coordonnées. Musique et narrateur au choix.</p>
     <div class="grid">
       <div class="stage videobox" id="vidBox"><canvas id="vid"></canvas></div>
       <div class="panel">
@@ -467,7 +469,15 @@ hr{border:0;border-top:1px solid var(--line);margin:2px 0}
         <div class="field"><label for="vSub">Détails</label><input type="text" id="vSub" value="5 pièces · 3 chambres · 118 m² · terrain 600 m²"></div>
         <div class="field"><label for="vPrice">Prix</label><input type="text" id="vPrice" value="349 000 € honoraires inclus"></div>
         <div class="field"><span class="lbl">Classe énergie (DPE)</span><div class="dpe" id="dpe"></div></div>
+        <div class="field"><label for="vDesc">Description qui défile sur les photos</label><textarea id="vDesc" rows="4" placeholder="Ex. : Grand séjour lumineux ouvert sur le jardin. Cuisine équipée avec îlot. Suite parentale avec dressing."></textarea></div>
         <div class="field"><label for="vAgent">Contact (carton final)</label><input type="text" id="vAgent" value="Votre nom · 06 00 00 00 00"></div>
+        <div class="field"><span class="lbl">Clips vidéo <span class="note">(facultatif)</span></span>
+          <label class="btn file" id="vClipLbl">Filmer ou ajouter un clip<input type="file" id="vClip" accept="video/*" multiple></label>
+          <div id="vClips" class="cliplist"></div>
+          <p class="note">Les clips s'enchaînent après les photos (12 s maximum chacun), avec la description, la musique et le narrateur. Le son d'origine du clip est coupé.</p></div>
+        <label class="toggle" for="vMusic"><span>Musique de fond <span class="note">(libre de droits)</span></span><input type="checkbox" id="vMusic" checked></label>
+        <label class="toggle" for="vVoice"><span>Narrateur : ma voix <span class="note">(micro)</span></span><input type="checkbox" id="vVoice"></label>
+        <p class="note" id="vVoiceNote" hidden>Pendant la création, lisez à voix haute la description qui s'affiche sur les photos : votre voix est enregistrée dans la vidéo, la musique baisse automatiquement.</p>
         <div class="slider"><span>Par photo</span><input type="range" id="vDur" min="2" max="6" value="3" step="0.5"><output for="vDur">3 s</output></div>
         <div class="row">
           <button id="vPlay">Aperçu</button>
@@ -1192,9 +1202,30 @@ function dpeBadge(x, cx, cy, size, u) {
   x.fillStyle = "#FFFFFF"; x.font = `500 ${size * .2}px "Public Sans", system-ui, sans-serif`; x.fillText("Classe énergie", cx, cy + size * .5 + size * .26); x.restore();
 }
 function vSize() { return V.fmt === "v" ? [1080, 1920] : [1920, 1080]; }
-function vPhotos() { return P.shoot.length ? P.shoot.map(p => p.canvas) : [sampleFacade(), sampleRoom(0, 1), sampleRoom(2, 1)]; }
+function vPhotos() { const cl = (V.clips || []).map(c => c.el); if (!P.shoot.length && cl.length) return cl; return (P.shoot.length ? P.shoot.map(p => p.canvas) : [sampleFacade(), sampleRoom(0, 1), sampleRoom(2, 1)]).concat(cl); }
+const isClip = m => m && m.tagName === "VIDEO";
+V.clips = [];
+function renderClips() { const box = $("#vClips"); box.innerHTML = "";
+  V.clips.forEach((c, i) => { const s = document.createElement("span"); s.textContent = `Clip ${i + 1} · ${Math.round(Math.min(c.el.duration, 12))} s`;
+    const b = document.createElement("button"); b.textContent = "✕"; b.setAttribute("aria-label", "Retirer le clip " + (i + 1));
+    b.onclick = () => { URL.revokeObjectURL(c.el.src); c.el.remove(); V.clips.splice(i, 1); renderClips(); if (!V.playing) vStill(); }; s.appendChild(b); box.appendChild(s); }); }
+$("#vClip").onchange = async e => {
+  const files = [...e.target.files]; e.target.value = ""; const st = $("#vStatus"); st.className = "status";
+  let hold = $("#clipHold"); if (!hold) { hold = document.createElement("div"); hold.id = "clipHold"; hold.style.cssText = "position:fixed;left:0;top:0;width:2px;height:2px;opacity:0;pointer-events:none;overflow:hidden"; document.body.appendChild(hold); }
+  for (const f of files) {
+    st.textContent = "Chargement du clip…";
+    const el = document.createElement("video"); el.muted = true; el.playsInline = true; el.setAttribute("playsinline", ""); el.setAttribute("muted", ""); el.preload = "auto"; hold.appendChild(el);
+    try {
+      await new Promise((res, rej) => { el.onloadedmetadata = res; el.onerror = () => rej(new Error("clip")); el.src = URL.createObjectURL(f); el.load(); });
+      await new Promise(res => { el.onseeked = res; el.currentTime = Math.min(.5, el.duration / 2); setTimeout(res, 1500); });
+      V.clips.push({ el }); st.textContent = "";
+    } catch (_) { el.remove(); st.className = "status err"; st.textContent = "Ce clip n'a pas pu être ouvert. Filmez-le directement avec le bouton ci-dessus."; }
+  }
+  renderClips(); if (!V.playing) vStill();
+};
 function fitCover(x, img, W, H, zoom, panX, panY) {
-  const s = Math.max(W / img.width, H / img.height) * zoom, w = img.width * s, h = img.height * s;
+  const iw = img.videoWidth || img.width, ih = img.videoHeight || img.height; if (!iw || !ih) { x.fillStyle = "#02062C"; x.fillRect(0, 0, W, H); return; }
+  const s = Math.max(W / iw, H / ih) * zoom, w = iw * s, h = ih * s;
   x.drawImage(img, (W - w) / 2 + panX * (w - W) / 2, (H - h) / 2 + panY * (h - H) / 2, w, h);
 }
 function wrapText(x, text, cx, y, maxW, lh) {
@@ -1209,7 +1240,16 @@ function drawCard(x, W, H, kind, t) {
   x.strokeStyle = "rgba(7,12,155,.9)"; x.lineWidth = 3 * u;
   for (let r = 1; r <= 4; r++) { x.beginPath(); x.arc(W / 2, H / 2, r * 140 * u * (1 + t * .15), 0, 7); x.stroke(); }
   x.textAlign = "center"; x.fillStyle = "#fff"; const cx = W / 2, maxW = W * .82;
-  if (kind === "open") {
+  if (kind === "intro") {
+    const lg = $("#logoImg"); let y = H * (portrait ? .36 : .26);
+    if (lg && lg.complete && lg.naturalWidth) { const lw = Math.min(W * .8, 800 * u), lh = lw * lg.naturalHeight / lg.naturalWidth, pd = 40 * u, a = Math.min(1, t * 2.2), sc = .92 + .08 * a;
+      x.save(); x.globalAlpha = a; x.translate(cx, y + lh / 2); x.scale(sc, sc); x.translate(-cx, -(y + lh / 2));
+      x.fillStyle = "#FFFFFF"; x.beginPath(); x.roundRect ? x.roundRect(cx - lw / 2 - pd, y - pd, lw + 2 * pd, lh + 2 * pd, 30 * u) : x.rect(cx - lw / 2 - pd, y - pd, lw + 2 * pd, lh + 2 * pd); x.fill();
+      x.drawImage(lg, cx - lw / 2, y, lw, lh); x.restore(); y += lh + pd + 90 * u; }
+    const a2 = Math.max(0, Math.min(1, (t - .35) * 2.5)); x.globalAlpha = a2;
+    x.fillStyle = "#F0B00A"; x.fillRect(cx - 60 * u, y, 120 * u, 7 * u);
+    x.fillStyle = "#FFFFFF"; x.font = `600 ${50 * u}px "Public Sans", system-ui, sans-serif`; x.fillText("vous présente", cx, y + 90 * u); x.globalAlpha = 1;
+  } else if (kind === "open") {
     x.font = `700 ${(portrait ? 92 : 84) * u}px "Bricolage Grotesque", system-ui, sans-serif`;
     const n = wrapText(x, $("#vTitle").value, cx, H * .42, maxW, 100 * u);
     x.font = `500 ${44 * u}px "Public Sans", system-ui, sans-serif`; x.fillStyle = "#FFFFFF"; const m = wrapText(x, $("#vSub").value, cx, H * .42 + n * 100 * u + 30 * u, maxW, 54 * u);
@@ -1220,24 +1260,60 @@ function drawCard(x, W, H, kind, t) {
     const lg = $("#logoImg"); if (lg && lg.complete && lg.naturalWidth) { const lw = Math.min(W * .78, 760 * u), lh = lw * lg.naturalHeight / lg.naturalWidth, pd = 36 * u, ly = H * .16;
       x.fillStyle = "#FFFFFF"; x.beginPath(); x.roundRect ? x.roundRect(cx - lw / 2 - pd, ly - pd, lw + 2 * pd, lh + 2 * pd, 28 * u) : x.rect(cx - lw / 2 - pd, ly - pd, lw + 2 * pd, lh + 2 * pd); x.fill();
       x.drawImage(lg, cx - lw / 2, ly, lw, lh); x.fillStyle = "#FFFFFF"; }
-    x.font = `700 ${70 * u}px "Bricolage Grotesque", system-ui, sans-serif`; x.fillText("Pour visiter", cx, H * .44);
-    x.font = `500 ${48 * u}px "Public Sans", system-ui, sans-serif`; x.fillStyle = "#FFFFFF"; wrapText(x, $("#vAgent").value, cx, H * .44 + 90 * u, maxW, 60 * u);
+    const y0 = portrait ? H * .46 : H * .54;
+    x.font = `700 ${72 * u}px "Bricolage Grotesque", system-ui, sans-serif`; x.fillText("Pour visiter", cx, y0);
+    x.fillStyle = "#F0B00A"; x.fillRect(cx - 60 * u, y0 + 40 * u, 120 * u, 7 * u);
+    const parts = $("#vAgent").value.split(/\s*[·|•]\s*/).filter(Boolean); let yy = y0 + 130 * u;
+    parts.forEach((p, i) => { x.fillStyle = i === 0 ? "#FFFFFF" : "#F0B00A"; x.font = `${i === 0 ? 700 : 600} ${(i === 0 ? 58 : 54) * u}px "Public Sans", system-ui, sans-serif`; yy += wrapText(x, p, cx, yy, maxW, 68 * u) * 68 * u + 12 * u; });
 
   }
 }
-function vTimeline() { const d = +$("#vDur").value, ph = vPhotos(); return { d, ph, card: 2.6, total: 2.6 * 2 + ph.length * d }; }
+function vCaptions(n) {
+  const txt = ($("#vDesc").value || "").replace(/\s+/g, " ").trim(); if (!txt || !n) return Array(n).fill("");
+  let sents = txt.split(/(?<=[.!?…])\s+/).filter(Boolean), out = Array(n).fill("");
+  if (sents.length <= n) { sents.forEach((t, j) => { out[Math.floor(j * n / sents.length)] = t; }); }
+  else sents.forEach((t, j) => { const k = Math.floor(j * n / sents.length); out[k] = out[k] ? out[k] + " " + t : t; });
+  return out;
+}
+function vTimeline() {
+  const d = +$("#vDur").value, ph = vPhotos(), caps = vCaptions(ph.length);
+  const durs = caps.map((c, i) => isClip(ph[i]) ? Math.max(1, Math.min(ph[i].duration || 5, 12)) : Math.max(d, c ? c.split(" ").length / 2.6 + 1 : 0));
+  const starts = []; let acc = 0; durs.forEach(x => { starts.push(acc); acc += x; });
+  const intro = 3, card = 3, close = 4;
+  return { d, ph, caps, durs, starts, intro, card, close, photos: acc, total: intro + card + acc + close };
+}
+function vCaption(x, W, H, txt, p, dur, u) {
+  if (!txt) return;
+  const words = txt.split(" "), reveal = Math.min(1, p * dur / Math.max(.8, Math.min(dur * .55, words.length / 3.2)));
+  const shown = Math.max(1, Math.ceil(words.length * reveal));
+  const fs = (H > W ? 46 : 40) * u, lh = fs * 1.3, maxW = W - 120 * u;
+  x.font = `600 ${fs}px "Public Sans", system-ui, sans-serif`;
+  let lines = [], line = "";
+  for (const w of words) { const t = line ? line + " " + w : w; if (x.measureText(t).width > maxW - 60 * u && line) { lines.push(line); line = w; } else line = t; }
+  lines.push(line);
+  const bh = lines.length * lh + 44 * u, by = H - 150 * u - bh, a = Math.min(1, p * dur / .35);
+  x.save(); x.globalAlpha = .82 * a; x.fillStyle = "#02062C"; x.beginPath(); x.roundRect ? x.roundRect(40 * u, by, W - 80 * u, bh, 26 * u) : x.rect(40 * u, by, W - 80 * u, bh); x.fill();
+  x.globalAlpha = a; x.fillStyle = "#F0B00A"; x.fillRect(40 * u, by + 22 * u, 7 * u, bh - 44 * u);
+  x.textAlign = "left"; let k = 0;
+  lines.forEach((l, i) => { let xx = 76 * u; for (const w of l.split(" ")) { x.fillStyle = k < shown ? "#FFFFFF" : "rgba(255,255,255,.28)"; x.fillText(w, xx, by + 22 * u + fs + i * lh - fs * .12); xx += x.measureText(w + " ").width; k++; } });
+  x.restore();
+}
 function vDraw(x, W, H, tl, t) {
-  const fadeT = .6;
-  if (t < tl.card) { drawCard(x, W, H, "open", t / tl.card); }
-  else if (t < tl.card + tl.ph.length * tl.d) {
-    const lt = t - tl.card, i = Math.min(tl.ph.length - 1, Math.floor(lt / tl.d)), p = (lt - i * tl.d) / tl.d;
+  const fadeT = .6, u = Math.min(W, H) / 1080, p0 = tl.intro + tl.card;
+  if (t < tl.intro) { drawCard(x, W, H, "intro", t / tl.intro); if (t < .5) { x.globalAlpha = 1 - t / .5; x.fillStyle = "#000"; x.fillRect(0, 0, W, H); x.globalAlpha = 1; } }
+  else if (t < p0) { const e = t - tl.intro; drawCard(x, W, H, "open", e / tl.card); if (e < fadeT) { x.globalAlpha = 1 - e / fadeT; drawCard(x, W, H, "intro", 1); x.globalAlpha = 1; } }
+  else if (t < p0 + tl.photos) {
+    const lt = t - p0; let i = 0; while (i < tl.ph.length - 1 && lt >= tl.starts[i + 1]) i++;
+    const into = lt - tl.starts[i], p = into / tl.durs[i];
     const kb = j => [[1, 1.12, -.6, .6, 0, 0], [1.12, 1, .5, -.4, .3, -.2], [1, 1.1, 0, 0, .5, -.5]][j % 3];
-    const drawK = (j, pp) => { const k = kb(j); fitCover(x, tl.ph[j], W, H, k[0] + (k[1] - k[0]) * pp, k[2] + (k[3] - k[2]) * pp, k[4] + (k[5] - k[4]) * pp); };
+    const drawK = (j, pp) => { if (isClip(tl.ph[j])) { fitCover(x, tl.ph[j], W, H, 1, 0, 0); return; } const k = kb(j); fitCover(x, tl.ph[j], W, H, k[0] + (k[1] - k[0]) * pp, k[2] + (k[3] - k[2]) * pp, k[4] + (k[5] - k[4]) * pp); };
+    const cur = tl.ph[i];
+    if (V.playing && V.curClip !== cur) { if (V.curClip) V.curClip.pause(); V.curClip = null; if (isClip(cur)) { cur.currentTime = 0; const pr = cur.play(); pr && pr.catch(() => {}); V.curClip = cur; } }
     drawK(i, p);
-    const intoNext = lt - i * tl.d;
-    if (i > 0 && intoNext < fadeT) { x.globalAlpha = 1 - intoNext / fadeT; drawK(i - 1, 1); x.globalAlpha = 1; }
-    if (i === 0 && intoNext < fadeT) { x.globalAlpha = 1 - intoNext / fadeT; drawCard(x, W, H, "open", 1); x.globalAlpha = 1; }
-    const u = Math.min(W, H) / 1080; x.fillStyle = "rgba(2,6,44,.85)"; x.fillRect(0, H - 110 * u, W, 110 * u); x.fillStyle = "#F0B00A"; x.fillRect(0, H - 114 * u, W, 4 * u);
+    if (i > 0 && into < fadeT) { x.globalAlpha = 1 - into / fadeT; drawK(i - 1, 1); x.globalAlpha = 1; }
+    if (i === 0 && into < fadeT) { x.globalAlpha = 1 - into / fadeT; drawCard(x, W, H, "open", 1); x.globalAlpha = 1; }
+    vCaption(x, W, H, tl.caps[i], p, tl.durs[i], u);
+    x.fillStyle = "rgba(2,6,44,.85)"; x.fillRect(0, H - 110 * u, W, 110 * u); x.fillStyle = "#F0B00A"; x.fillRect(0, H - 114 * u, W, 4 * u);
     // bandeau : prix court à droite, titre réduit pour ne jamais chevaucher
     const pShort = ($("#vPrice").value.match(/^[^€]*€/) || [$("#vPrice").value])[0].trim(), right = V.dpe ? 120 * u : 40 * u;
     x.font = `700 ${38 * u}px "Public Sans", system-ui, sans-serif`; const pw = Math.min(x.measureText(pShort).width, W * .4);
@@ -1248,17 +1324,41 @@ function vDraw(x, W, H, tl, t) {
     x.fillStyle = "#fff"; x.textAlign = "left"; x.fillText(tt, 40 * u, H - 44 * u);
     if (V.dpe) { x.fillStyle = DPE[V.dpe]; x.fillRect(W - 96 * u, H - 92 * u, 66 * u, 66 * u); x.fillStyle = "ABC".includes(V.dpe) || V.dpe === "G" ? "#fff" : "#1b1b1b"; x.textAlign = "center"; x.font = `800 ${46 * u}px "Bricolage Grotesque", system-ui, sans-serif`; x.fillText(V.dpe, W - 63 * u, H - 43 * u); }
   } else {
-    const e = t - tl.card - tl.ph.length * tl.d; drawCard(x, W, H, "close", e / tl.card);
+    if (V.curClip) { V.curClip.pause(); V.curClip = null; }
+    const e = t - p0 - tl.photos; drawCard(x, W, H, "close", e / tl.close);
     if (e < fadeT) { x.globalAlpha = 1 - e / fadeT; fitCover(x, tl.ph[tl.ph.length - 1], W, H, 1.1, 0, 0); x.globalAlpha = 1; }
+    if (e > tl.close - .6) { x.globalAlpha = (e - (tl.close - .6)) / .6; x.fillStyle = "#000"; x.fillRect(0, 0, W, H); x.globalAlpha = 1; }
   }
 }
+/* Musique de fond originale, générée sur le téléphone (aucun fichier, libre de droits) */
+function vMusic(ctx, out, total) {
+  const t0 = ctx.currentTime + .05, beat = 60 / 96, bar = 4 * beat, hz = m => 440 * Math.pow(2, (m - 69) / 12);
+  const prog = [[53, 57, 60, 64], [55, 59, 62, 65], [52, 55, 59, 62], [57, 60, 64, 67]];
+  const master = ctx.createGain(), lp = ctx.createBiquadFilter(); lp.type = "lowpass"; lp.frequency.value = 5200; master.connect(lp); lp.connect(out);
+  master.gain.setValueAtTime(0, t0); master.gain.linearRampToValueAtTime(1, t0 + 2); master.gain.setValueAtTime(1, t0 + total - 3); master.gain.linearRampToValueAtTime(0, t0 + total);
+  const note = (f, st, dur, type, vol, a, r) => { const o = ctx.createOscillator(), g = ctx.createGain(); o.type = type; o.frequency.value = f; o.connect(g); g.connect(master);
+    g.gain.setValueAtTime(0, st); g.gain.linearRampToValueAtTime(vol, st + a); g.gain.setValueAtTime(vol, Math.max(st + a, st + dur - r)); g.gain.linearRampToValueAtTime(0, st + dur); o.start(st); o.stop(st + dur + .05); };
+  const pluck = (f, st, vol) => { const o = ctx.createOscillator(), g = ctx.createGain(); o.type = "triangle"; o.frequency.value = f; o.connect(g); g.connect(master);
+    g.gain.setValueAtTime(0, st); g.gain.linearRampToValueAtTime(vol, st + .01); g.gain.exponentialRampToValueAtTime(.0005, st + .7); o.start(st); o.stop(st + .75); };
+  const kick = (st, vol) => { const o = ctx.createOscillator(), g = ctx.createGain(); o.frequency.setValueAtTime(120, st); o.frequency.exponentialRampToValueAtTime(50, st + .12); o.connect(g); g.connect(master);
+    g.gain.setValueAtTime(vol, st); g.gain.exponentialRampToValueAtTime(.0005, st + .25); o.start(st); o.stop(st + .3); };
+  for (let k = 0, st = t0; st < t0 + total; k++, st += bar) {
+    const ch = prog[k % 4], len = Math.min(bar, t0 + total - st);
+    ch.forEach(m => { note(hz(m), st, len + .4, "sine", .035, .8, .8); note(hz(m) * 1.003, st, len + .4, "sine", .02, .8, .8); });
+    note(hz(ch[0] - 12), st, len, "sine", .09, .05, .6);
+    const arp = [0, 1, 2, 3, 2, 1, 3, 2]; arp.forEach((a, i) => { const s2 = st + i * beat / 2; if (s2 < t0 + total - .5) pluck(hz(ch[a] + 12), s2, .045); });
+    for (let b = 0; b < 4; b++) { const s3 = st + b * beat; if (s3 < t0 + total - .5) kick(s3, b % 2 ? .12 : .22); }
+  }
+  return master;
+}
 function vSetup() { const c = $("#vid"), [W, H] = vSize(); c.width = W; c.height = H; c.style.aspectRatio = W + " / " + H; c.style.width = V.fmt === "v" ? "min(100%, 340px)" : "100%"; return c; }
-function vStill() { const c = vSetup(), tl = vTimeline(); vDraw(c.getContext("2d"), c.width, c.height, tl, tl.card + 1.2);
+function vStill() { const c = vSetup(), tl = vTimeline(); vDraw(c.getContext("2d"), c.width, c.height, tl, tl.intro + tl.card + Math.min(2.2, tl.durs[0] * .8));
   $("#vInfo").textContent = (P.shoot.length ? P.shoot.length + " photo(s) du reportage" : "Exemple : ajoutez vos photos depuis l'onglet Photos") + ` · durée ${Math.round(tl.total)} s`; }
 function vRun(onEnd) {
   const c = vSetup(), x = c.getContext("2d"), tl = vTimeline(), t0 = performance.now(); V.playing = true;
   cancelAnimationFrame(V.raf);
-  const step = () => { const t = (performance.now() - t0) / 1000; if (!V.playing) return;
+  V.curClip = null;
+  const step = () => { const t = (performance.now() - t0) / 1000; if (!V.playing) { if (V.curClip) { V.curClip.pause(); V.curClip = null; } return; }
     if (t >= tl.total) { vDraw(x, c.width, c.height, tl, tl.total - .01); V.playing = false; onEnd && onEnd(); return; }
     vDraw(x, c.width, c.height, tl, t); V.raf = requestAnimationFrame(step); };
   step(); return c;
@@ -1267,19 +1367,45 @@ $("#fV").onclick = () => { V.fmt = "v"; $("#fV").setAttribute("aria-pressed", tr
 $("#fH").onclick = () => { V.fmt = "h"; $("#fH").setAttribute("aria-pressed", true); $("#fV").setAttribute("aria-pressed", false); vStill(); };
 ["vTitle", "vSub", "vPrice", "vAgent"].forEach(id => $("#" + id).addEventListener("input", () => { save(); if (!V.playing) vStill(); }));
 $("#vDur").addEventListener("input", e => { e.target.nextElementSibling.textContent = e.target.value + " s"; if (!V.playing) vStill(); });
-$("#vPlay").onclick = () => { if (V.playing) { V.playing = false; $("#vPlay").textContent = "Aperçu"; return; } $("#vPlay").textContent = "Arrêter"; vRun(() => $("#vPlay").textContent = "Aperçu"); };
+$("#vPlay").onclick = () => {
+  const stopA = () => { if (V.actx) { try { V.actx.close(); } catch (_) {} V.actx = null; } };
+  if (V.playing) { V.playing = false; stopA(); $("#vPlay").textContent = "Aperçu"; return; }
+  $("#vPlay").textContent = "Arrêter"; const AC = window.AudioContext || window.webkitAudioContext;
+  if ($("#vMusic").checked && AC) { V.actx = new AC(); try { V.actx.resume(); } catch (_) {} vMusic(V.actx, V.actx.destination, vTimeline().total); }
+  vRun(() => { stopA(); $("#vPlay").textContent = "Aperçu"; });
+};
+$("#vVoice").addEventListener("change", e => { $("#vVoiceNote").hidden = !e.target.checked; save(); });
+$("#vMusic").addEventListener("change", save); $("#vDesc").addEventListener("input", () => { save(); if (!V.playing) vStill(); });
 $("#vRec").onclick = async () => {
   const st = $("#vStatus"); st.className = "status";
-  const types = ["video/mp4;codecs=avc1", "video/mp4", "video/webm;codecs=vp9", "video/webm;codecs=vp8", "video/webm"];
+  const wantMusic = $("#vMusic").checked, wantVoice = $("#vVoice").checked, withAudio = wantMusic || wantVoice;
+  const types = withAudio ? ["video/mp4;codecs=avc1,mp4a.40.2", "video/mp4", "video/webm;codecs=vp9,opus", "video/webm;codecs=vp8,opus", "video/webm"]
+                          : ["video/mp4;codecs=avc1", "video/mp4", "video/webm;codecs=vp9", "video/webm;codecs=vp8", "video/webm"];
   const type = window.MediaRecorder ? types.find(t => MediaRecorder.isTypeSupported(t)) : null;
   const c0 = $("#vid");
   if (!type || !c0.captureStream) { st.className = "status err"; st.textContent = "Ce navigateur ne sait pas créer de vidéo. Essayez avec Safari récent ou Chrome."; return; }
-  $("#vRec").disabled = true; $("#vPlay").disabled = true; st.textContent = "Création de la vidéo en cours… gardez cette page ouverte.";
-  const c = vSetup(), stream = c.captureStream(30), rec = new MediaRecorder(stream, { mimeType: type, videoBitsPerSecond: 8e6 }), chunks = [];
-  rec.ondataavailable = e => e.data.size && chunks.push(e.data);
+  let ctx = null, dest = null, mic = null;
+  const AC = window.AudioContext || window.webkitAudioContext;
+  if (withAudio && AC) { ctx = new AC(); try { await ctx.resume(); } catch (_) {} dest = ctx.createMediaStreamDestination(); const comp = ctx.createDynamicsCompressor(); comp.threshold.value = -14; comp.ratio.value = 4; comp.connect(dest); V.aIn = comp; }
+  if (wantVoice && ctx) {
+    try { mic = await navigator.mediaDevices.getUserMedia({ audio: { echoCancellation: true, noiseSuppression: true } }); }
+    catch (_) { st.className = "status err"; st.textContent = "Micro refusé : autorisez le micro pour le narrateur, ou décochez « Narrateur »."; ctx.close(); return; }
+  }
+  $("#vRec").disabled = true; $("#vPlay").disabled = true;
+  const c = vSetup(), tl = vTimeline(), vs = c.captureStream(30);
+  if (ctx) {
+    if (mic) { const src = ctx.createMediaStreamSource(mic), g = ctx.createGain(); g.gain.value = 1.2; src.connect(g); g.connect(V.aIn); }
+    if (wantMusic) { const m = ctx.createGain(); m.gain.value = mic ? .35 : 1; m.connect(V.aIn); vMusic(ctx, m, tl.total); }
+  }
+  const stream = dest ? new MediaStream([...vs.getVideoTracks(), ...dest.stream.getAudioTracks()]) : vs;
+  let rec; try { rec = new MediaRecorder(stream, { mimeType: type, videoBitsPerSecond: 8e6 }); }
+  catch (_) { rec = new MediaRecorder(stream); }
+  const chunks = []; rec.ondataavailable = e => e.data.size && chunks.push(e.data);
   const done = new Promise(r => rec.onstop = r);
-  rec.start(250); await new Promise(r => vRun(r)); await sleep(150); rec.stop(); await done;
-  const ext = type.startsWith("video/mp4") ? "mp4" : "webm", blob = new Blob(chunks, { type: type.split(";")[0] });
+  st.textContent = mic ? "Enregistrement : lisez la description qui s'affiche… gardez cette page ouverte." : "Création de la vidéo en cours… gardez cette page ouverte.";
+  rec.start(250); await new Promise(r => vRun(r)); await sleep(200); rec.stop(); await done;
+  if (mic) mic.getTracks().forEach(t => t.stop()); if (ctx) try { ctx.close(); } catch (_) {}
+  const mt = rec.mimeType || type, ext = mt.startsWith("video/mp4") ? "mp4" : "webm", blob = new Blob(chunks, { type: mt.split(";")[0] });
   $("#vRec").disabled = false; $("#vPlay").disabled = false;
   st.textContent = `Vidéo prête (${(blob.size / 1048576).toFixed(1)} Mo, format ${ext.toUpperCase()}).`;
   V.last = { blob, ext };
@@ -1485,10 +1611,10 @@ async function save3d() {
 /* ============ Sauvegarde sur ce téléphone ============ */
 let saveT = 0;
 function save() { clearTimeout(saveT); saveT = setTimeout(() => { try {
-  localStorage.setItem("studio-habitat", JSON.stringify({ v: { t: $("#vTitle").value, s: $("#vSub").value, p: $("#vPrice").value, a: $("#vAgent").value, dpe: V.dpe },
+  localStorage.setItem("studio-habitat", JSON.stringify({ v: { t: $("#vTitle").value, s: $("#vSub").value, p: $("#vPrice").value, a: $("#vAgent").value, dpe: V.dpe, d: $("#vDesc").value, m: $("#vMusic").checked, n: $("#vVoice").checked },
     plan: PL.isSample ? null : { title: $("#planTitle").value, rooms: PL.rooms } })); } catch (_) {} }, 400); }
 function restore() { try { const d = JSON.parse(localStorage.getItem("studio-habitat") || "null"); if (!d) return;
-  if (d.v) { $("#vTitle").value = d.v.t; $("#vSub").value = d.v.s; $("#vPrice").value = d.v.p; $("#vAgent").value = d.v.a; V.dpe = d.v.dpe || "C"; [...$("#dpe").children].forEach(o => o.setAttribute("aria-pressed", o.textContent === V.dpe)); }
+  if (d.v) { $("#vTitle").value = d.v.t; $("#vSub").value = d.v.s; $("#vPrice").value = d.v.p; $("#vAgent").value = d.v.a; V.dpe = d.v.dpe || "C"; $("#vDesc").value = d.v.d || ""; if ("m" in d.v) $("#vMusic").checked = d.v.m; $("#vVoice").checked = !!d.v.n; $("#vVoiceNote").hidden = !d.v.n; [...$("#dpe").children].forEach(o => o.setAttribute("aria-pressed", o.textContent === V.dpe)); }
   if (d.plan && d.plan.rooms && d.plan.rooms.length) { PL.rooms = d.plan.rooms; PL.isSample = false; PL.sel = 0; $("#planTitle").value = d.plan.title || ""; $("#planEx").hidden = true; }
 } catch (_) {} }
 $("#planTitle").addEventListener("input", save);
@@ -1564,6 +1690,7 @@ $("#fApply").onclick = () => {
   const d = ficheData(), t = ficheTitle(d);
   $("#vTitle").value = t; $("#vSub").value = ficheDetails(d) || $("#vSub").value;
   if (nb(d.fPrice)) $("#vPrice").value = `${euro(nb(d.fPrice))} ${d.fFees}`;
+  if (d.fDesc && d.fDesc.trim()) $("#vDesc").value = d.fDesc.trim();
   if (d.dpe) { V.dpe = d.dpe; [...$("#dpe").children].forEach(o => o.setAttribute("aria-pressed", o.textContent === V.dpe)); }
   $("#planTitle").value = t; $("#dosName").value = [d.fType, d.fCity || d.fAddr].filter(Boolean).join(" ");
   try { localStorage.setItem("studio-habitat-dossier", $("#dosName").value); } catch (_) {}
@@ -1613,7 +1740,7 @@ $("#dosSave").onclick = async () => {
     const tour = (!T.isSample && T.scenes.length) ? { start: T.start, scenes: T.scenes.map(sc => ({ id: sc.id, name: sc.name, src: sc.src, thumb: sc.thumb, ratio: sc.ratio, hotspots: sc.hotspots })) } : null;
     const d = { app: "studio-habitat", version: DOS_VERSION, saved: new Date().toISOString(), name: dosName(), photos,
       plan: PL.isSample ? null : { title: $("#planTitle").value, rooms: PL.rooms },
-      video: { t: $("#vTitle").value, s: $("#vSub").value, p: $("#vPrice").value, a: $("#vAgent").value, dpe: V.dpe }, tour, fiche: ficheData() };
+      video: { t: $("#vTitle").value, s: $("#vSub").value, p: $("#vPrice").value, a: $("#vAgent").value, dpe: V.dpe, d: $("#vDesc").value }, tour, fiche: ficheData() };
     const blob = new Blob([JSON.stringify(d)], { type: "application/json" });
     const r = await offerFile(`Dossier - ${safeName(d.name)}.json`, blob, "dossier");
     const mo = (blob.size / 1048576).toFixed(1).replace(".", ",");
@@ -1639,7 +1766,7 @@ $("#dosOpen").onchange = async e => {
     if (d.plan && d.plan.rooms) { PL.rooms = d.plan.rooms; PL.isSample = false; PL.sel = 0; $("#planTitle").value = d.plan.title || ""; $("#planEx").hidden = true; renderRooms(); renderPlan(); }
     // vidéo
     ficheLoad(d.fiche || null); try { localStorage.setItem("studio-habitat-fiche", JSON.stringify(ficheData())); } catch (_) {}
-    if (d.video) { $("#vTitle").value = d.video.t || ""; $("#vSub").value = d.video.s || ""; $("#vPrice").value = d.video.p || ""; $("#vAgent").value = d.video.a || ""; V.dpe = d.video.dpe || "C";
+    if (d.video) { $("#vTitle").value = d.video.t || ""; $("#vSub").value = d.video.s || ""; $("#vPrice").value = d.video.p || ""; $("#vAgent").value = d.video.a || ""; $("#vDesc").value = d.video.d || ""; V.dpe = d.video.dpe || "C";
       [...$("#dpe").children].forEach(o => o.setAttribute("aria-pressed", o.textContent === V.dpe)); }
     // visite
     if (d.tour && d.tour.scenes && d.tour.scenes.length) {
@@ -1664,7 +1791,8 @@ $("#dosNew").onclick = async () => {
   for (const p of P.shoot) if (p.id) await DB.del(p.id);
   P.shoot = []; renderShoot();
   PL.rooms = []; PL.isSample = false; $("#planTitle").value = ""; $("#planEx").hidden = true; renderRooms(); renderPlan();
-  ["vTitle", "vSub", "vPrice"].forEach(id => $("#" + id).value = "");
+  ["vTitle", "vSub", "vPrice", "vDesc"].forEach(id => $("#" + id).value = "");
+  V.clips.forEach(c => { URL.revokeObjectURL(c.el.src); c.el.remove(); }); V.clips = []; renderClips();
   ficheLoad(null); try { localStorage.removeItem("studio-habitat-fiche"); } catch (_) {}
   if (T.viewer && !T.isSample) { T.scenes.length = 0; T.isSample = true; initSampleTour(); $("#tourEx").hidden = false; T.viewer.go(T.start); renderScenes(); }
   $("#dosName").value = ""; try { localStorage.setItem("studio-habitat-dossier", ""); } catch (_) {}
