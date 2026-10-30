@@ -385,7 +385,7 @@ hr{border:0;border-top:1px solid var(--line);margin:2px 0}
           <span class="badge ex" id="exBadge">Exemple</span>
         </div>
         <label class="btn file primary" id="pickLbl">Prendre ou choisir une photo
-          <input type="file" id="pick" accept="image/*">
+          <input type="file" id="pick" accept="image/*,image/heic,image/heif">
         </label>
         <p class="note" id="modeNote">Une seule photo par pièce suffit. Tenez le téléphone droit, à hauteur de poitrine.</p>
         <div class="status" id="pStatus"></div>
@@ -430,7 +430,7 @@ hr{border:0;border-top:1px solid var(--line);margin:2px 0}
         <div class="row" style="justify-content:space-between"><span class="lbl">Pièces</span><span class="badge ex" id="tourEx">Exemple</span></div>
         <div class="scenes" id="scenes"></div>
         <label class="btn file">Ajouter une pièce
-          <input type="file" id="pick360" accept="image/*" multiple>
+          <input type="file" id="pick360" accept="image/*,image/heic,image/heif" multiple>
         </label>
         <hr>
         <div class="row">
@@ -912,7 +912,7 @@ $("#pick").onchange = async e => {
       const c = await fileToCanvas(files[0], 2048); await setPhotoSource(canvasToFloat(c), null, false); st.textContent = "";
     }
     resetSliders();
-  } catch (err) { st.className = "status err"; st.textContent = "Cette photo n'a pas pu être ouverte. Essayez en JPEG ou PNG."; }
+  } catch (err) { st.className = "status err"; st.textContent = "Cette photo n'a pas pu être ouverte. Réessayez, ou prenez la photo directement avec « Prendre une photo »."; }
 };
 function resetSliders() { $("#sBright").value = 0; $("#sContrast").value = 0; $("#sWarm").value = 0; $("#sVib").value = 0; $("#sSharp").value = 35; $("#sRot").value = 0; renderPhoto(); }
 $("#resetAuto").onclick = resetSliders;
