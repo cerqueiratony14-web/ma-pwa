@@ -93,7 +93,7 @@ label.file{position:relative;overflow:hidden}
 .pano-ov video,.pano-ghost{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
 .pano-ghost{opacity:.38;pointer-events:none}
 .pano-top{position:absolute;left:0;right:0;top:0;padding:max(14px,env(safe-area-inset-top)) 18px 26px;background:linear-gradient(rgba(2,6,44,.85),transparent);display:flex;flex-direction:column;gap:6px;text-align:center}
-.pano-top b{font-size:20px}.pano-top span{font-size:15px;line-height:1.35}
+.pano-top b{font-size:20px}.pano-top span{font-size:15px;line-height:1.35}.pano-top .pano-lens{font-size:13px;color:#F0B00A}
 .pano-aim{position:absolute;left:50%;top:50%;width:0;height:0}
 .pano-ring{position:absolute;left:-34px;top:-34px;width:68px;height:68px;border-radius:50%;border:4px solid #fff;box-shadow:0 0 0 2px rgba(0,0,0,.35)}
 .pano-ring.ok{border-color:#F0B00A}
@@ -493,8 +493,9 @@ hr{border:0;border-top:1px solid var(--line);margin:2px 0}
           <p class="note">Les clips s'enchaînent après les photos (12 s maximum chacun), avec la description, la musique et le narrateur. Le son d'origine du clip est coupé.</p></div>
         <div class="field"><label for="vMusic">Musique de fond <span class="note">(libre de droits)</span></label>
           <div class="row" style="flex-wrap:nowrap"><select id="vMusic" style="flex:1"></select><button id="vMusicTry" type="button">▶ Écouter</button></div></div>
-        <label class="toggle" for="vVoice"><span>Narrateur : ma voix <span class="note">(micro)</span></span><input type="checkbox" id="vVoice"></label>
-        <p class="note" id="vVoiceNote" hidden>Pendant la création, lisez à voix haute la description qui s'affiche sur les photos : votre voix est enregistrée dans la vidéo, la musique baisse automatiquement.</p>
+        <div class="field"><label for="vNarr">Narrateur</label>
+          <div class="row" style="flex-wrap:nowrap"><select id="vNarr" style="flex:1"><option value="">Sans narrateur</option><option value="f1">Voix femme 1</option><option value="f2">Voix femme 2</option><option value="m1">Voix homme 1</option><option value="m2">Voix homme 2</option><option value="mic">Ma voix (micro)</option></select><button id="vNarrTry" type="button">▶ Écouter</button></div></div>
+        <p class="note" id="vVoiceNote" hidden></p>
         <div class="slider"><span>Par photo</span><input type="range" id="vDur" min="2" max="6" value="3" step="0.5"><output for="vDur">3 s</output></div>
         <div class="row">
           <button id="vPlay">Aperçu</button>
@@ -1248,16 +1249,16 @@ function panoShifts(grays, f, yawSteps) {
   return res;
 }
 // Assemblage : renvoie un panorama 360° (cylindrique, latitude linéaire) et son champ vertical
-async function stitchPano(cans, yaws, onProg) {
+async function stitchPano(cans, yaws, onProg, wide) {
   const n = cans.length, w = cans[0].width, h = cans[0].height, grays = cans.map(grayOf);
   const prog = t => onProg && onProg(t);
   // focale de départ : gyroscope si disponible, sinon champ horizontal ~ 50° (téléphone en portrait)
-  let f = (w / 2) / Math.tan(25 * Math.PI / 180), steps = null;
+  let f = (w / 2) / Math.tan((wide ? 42 : 25) * Math.PI / 180), steps = null;
   if (yaws && yaws.length === n) steps = yaws.map((y, i) => { const d = (yaws[(i + 1) % n] - y + 360) % 360; return d || PANO_STEP; });
   let sh = null;
   for (let it = 0; it < 3; it++) {
     prog(.1 + it * .2); await frame();
-    sh = panoShifts(grays, f, steps);
+    sh = panoShifts(grays, f, it ? steps : null);
     const tot = sh.reduce((s, o) => s + o.dx, 0), fNew = tot / (2 * Math.PI);
     if (!(fNew > w * .3 && fNew < w * 4)) break; const conv = Math.abs(fNew - f) / f < .004; f = fNew; if (conv) break;
   }
@@ -1310,12 +1311,18 @@ async function openPanoCapture() {
   // autorisation du gyroscope (iPhone) : à demander tout de suite, dans le geste de l'utilisateur
   let gyro = false;
   try { if (window.DeviceOrientationEvent && typeof DeviceOrientationEvent.requestPermission === "function") gyro = (await DeviceOrientationEvent.requestPermission()) === "granted"; else gyro = "DeviceOrientationEvent" in window; } catch (_) { gyro = false; }
-  let stream;
+  let stream, wide = false;
   try { stream = await navigator.mediaDevices.getUserMedia({ audio: false, video: { facingMode: { ideal: "environment" }, width: { ideal: 1920 }, height: { ideal: 1080 } } }); }
   catch (_) { st.className = "status err"; st.textContent = "Caméra inaccessible : autorisez l'appareil photo pour Studio Habitat (Réglages), puis réessayez."; return; }
+  // objectif ultra grand-angle (0,5×) s'il existe : il voit beaucoup plus de sol et de plafond
+  try {
+    const devs = (await navigator.mediaDevices.enumerateDevices()).filter(d => d.kind === "videoinput");
+    const uw = devs.find(d => /ultra|grand[- ]angle|0[.,]5/i.test(d.label) && !/avant|front|dual|double|triple/i.test(d.label));
+    if (uw) { const s2 = await navigator.mediaDevices.getUserMedia({ audio: false, video: { deviceId: { exact: uw.deviceId }, width: { ideal: 1920 }, height: { ideal: 1080 } } }); stream.getTracks().forEach(t => t.stop()); stream = s2; wide = true; }
+  } catch (_) {}
   const ov = document.createElement("div"); ov.className = "pano-ov"; ov.setAttribute("role", "dialog"); ov.setAttribute("aria-label", "Prise de vue 360°");
   ov.innerHTML = `<video playsinline muted autoplay></video><canvas class="pano-ghost"></canvas>
-    <div class="pano-top"><b class="pano-count">Photo 1 / ${PANO_N}</b><span class="pano-msg">Placez-vous au centre de la pièce, téléphone droit à hauteur de poitrine.</span></div>
+    <div class="pano-top"><b class="pano-count">Photo 1 / ${PANO_N}</b><span class="pano-msg">Placez-vous au centre de la pièce, téléphone droit à hauteur de poitrine.</span><span class="pano-lens"></span></div>
     <div class="pano-aim"><div class="pano-ring"></div><div class="pano-dot"></div></div>
     <div class="pano-strip"></div>
     <div class="pano-bar"><button class="ghost pano-cancel">Annuler</button><button class="primary pano-shot">Commencer</button></div>
@@ -1323,6 +1330,7 @@ async function openPanoCapture() {
   document.body.appendChild(ov);
   const vid = ov.querySelector("video"), ghost = ov.querySelector(".pano-ghost"), dot = ov.querySelector(".pano-dot"), ring = ov.querySelector(".pano-ring"), msg = ov.querySelector(".pano-msg"), cnt = ov.querySelector(".pano-count"), shot = ov.querySelector(".pano-shot"), strip = ov.querySelector(".pano-strip");
   vid.srcObject = stream; try { await vid.play(); } catch (_) {}
+  ov.querySelector(".pano-lens").textContent = wide ? "Objectif grand-angle 0,5× : sol et plafond inclus." : "";
   const shots = [], yaws = []; let cur = null, hist = [], done = false, busy = false, gotGyro = false;
   const onOri = e => { if (e.alpha == null) return; gotGyro = true; cur = camHeading(e.alpha, e.beta || 0, e.gamma || 0); const t = performance.now(); hist.push([t, cur.yaw]); while (hist.length && t - hist[0][0] > 350) hist.shift(); };
   if (gyro) window.addEventListener("deviceorientation", onOri);
@@ -1368,7 +1376,7 @@ async function openPanoCapture() {
     ov.querySelector(".pano-bar").hidden = true; ring.style.display = dot.style.display = "none"; ghost.style.display = "none";
     msg.textContent = "Assemblage du panorama… gardez l'application ouverte.";
     try {
-      const r = await stitchPano(shots, yaws.every(y => y != null) ? yaws : null, p => cnt.textContent = `Assemblage… ${Math.round(p * 100)} %`);
+      const r = await stitchPano(shots, yaws.every(y => y != null) ? yaws : null, p => cnt.textContent = `Assemblage… ${Math.round(p * 100)} %`, wide);
       if (T.isSample) { T.scenes.length = 0; T.isSample = false; $("#tourEx").hidden = true; }
       const id = addScene("Pièce " + (T.scenes.length + 1), r.canvas, r.vfov); T.start = T.scenes[0].id; T.viewer.go(id); renderScenes();
       stop();
@@ -1481,14 +1489,16 @@ function vCaptions(n) {
 }
 function vTimeline() {
   const d = +$("#vDur").value, ph = vPhotos(), caps = vCaptions(ph.length);
-  const durs = caps.map((c, i) => isClip(ph[i]) ? Math.max(1, Math.min(ph[i].duration || 5, 12)) : Math.max(d, c ? c.split(" ").length / 2.6 + 1 : 0));
+  const sp = V.speech && V.speech.key === narr() ? V.speech : null, sd = c => c ? c.data.length / c.sr : 0;
+  const capDur = caps.map((c, i) => sp && sp.caps[i] ? sd(sp.caps[i]) : 0);
+  const durs = caps.map((c, i) => Math.max(isClip(ph[i]) ? Math.max(1, Math.min(ph[i].duration || 5, 12)) : Math.max(d, c ? c.split(" ").length / 2.6 + 1 : 0), capDur[i] ? capDur[i] + 1.1 : 0));
   const starts = []; let acc = 0; durs.forEach(x => { starts.push(acc); acc += x; });
-  const intro = 3, card = 3, close = 4;
-  return { d, ph, caps, durs, starts, intro, card, close, photos: acc, total: intro + card + acc + close };
+  const intro = 3, card = sp && sp.open ? Math.max(3, sd(sp.open) + 1.1) : 3, close = sp && sp.close ? Math.max(4, sd(sp.close) + 1.6) : 4;
+  return { d, ph, caps, capDur, durs, starts, intro, card, close, photos: acc, total: intro + card + acc + close };
 }
-function vCaption(x, W, H, txt, p, dur, u) {
+function vCaption(x, W, H, txt, p, dur, u, rv) {
   if (!txt) return;
-  const words = txt.split(" "), reveal = Math.min(1, p * dur / Math.max(.8, Math.min(dur * .55, words.length / 3.2)));
+  const words = txt.split(" "), reveal = Math.min(1, Math.max(0, p * dur - (rv ? .35 : 0)) / (rv || Math.max(.8, Math.min(dur * .55, words.length / 3.2))));
   const shown = Math.max(1, Math.ceil(words.length * reveal));
   const fs = (H > W ? 46 : 40) * u, lh = fs * 1.3, maxW = W - 120 * u;
   x.font = `600 ${fs}px "Public Sans", system-ui, sans-serif`;
@@ -1516,7 +1526,7 @@ function vDraw(x, W, H, tl, t) {
     drawK(i, p);
     if (i > 0 && into < fadeT) { x.globalAlpha = 1 - into / fadeT; drawK(i - 1, 1); x.globalAlpha = 1; }
     if (i === 0 && into < fadeT) { x.globalAlpha = 1 - into / fadeT; drawCard(x, W, H, "open", 1); x.globalAlpha = 1; }
-    vCaption(x, W, H, tl.caps[i], p, tl.durs[i], u);
+    vCaption(x, W, H, tl.caps[i], p, tl.durs[i], u, tl.capDur && tl.capDur[i]);
     x.fillStyle = "rgba(2,6,44,.85)"; x.fillRect(0, H - 110 * u, W, 110 * u); x.fillStyle = "#F0B00A"; x.fillRect(0, H - 114 * u, W, 4 * u);
     // bandeau : prix court à droite, titre réduit pour ne jamais chevaucher
     const pShort = ($("#vPrice").value.match(/^[^€]*€/) || [$("#vPrice").value])[0].trim(), right = V.dpe ? 120 * u : 40 * u;
@@ -1592,14 +1602,121 @@ $("#fV").onclick = () => { V.fmt = "v"; $("#fV").setAttribute("aria-pressed", tr
 $("#fH").onclick = () => { V.fmt = "h"; $("#fH").setAttribute("aria-pressed", true); $("#fV").setAttribute("aria-pressed", false); vStill(); };
 ["vTitle", "vSub", "vPrice", "vAgent"].forEach(id => $("#" + id).addEventListener("input", () => { save(); if (!V.playing) vStill(); }));
 $("#vDur").addEventListener("input", e => { e.target.nextElementSibling.textContent = e.target.value + " s"; if (!V.playing) vStill(); });
-$("#vPlay").onclick = () => {
+/* ============ Narrateur : voix de synthèse sur le téléphone (Piper, gratuit, hors serveur) ============ */
+const TTS = {
+  base: "voices/",
+  voices: {
+    f1: { label: "Voix femme 1", file: "siwis", sid: null, mb: 63 },
+    f2: { label: "Voix femme 2", file: "upmc", sid: 0, mb: 77 },
+    m1: { label: "Voix homme 1", file: "upmc", sid: 1, mb: 77 },
+    m2: { label: "Voix homme 2", file: "tom", sid: null, mb: 63 }
+  },
+  sessions: {}, configs: {}, cache: new Map(), ort: null, phon: null
+};
+function ttsText(s) {
+  return String(s || "")
+    .replace(/(\d)[  ](\d{3})/g, "$1$2").replace(/(\d)[  ](\d{3})/g, "$1$2")
+    .replace(/m²|m2\b/g, " mètres carrés").replace(/€/g, " euros").replace(/\bn°\s*/gi, "numéro ")
+    .replace(/\bDPE\b/g, "D P E").replace(/\bGES\b/g, "G E S").replace(/\bWC\b/g, "toilettes").replace(/\bFAI\b/g, "frais d'agence inclus")
+    .replace(/\bT(\d)\b/g, "T $1").replace(/[·•|]/g, ", ").replace(/–|—/g, ", ").replace(/&/g, " et ").replace(/\s+/g, " ").trim();
+}
+function ttsLoadScript(src) { return new Promise((res, rej) => { const s = document.createElement("script"); s.src = src; s.onload = res; s.onerror = () => rej(new Error("script")); document.head.appendChild(s); }); }
+async function ttsFetch(url, onProg) {
+  const r = await fetch(url); if (!r.ok) throw new Error("http " + r.status);
+  const total = +r.headers.get("content-length") || 0;
+  if (!r.body || !total || !onProg) return new Uint8Array(await r.arrayBuffer());
+  const rd = r.body.getReader(), buf = new Uint8Array(total); let got = 0;
+  for (;;) { const { done, value } = await rd.read(); if (done) break; if (got + value.length > buf.length) { const nb = new Uint8Array(Math.max(buf.length * 2, got + value.length)); nb.set(buf.subarray(0, got)); return ttsFetchRest(rd, nb, got, value); } buf.set(value, got); got += value.length; onProg(got / total); }
+  return got === total ? buf : buf.subarray(0, got);
+}
+async function ttsFetchRest(rd, buf, got, value) { buf.set(value, got); got += value.length; for (;;) { const { done, value: v } = await rd.read(); if (done) break; if (got + v.length > buf.length) { const nb = new Uint8Array((got + v.length) * 2); nb.set(buf.subarray(0, got)); buf = nb; } buf.set(v, got); got += v.length; } return buf.subarray(0, got); }
+async function ttsSession(file, onProg) {
+  if (TTS.sessions[file]) return TTS.sessions[file];
+  if (!window.ort) await ttsLoadScript(TTS.base + "ort.wasm.min.js");
+  ort.env.wasm.wasmPaths = new URL(TTS.base, location.href).href; ort.env.wasm.numThreads = 1; ort.env.wasm.proxy = false;
+  TTS.configs[file] = await (await fetch(TTS.base + file + ".json")).json();
+  const bytes = await ttsFetch(TTS.base + file + ".onnx", onProg);
+  TTS.sessions[file] = await ort.InferenceSession.create(bytes, { executionProviders: ["wasm"], graphOptimizationLevel: "all" });
+  return TTS.sessions[file];
+}
+// Phonèmes (espeak-ng, français) → identifiants, pour plusieurs phrases en un seul passage
+async function ttsPhonemeIds(texts) {
+  if (!TTS.phon) TTS.phon = await import(new URL(TTS.base + "piper_phonemize.mjs", location.href).href);
+  const out = [];
+  await new Promise((resolve, reject) => {
+    TTS.phon.createPiperPhonemize({
+      print: l => { try { out.push(JSON.parse(l).phoneme_ids); if (out.length >= texts.length) resolve(); } catch (_) {} },
+      printErr: () => {},
+      locateFile: f => new URL(TTS.base + (f.endsWith(".wasm") ? "piper_phonemize.wasm" : f.endsWith(".data") ? "piper_phonemize.data" : f), location.href).href
+    }).then(m => { try { m.callMain(["-l", "fr", "--input", JSON.stringify(texts.map(t => ({ text: t }))), "--espeak_data", "/espeak-ng-data"]); } catch (e) { if (out.length < texts.length) reject(e); } }, reject);
+    setTimeout(() => reject(new Error("phonemes")), 60000);
+  });
+  return out;
+}
+// Synthèse : renvoie, pour chaque texte, { data: Float32Array, sr } (null si texte vide)
+async function ttsSpeak(texts, key, onProg) {
+  const v = TTS.voices[key]; if (!v) throw new Error("voix");
+  const todo = [], res = texts.map(t => { const s = ttsText(t); if (!s) return null; const ck = key + "|" + s; if (TTS.cache.has(ck)) return TTS.cache.get(ck); todo.push(s); return ck; });
+  if (todo.length) {
+    const sess = await ttsSession(v.file, p => onProg && onProg("load", p)), cfg = TTS.configs[v.file], sr = cfg.audio.sample_rate, inf = cfg.inference || {};
+    onProg && onProg("speak", 0);
+    const uniq = [...new Set(todo)], ids = await ttsPhonemeIds(uniq);
+    for (let i = 0; i < uniq.length; i++) {
+      const id = ids[i] || [], n = id.length;
+      const feeds = { input: new ort.Tensor("int64", BigInt64Array.from(id.map(BigInt)), [1, n]), input_lengths: new ort.Tensor("int64", BigInt64Array.from([BigInt(n)]), [1]),
+        scales: new ort.Tensor("float32", Float32Array.from([inf.noise_scale ?? .667, (inf.length_scale ?? 1) * 1.04, inf.noise_w ?? .8]), [3]) };
+      if (v.sid != null) feeds.sid = new ort.Tensor("int64", BigInt64Array.from([BigInt(v.sid)]), [1]);
+      const out = await sess.run(feeds), data = (out.output || Object.values(out)[0]).data;
+      const f = Float32Array.from(data); let pk = 0; for (const x of f) pk = Math.max(pk, Math.abs(x)); if (pk > 1e-4) { const g = .85 / pk; for (let j = 0; j < f.length; j++) f[j] *= g; }
+      TTS.cache.set(key + "|" + uniq[i], { data: f, sr });
+      onProg && onProg("speak", (i + 1) / uniq.length); await frame();
+    }
+  }
+  return res.map(r => r && typeof r === "string" ? TTS.cache.get(r) : r);
+}
+function ttsBuffer(ctx, clip) { const b = ctx.createBuffer(1, clip.data.length, clip.sr); b.copyToChannel ? b.copyToChannel(clip.data, 0) : b.getChannelData(0).set(clip.data); return b; }
+const narr = () => $("#vNarr").value, isSynth = k => !!TTS.voices[k];
+function narrNote() {
+  const k = narr(), n = $("#vVoiceNote"); n.hidden = !k;
+  if (k === "mic") n.textContent = "Pendant la création, lisez à voix haute la description qui s'affiche sur les photos : votre voix est enregistrée dans la vidéo, la musique baisse automatiquement.";
+  else if (isSynth(k)) n.textContent = `La voix lit la présentation du bien, la description et vos coordonnées. Première utilisation : la voix se télécharge une seule fois (environ ${TTS.voices[k].mb} Mo, en Wi-Fi de préférence), ensuite elle fonctionne sans réseau.`;
+}
+function vSpeechTexts() {
+  const n = vPhotos().length, ag = $("#vAgent").value.trim();
+  return { open: [$("#vTitle").value, $("#vSub").value, $("#vPrice").value].map(x => x.trim()).filter(Boolean).join(". ") + ".",
+    caps: vCaptions(n), close: ag ? "Pour visiter, contactez " + ag + "." : "Pour visiter, contactez votre conseiller." };
+}
+async function vPrepareSpeech() {
+  const k = narr(); if (!isSynth(k)) { V.speech = null; return; }
+  const t = vSpeechTexts(), st = $("#vStatus"); st.className = "status";
+  const all = await ttsSpeak([t.open, ...t.caps, t.close], k, (ph, p) => { st.textContent = ph === "load" ? `Téléchargement de la voix (une seule fois) : ${Math.round(p * 100)} %` : `Préparation de la voix… ${Math.round(p * 100)} %`; });
+  V.speech = { key: k, open: all[0], caps: all.slice(1, -1), close: all[all.length - 1] }; st.textContent = "";
+}
+function vSpeechSchedule(ctx, out, tl) {
+  const sp = V.speech; if (!sp || sp.key !== narr()) return;
+  const play = (c, at) => { if (!c) return; const s = ctx.createBufferSource(); s.buffer = ttsBuffer(ctx, c); s.connect(out); s.start(ctx.currentTime + at); };
+  const p0 = tl.intro + tl.card; play(sp.open, tl.intro + .35); sp.caps.forEach((c, i) => play(c, p0 + tl.starts[i] + .35)); play(sp.close, p0 + tl.photos + .6);
+}
+$("#vPlay").onclick = async () => {
   const stopA = () => { if (V.actx) { try { V.actx.close(); } catch (_) {} V.actx = null; } };
   if (V.playing) { V.playing = false; stopA(); $("#vPlay").textContent = "Aperçu"; return; }
-  $("#vPlay").textContent = "Arrêter"; const AC = window.AudioContext || window.webkitAudioContext;
-  if (musicIdx() >= 0 && AC) { V.actx = new AC(); try { V.actx.resume(); } catch (_) {} vMusic(V.actx, V.actx.destination, vTimeline().total, musicIdx()); }
+  const AC = window.AudioContext || window.webkitAudioContext, synth = isSynth(narr());
+  if ((musicIdx() >= 0 || synth) && AC) { V.actx = new AC(); try { V.actx.resume(); } catch (_) {} }
+  if (synth) { $("#vPlay").disabled = $("#vRec").disabled = true; try { await vPrepareSpeech(); } catch (_) { const st = $("#vStatus"); st.className = "status err"; st.textContent = "La voix n'a pas pu être chargée. Vérifiez la connexion (première utilisation) et réessayez."; $("#vPlay").disabled = $("#vRec").disabled = false; stopA(); return; } $("#vPlay").disabled = $("#vRec").disabled = false; }
+  $("#vPlay").textContent = "Arrêter"; const tl = vTimeline();
+  if (V.actx) { if (musicIdx() >= 0) { const m = V.actx.createGain(); m.gain.value = synth ? .35 : 1; m.connect(V.actx.destination); vMusic(V.actx, m, tl.total, musicIdx()); } vSpeechSchedule(V.actx, V.actx.destination, tl); }
   vRun(() => { stopA(); $("#vPlay").textContent = "Aperçu"; });
 };
-$("#vVoice").addEventListener("change", e => { $("#vVoiceNote").hidden = !e.target.checked; save(); });
+$("#vNarr").addEventListener("change", () => { narrNote(); V.speech = null; save(); if (!V.playing) vStill(); });
+$("#vNarrTry").onclick = async () => {
+  const k = narr(), b = $("#vNarrTry"), st = $("#vStatus"); if (!isSynth(k)) { st.className = "status"; st.textContent = k === "mic" ? "Avec « Ma voix », c'est vous qui parlez pendant la création de la vidéo." : "Choisissez d'abord une voix."; return; }
+  const AC = window.AudioContext || window.webkitAudioContext; if (!AC) return; const ctx = new AC(); try { ctx.resume(); } catch (_) {}
+  b.disabled = true;
+  try { const [c] = await ttsSpeak(["Bonjour ! Je vous présente ce bien. Pour le visiter, contactez votre conseiller."], k, (ph, p) => { st.className = "status"; st.textContent = ph === "load" ? `Téléchargement de la voix (une seule fois) : ${Math.round(p * 100)} %` : "Préparation de la voix…"; });
+    st.textContent = ""; const s = ctx.createBufferSource(); s.buffer = ttsBuffer(ctx, c); s.connect(ctx.destination); s.onended = () => ctx.close(); s.start(); }
+  catch (_) { st.className = "status err"; st.textContent = "La voix n'a pas pu être chargée. Vérifiez la connexion et réessayez."; try { ctx.close(); } catch (e) {} }
+  b.disabled = false;
+};
 $("#vMusic").addEventListener("change", save);
 $("#vMusicTry").onclick = () => {
   const b = $("#vMusicTry"); if (V.tryCtx) { try { V.tryCtx.close(); } catch (_) {} V.tryCtx = null; clearTimeout(V.tryT); b.textContent = "▶ Écouter"; return; }
@@ -1609,7 +1726,7 @@ $("#vMusicTry").onclick = () => {
 }; $("#vDesc").addEventListener("input", () => { save(); if (!V.playing) vStill(); });
 $("#vRec").onclick = async () => {
   const st = $("#vStatus"); st.className = "status";
-  const wantMusic = musicIdx() >= 0, wantVoice = $("#vVoice").checked, withAudio = wantMusic || wantVoice;
+  const wantMusic = musicIdx() >= 0, wantVoice = narr() === "mic", synth = isSynth(narr()), withAudio = wantMusic || wantVoice || synth;
   const types = withAudio ? ["video/mp4;codecs=avc1,mp4a.40.2", "video/mp4", "video/webm;codecs=vp9,opus", "video/webm;codecs=vp8,opus", "video/webm"]
                           : ["video/mp4;codecs=avc1", "video/mp4", "video/webm;codecs=vp9", "video/webm;codecs=vp8", "video/webm"];
   const type = window.MediaRecorder ? types.find(t => MediaRecorder.isTypeSupported(t)) : null;
@@ -1618,15 +1735,18 @@ $("#vRec").onclick = async () => {
   let ctx = null, dest = null, mic = null;
   const AC = window.AudioContext || window.webkitAudioContext;
   if (withAudio && AC) { ctx = new AC(); try { await ctx.resume(); } catch (_) {} dest = ctx.createMediaStreamDestination(); const comp = ctx.createDynamicsCompressor(); comp.threshold.value = -14; comp.ratio.value = 4; comp.connect(dest); V.aIn = comp; }
+  if (synth) { $("#vRec").disabled = $("#vPlay").disabled = true;
+    try { await vPrepareSpeech(); } catch (_) { st.className = "status err"; st.textContent = "La voix n'a pas pu être chargée. Vérifiez la connexion (première utilisation) et réessayez."; $("#vRec").disabled = $("#vPlay").disabled = false; if (ctx) ctx.close(); return; } }
   if (wantVoice && ctx) {
     try { mic = await navigator.mediaDevices.getUserMedia({ audio: { echoCancellation: true, noiseSuppression: true } }); }
-    catch (_) { st.className = "status err"; st.textContent = "Micro refusé : autorisez le micro pour le narrateur, ou décochez « Narrateur »."; ctx.close(); return; }
+    catch (_) { st.className = "status err"; st.textContent = "Micro refusé : autorisez le micro pour le narrateur, ou choisissez un autre narrateur."; ctx.close(); return; }
   }
   $("#vRec").disabled = true; $("#vPlay").disabled = true;
   const c = vSetup(), tl = vTimeline(), vs = c.captureStream(30);
   if (ctx) {
     if (mic) { const src = ctx.createMediaStreamSource(mic), g = ctx.createGain(); g.gain.value = 1.2; src.connect(g); g.connect(V.aIn); }
-    if (wantMusic) { const m = ctx.createGain(); m.gain.value = mic ? .35 : 1; m.connect(V.aIn); vMusic(ctx, m, tl.total, musicIdx()); }
+    if (wantMusic) { const m = ctx.createGain(); m.gain.value = mic || synth ? .35 : 1; m.connect(V.aIn); vMusic(ctx, m, tl.total, musicIdx()); }
+    if (synth) vSpeechSchedule(ctx, V.aIn, tl);
   }
   const stream = dest ? new MediaStream([...vs.getVideoTracks(), ...dest.stream.getAudioTracks()]) : vs;
   let rec; try { rec = new MediaRecorder(stream, { mimeType: type, videoBitsPerSecond: 8e6 }); }
@@ -1842,10 +1962,10 @@ async function save3d() {
 /* ============ Sauvegarde sur ce téléphone ============ */
 let saveT = 0;
 function save() { clearTimeout(saveT); saveT = setTimeout(() => { try {
-  localStorage.setItem("studio-habitat", JSON.stringify({ v: { t: $("#vTitle").value, s: $("#vSub").value, p: $("#vPrice").value, a: $("#vAgent").value, dpe: V.dpe, d: $("#vDesc").value, m: musicIdx(), n: $("#vVoice").checked },
+  localStorage.setItem("studio-habitat", JSON.stringify({ v: { t: $("#vTitle").value, s: $("#vSub").value, p: $("#vPrice").value, a: $("#vAgent").value, dpe: V.dpe, d: $("#vDesc").value, m: musicIdx(), n: narr() },
     plan: PL.isSample ? null : { title: $("#planTitle").value, rooms: PL.rooms } })); } catch (_) {} }, 400); }
 function restore() { try { const d = JSON.parse(localStorage.getItem("studio-habitat") || "null"); if (!d) return;
-  if (d.v) { $("#vTitle").value = d.v.t; $("#vSub").value = d.v.s; $("#vPrice").value = d.v.p; $("#vAgent").value = d.v.a; V.dpe = d.v.dpe || "C"; $("#vDesc").value = d.v.d || ""; if ("m" in d.v) $("#vMusic").value = String(d.v.m === true ? 0 : d.v.m === false ? -1 : d.v.m); $("#vVoice").checked = !!d.v.n; $("#vVoiceNote").hidden = !d.v.n; [...$("#dpe").children].forEach(o => o.setAttribute("aria-pressed", o.textContent === V.dpe)); }
+  if (d.v) { $("#vTitle").value = d.v.t; $("#vSub").value = d.v.s; $("#vPrice").value = d.v.p; $("#vAgent").value = d.v.a; V.dpe = d.v.dpe || "C"; $("#vDesc").value = d.v.d || ""; if ("m" in d.v) $("#vMusic").value = String(d.v.m === true ? 0 : d.v.m === false ? -1 : d.v.m); $("#vNarr").value = d.v.n === true ? "mic" : (typeof d.v.n === "string" ? d.v.n : ""); narrNote(); [...$("#dpe").children].forEach(o => o.setAttribute("aria-pressed", o.textContent === V.dpe)); }
   if (d.plan && d.plan.rooms && d.plan.rooms.length) { PL.rooms = d.plan.rooms; PL.isSample = false; PL.sel = 0; $("#planTitle").value = d.plan.title || ""; $("#planEx").hidden = true; }
 } catch (_) {} }
 $("#planTitle").addEventListener("input", save);
@@ -2097,7 +2217,9 @@ const BD = {
   video: { title: "Monter la vidéo", steps: [
     ["camera", "Sélectionner les photos", [0, 4], "Dans l'onglet « Photos », ajoutez les meilleures photos au reportage."],
     ["video", "Choisir le format", [0, 17], "Si la fiche est remplie, les textes sont déjà en place. Choisissez Vertical (réseaux sociaux) ou Horizontal (annonce)."],
-    ["hourglass", "Créer la vidéo", [0, 0], "Touchez « Créer la vidéo » et laissez l'écran allumé pendant la création."],
+    ["text", "Description et clips", [18, 38], "La description de la fiche défile sur les photos : modifiez-la si besoin. « Filmer ou ajouter un clip » ajoute de courtes vidéos au montage."],
+    ["sun", "Musique et narrateur", [0, 24], "Choisissez une des 10 musiques et un narrateur (2 voix de femme, 2 voix d'homme, ou votre voix au micro). « Écouter » pour les essayer."],
+    ["hourglass", "Créer la vidéo", [0, 0], "Touchez « Créer la vidéo » et laissez l'écran allumé pendant la création. La vidéo commence et finit avec le logo du réseau et vos coordonnées."],
     ["share", "Enregistrer et publier", [0, 36], "« Enregistrer » puis « Enregistrer la vidéo » : elle est ajoutée à vos Photos."]] },
   plan: { title: "Dessiner le plan", steps: [
     ["plan", "Ajouter les pièces", [18, 20], "Choisissez le type de pièce dans la liste, puis touchez « Ajouter »."],
@@ -2247,8 +2369,12 @@ const KB = [
   { k: "envoyer visite client acquereur exporter partager", q: "Comment envoyer la visite à un client ?", a: "Touchez « Exporter la visite », puis « Enregistrer ». Vous obtenez une page à envoyer par mail ou message, ou à joindre à l'annonce. Elle s'ouvre sur n'importe quel téléphone ou ordinateur.", tab: "visite" },
   { k: "video creer faire montage film", q: "Comment créer la vidéo ?", a: "Ajoutez d'abord vos photos au reportage. Dans l'onglet Vidéo, vérifiez les textes, choisissez le format, puis touchez « Créer la vidéo » en laissant l'écran allumé.", tab: "video", guide: "video" },
   { k: "format vertical horizontal instagram tiktok facebook reseaux sociaux youtube", q: "Quel format de vidéo choisir ?", a: "Vertical pour Instagram, TikTok et Facebook. Horizontal pour l'annonce, YouTube ou un écran d'ordinateur.", tab: "video" },
-  { k: "video longue duree courte temps par photo", q: "Comment changer la durée de la vidéo ?", a: "Réglez le curseur « Par photo », de 2 à 6 secondes. La durée totale s'affiche sous les boutons.", tab: "video" },
-  { k: "musique son audio chanson bande sonore mettre ajouter", q: "Peut-on ajouter de la musique ?", a: "Pas encore. Vous pouvez ajouter une musique libre de droits ensuite, au moment de publier sur Instagram ou TikTok." },
+  { k: "video longue duree courte temps par photo", q: "Comment changer la durée de la vidéo ?", a: "Réglez le curseur « Par photo », de 2 à 6 secondes. Chaque photo reste aussi le temps de lire ou d'entendre sa description. La durée totale s'affiche sous les boutons.", tab: "video" },
+  { k: "musique son audio chanson bande sonore mettre ajouter choisir", q: "Comment ajouter de la musique ?", a: "Onglet Vidéo, choisissez une des 10 musiques dans « Musique de fond » et touchez « Écouter » pour l'essayer. Elles sont libres de droits. Choisissez « Sans musique » pour l'enlever.", tab: "video", guide: "video" },
+  { k: "narrateur voix off commentaire parle lire voix homme femme synthese", q: "Comment ajouter un narrateur ?", a: "Onglet Vidéo, choisissez un narrateur : 2 voix de femme, 2 voix d'homme, ou « Ma voix (micro) ». La voix lit la présentation du bien, la description et vos coordonnées. À la première utilisation, la voix se télécharge une seule fois, de préférence en Wi-Fi.", tab: "video", guide: "video" },
+  { k: "micro ma voix enregistrer commentaire moi meme", q: "Comment commenter la vidéo avec ma voix ?", a: "Choisissez « Ma voix (micro) » comme narrateur, autorisez le micro, puis touchez « Créer la vidéo » et lisez à voix haute la description qui s'affiche. La musique baisse automatiquement.", tab: "video" },
+  { k: "clip filmer video tourner sequence ajouter clip", q: "Comment ajouter des clips filmés ?", a: "Onglet Vidéo, touchez « Filmer ou ajouter un clip ». Les clips s'enchaînent après les photos, 12 secondes maximum chacun, avec la description, la musique et le narrateur.", tab: "video" },
+  { k: "description texte defile sous titre ecrit video", q: "D'où vient le texte qui défile ?", a: "De la description de la fiche du bien, reprise quand vous touchez le bouton de la fiche. Vous pouvez la modifier dans l'onglet Vidéo, champ « Description qui défile sur les photos ».", tab: "video" },
   { k: "enregistrer video galerie telecharger video sauvegarder video publier envoyer facebook partager video", q: "Comment enregistrer la vidéo ?", a: "Une fois la vidéo créée, touchez « Enregistrer », puis « Enregistrer la vidéo ». Elle arrive dans vos Photos.", tab: "video" },
   { k: "video bloque longue lente creation ne marche pas", q: "La création de la vidéo est longue", a: "C'est normal : la vidéo se crée en temps réel, elle dure environ le temps de la vidéo. Gardez l'écran allumé et l'application ouverte." },
   { k: "plan dessiner 2d piece ajouter", q: "Comment dessiner le plan ?", a: "Onglet Plan, choisissez le type de pièce et touchez « Ajouter ». Tapez la largeur et la longueur en mètres, puis faites glisser la pièce au bon endroit sur le dessin.", tab: "plan", guide: "plan" },

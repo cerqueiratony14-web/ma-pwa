@@ -1,0 +1,5 @@
+Voix du narrateur de Studio Habitat (synthèse Piper, exécutée sur le téléphone)
+- Voix femme 1 : fr_FR-siwis-medium — jeu de données SIWIS, licence CC BY 4.0
+- Voix femme 2 et Voix homme 1 : fr_FR-upmc-medium (Jessica, Pierre) — UPMC, licence CC BY-SA 4.0
+- Voix homme 2 : fr_FR-tom-medium — licence AGPL v3 ; code source de l'application : https://github.com/cerqueiratony14-web/ma-pwa
+Moteurs : Piper (MIT), piper-phonemize / eSpeak NG (GPL v3), ONNX Runtime Web (MIT).
