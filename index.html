@@ -1238,8 +1238,14 @@ function vDraw(x, W, H, tl, t) {
     if (i > 0 && intoNext < fadeT) { x.globalAlpha = 1 - intoNext / fadeT; drawK(i - 1, 1); x.globalAlpha = 1; }
     if (i === 0 && intoNext < fadeT) { x.globalAlpha = 1 - intoNext / fadeT; drawCard(x, W, H, "open", 1); x.globalAlpha = 1; }
     const u = Math.min(W, H) / 1080; x.fillStyle = "rgba(2,6,44,.85)"; x.fillRect(0, H - 110 * u, W, 110 * u); x.fillStyle = "#F0B00A"; x.fillRect(0, H - 114 * u, W, 4 * u);
-    x.fillStyle = "#fff"; x.textAlign = "left"; x.font = `600 ${38 * u}px "Public Sans", system-ui, sans-serif`; x.fillText($("#vTitle").value, 40 * u, H - 44 * u, W * .52);
-    x.textAlign = "right"; x.fillStyle = "#F0B00A"; x.fillText($("#vPrice").value, W - 120 * u, H - 44 * u, W * .34);
+    // bandeau : prix court à droite, titre réduit pour ne jamais chevaucher
+    const pShort = ($("#vPrice").value.match(/^[^€]*€/) || [$("#vPrice").value])[0].trim(), right = V.dpe ? 120 * u : 40 * u;
+    x.font = `700 ${38 * u}px "Public Sans", system-ui, sans-serif`; const pw = Math.min(x.measureText(pShort).width, W * .4);
+    x.textAlign = "right"; x.fillStyle = "#F0B00A"; x.fillText(pShort, W - right, H - 44 * u, W * .4);
+    const tMax = W - right - pw - 40 * u - 36 * u; let fs = 38; x.font = `600 ${fs * u}px "Public Sans", system-ui, sans-serif`;
+    while (fs > 26 && x.measureText($("#vTitle").value).width > tMax) { fs -= 2; x.font = `600 ${fs * u}px "Public Sans", system-ui, sans-serif`; }
+    let tt = $("#vTitle").value; while (tt.length > 4 && x.measureText(tt).width > tMax) tt = tt.slice(0, -2).trim() + "…";
+    x.fillStyle = "#fff"; x.textAlign = "left"; x.fillText(tt, 40 * u, H - 44 * u);
     if (V.dpe) { x.fillStyle = DPE[V.dpe]; x.fillRect(W - 96 * u, H - 92 * u, 66 * u, 66 * u); x.fillStyle = "ABC".includes(V.dpe) || V.dpe === "G" ? "#fff" : "#1b1b1b"; x.textAlign = "center"; x.font = `800 ${46 * u}px "Bricolage Grotesque", system-ui, sans-serif`; x.fillText(V.dpe, W - 63 * u, H - 43 * u); }
   } else {
     const e = t - tl.card - tl.ph.length * tl.d; drawCard(x, W, H, "close", e / tl.card);
@@ -1839,7 +1845,7 @@ function parseDictee(text) {
   // mandat
   if ((m = raw.match(/mandat\s*(n°|no|numéro|numero)?\s*([A-Za-z0-9-]{2,})/i))) o.fMandat = m[2];
   // ville : « à Touques », « sur Deauville »
-  if ((m = raw.match(/(?:^|[\s,(])(?:à|À|sur|secteur|quartier de|commune de)\s+((?:[A-ZÉÈÀÂÎÔÛ][\wéèêëàâîïôöûüç'-]+)(?:[ -](?:sur|en|les|la|le|de|du|des|[A-ZÉÈÀÂÎÔÛ][\wéèêëàâîïôöûüç'-]+)){0,4})/))) {
+  if ((m = raw.match(/(?:^|[\s,(])(?:à|À|sur|secteur|quartier de|commune de)\s+((?:[A-ZÉÈÀÂÎÔÛ][\wÀ-ÖØ-öø-ÿ'’-]+)(?:[ -](?:sur|en|les|la|le|de|du|des|[A-ZÉÈÀÂÎÔÛ][\wÀ-ÖØ-öø-ÿ'’-]+)){0,4})/))) {
     const c = m[1].replace(/\s+(sur|en|les|la|le|de|du|des)$/i, "").trim(); if (!/^(Vendre|Louer|Proximité|Deux|Trois)$/i.test(c)) o.fCity = c;
   }
   return o;
