@@ -1544,45 +1544,26 @@ function vDraw(x, W, H, tl, t) {
     if (e > tl.close - .6) { x.globalAlpha = (e - (tl.close - .6)) / .6; x.fillStyle = "#000"; x.fillRect(0, 0, W, H); x.globalAlpha = 1; }
   }
 }
-/* Musiques de fond originales, générées sur le téléphone (aucun fichier, libres de droits) */
-const MUSICS = [
-  { n: "Douceur", bpm: 96, prog: [[53, 57, 60, 64], [55, 59, 62, 65], [52, 55, 59, 62], [57, 60, 64, 67]], arp: [0, 1, 2, 3, 2, 1, 3, 2], div: 2, pl: "triangle", kick: [.22, .12, .22, .12], hat: 0 },
-  { n: "Élégance piano", bpm: 76, prog: [[48, 55, 60, 64], [45, 52, 57, 60], [41, 48, 57, 60], [43, 50, 55, 59]], arp: [0, 2, 3, 2, 1, 2, 3, 2], div: 2, pl: "piano", kick: [], hat: 0, pad: .5 },
-  { n: "Lounge", bpm: 92, prog: [[50, 57, 60, 64], [55, 59, 62, 65], [48, 55, 59, 64], [45, 52, 55, 60]], arp: [0, 2, 1, 3], div: 1, pl: "sine", kick: [.2, 0, .12, 0], hat: .02, swing: .12 },
-  { n: "Pop lumineuse", bpm: 112, prog: [[48, 55, 60, 64], [43, 55, 59, 62], [45, 57, 60, 64], [41, 53, 57, 60]], arp: [0, 2, 3, 2, 1, 2, 3, 2], div: 2, pl: "triangle", kick: [.25, .25, .25, .25], hat: .03, oct: 12 },
-  { n: "Cinématique", bpm: 68, prog: [[45, 52, 57, 60], [41, 48, 53, 57], [48, 55, 60, 64], [43, 50, 55, 59]], arp: [3, 2], div: 1, pl: "sine", kick: [.3, 0, 0, 0], hat: 0, pad: 1.6, bass: .14 },
-  { n: "Chill", bpm: 84, prog: [[50, 53, 57, 60], [55, 59, 62, 65], [52, 55, 59, 62], [57, 60, 64, 67]], arp: [0, 3, 1, 2, 3, 1], div: 1.5, pl: "sine", kick: [.18, 0, .1, .06], hat: .015 },
-  { n: "Bord de mer", bpm: 94, prog: [[50, 57, 62, 66], [45, 52, 57, 61], [47, 54, 59, 62], [43, 50, 55, 59]], arp: [0, 1, 2, 3, 2, 3, 1, 2], div: 2, pl: "triangle", kick: [.16, .08, .16, .08], hat: .012, oct: 12 },
-  { n: "Moderne", bpm: 118, prog: [[45, 52, 57, 60], [43, 50, 55, 59], [41, 48, 53, 57], [40, 47, 52, 56]], arp: [0, 3, 2, 3, 1, 3, 2, 3], div: 2, pl: "saw", kick: [.28, .28, .28, .28], hat: .035 },
-  { n: "Classique", bpm: 72, prog: [[48, 52, 55, 60], [45, 48, 52, 57], [41, 45, 48, 53], [43, 47, 50, 55]], arp: [0, 1, 2, 3, 2, 1, 2, 3, 0, 1, 2, 3, 2, 1, 2, 3], div: 4, pl: "piano", kick: [], hat: 0, pad: .3 },
-  { n: "Énergie", bpm: 126, prog: [[45, 52, 57, 60], [41, 48, 53, 57], [48, 55, 60, 64], [43, 50, 55, 59]], arp: [0, 2, 3, 2], div: 2, pl: "saw", kick: [.32, .32, .32, .32], hat: .045, bass: .12 },
-];
+/* Musiques de fond : 10 morceaux originaux, libres de droits (fichiers music/01.m4a … 10.m4a) */
+const MUSICS = ["Douceur (piano)", "Élégance (valse, cordes)", "Lounge jazz", "Pop lumineuse", "Cinématique", "Chill lo-fi", "Bord de mer", "Moderne (électro)", "Folk acoustique", "Énergie"].map(n => ({ n }));
 (function () { const sel = $("#vMusic"); sel.innerHTML = '<option value="-1">Sans musique</option>' + MUSICS.map((m, i) => `<option value="${i}">${i + 1}. ${m.n}</option>`).join(""); sel.value = "0"; })();
-const musicIdx = () => +$("#vMusic").value;
-function vMusic(ctx, out, total, idx) {
-  const M = MUSICS[idx == null ? 0 : idx] || MUSICS[0];
-  const t0 = ctx.currentTime + .05, beat = 60 / M.bpm, bar = 4 * beat, hz = m => 440 * Math.pow(2, (m - 69) / 12), end = t0 + total;
-  const master = ctx.createGain(), lp = ctx.createBiquadFilter(); lp.type = "lowpass"; lp.frequency.value = M.pl === "saw" ? 3800 : 5200; master.connect(lp); lp.connect(out);
-  master.gain.setValueAtTime(0, t0); master.gain.linearRampToValueAtTime(1, t0 + 1.5); master.gain.setValueAtTime(1, Math.max(t0 + 1.6, end - 3)); master.gain.linearRampToValueAtTime(0, end);
-  const note = (f, st, dur, type, vol, a, r) => { const o = ctx.createOscillator(), g = ctx.createGain(); o.type = type; o.frequency.value = f; o.connect(g); g.connect(master);
-    g.gain.setValueAtTime(0, st); g.gain.linearRampToValueAtTime(vol, st + a); g.gain.setValueAtTime(vol, Math.max(st + a, st + dur - r)); g.gain.linearRampToValueAtTime(0, st + dur); o.start(st); o.stop(st + dur + .05); };
-  const pluck = (f, st, vol) => {
-    const g = ctx.createGain(); g.connect(master); const dec = M.pl === "piano" ? 1.6 : M.pl === "saw" ? .35 : .7;
-    const parts = M.pl === "piano" ? [[1, "triangle", 1], [2, "sine", .35], [3, "sine", .12]] : M.pl === "saw" ? [[1, "sawtooth", .5]] : [[1, M.pl, 1]];
-    parts.forEach(([mul, ty, v]) => { const o = ctx.createOscillator(), og = ctx.createGain(); o.type = ty; o.frequency.value = f * mul; og.gain.value = v; o.connect(og); og.connect(g); o.start(st); o.stop(st + dec + .05); });
-    g.gain.setValueAtTime(0, st); g.gain.linearRampToValueAtTime(vol, st + .008); g.gain.exponentialRampToValueAtTime(.0005, st + dec); };
-  const kick = (st, vol) => { const o = ctx.createOscillator(), g = ctx.createGain(); o.frequency.setValueAtTime(120, st); o.frequency.exponentialRampToValueAtTime(48, st + .12); o.connect(g); g.connect(master);
-    g.gain.setValueAtTime(vol, st); g.gain.exponentialRampToValueAtTime(.0005, st + .25); o.start(st); o.stop(st + .3); };
-  let noise = null; if (M.hat) { noise = ctx.createBuffer(1, ctx.sampleRate * .06, ctx.sampleRate); const d = noise.getChannelData(0); for (let i = 0; i < d.length; i++) d[i] = (Math.random() * 2 - 1) * Math.exp(-i / d.length * 6); }
-  const hat = (st, vol) => { const b = ctx.createBufferSource(), hp = ctx.createBiquadFilter(), g = ctx.createGain(); hp.type = "highpass"; hp.frequency.value = 7000; b.buffer = noise; g.gain.value = vol; b.connect(hp); hp.connect(g); g.connect(master); b.start(st); };
-  const padV = M.pad == null ? 1 : M.pad;
-  for (let k = 0, st = t0; st < end; k++, st += bar) {
-    const ch = M.prog[k % M.prog.length], len = Math.min(bar, end - st);
-    if (padV) ch.forEach(m => { note(hz(m), st, len + .4, "sine", .035 * padV, .8, .8); note(hz(m) * 1.003, st, len + .4, "sine", .02 * padV, .8, .8); });
-    note(hz(ch[0] - 12), st, len, "sine", M.bass || .09, .05, .6);
-    const step = beat / M.div;
-    for (let i = 0; i * step < bar - 1e-6; i++) { let s2 = st + i * step; if (M.swing && i % 2) s2 += step * M.swing; if (s2 < end - .5) pluck(hz(ch[M.arp[i % M.arp.length]] + 12 + (M.oct || 0)), s2, M.pl === "saw" ? .035 : .045); }
-    for (let bt = 0; bt < 4; bt++) { const s3 = st + bt * beat; if (s3 >= end - .5) continue; const kv = M.kick[bt]; if (kv) kick(s3, kv); if (M.hat) hat(s3 + beat / 2, M.hat); }
+const musicIdx = () => +$("#vMusic").value, MUSIC_RAW = {};
+async function musicLoad(ctx, idx) {
+  if (!MUSIC_RAW[idx]) { const r = await fetch(`music/${String(idx + 1).padStart(2, "0")}.m4a`); if (!r.ok) throw new Error("musique"); MUSIC_RAW[idx] = await r.arrayBuffer(); }
+  const raw = MUSIC_RAW[idx].slice(0);
+  return await new Promise((res, rej) => { const p = ctx.decodeAudioData(raw, res, rej); if (p && p.then) p.then(res, rej); });
+}
+// joue le morceau (en boucle avec fondu enchaîné si la vidéo est plus longue), fondu de fin
+function vMusic(ctx, out, total, buf) {
+  if (!buf) return null; const t0 = ctx.currentTime + .05, end = t0 + total, D = buf.duration, xf = 2.5;
+  const master = ctx.createGain(); master.connect(out);
+  master.gain.setValueAtTime(0, t0); master.gain.linearRampToValueAtTime(1, t0 + .8);
+  master.gain.setValueAtTime(1, Math.max(t0 + .9, end - 3)); master.gain.linearRampToValueAtTime(0, end);
+  for (let st = t0, k = 0; st < end; st += D - xf, k++) {
+    const s = ctx.createBufferSource(), g = ctx.createGain(); s.buffer = buf; s.connect(g); g.connect(master);
+    if (k) { g.gain.setValueAtTime(0, st); g.gain.linearRampToValueAtTime(1, st + xf); }
+    if (st + D < end) { g.gain.setValueAtTime(1, st + D - xf); g.gain.linearRampToValueAtTime(0, st + D); }
+    s.start(st); s.stop(Math.min(end + .1, st + D));
   }
   return master;
 }
@@ -1692,9 +1673,10 @@ async function vPrepareSpeech() {
   const all = await ttsSpeak([t.open, ...t.caps, t.close], k, (ph, p) => { st.textContent = ph === "load" ? `Téléchargement de la voix (une seule fois) : ${Math.round(p * 100)} %` : `Préparation de la voix… ${Math.round(p * 100)} %`; });
   V.speech = { key: k, open: all[0], caps: all.slice(1, -1), close: all[all.length - 1] }; st.textContent = "";
 }
-function vSpeechSchedule(ctx, out, tl) {
+function vSpeechSchedule(ctx, out, tl, duck) {
   const sp = V.speech; if (!sp || sp.key !== narr()) return;
-  const play = (c, at) => { if (!c) return; const s = ctx.createBufferSource(); s.buffer = ttsBuffer(ctx, c); s.connect(out); s.start(ctx.currentTime + at); };
+  const play = (c, at) => { if (!c) return; const s = ctx.createBufferSource(), t = ctx.currentTime + at, d = c.data.length / c.sr; s.buffer = ttsBuffer(ctx, c); s.connect(out); s.start(t);
+    if (duck) { duck.gain.setTargetAtTime(.28, Math.max(ctx.currentTime, t - .3), .08); duck.gain.setTargetAtTime(1, t + d + .15, .35); } };
   const p0 = tl.intro + tl.card; play(sp.open, tl.intro + .35); sp.caps.forEach((c, i) => play(c, p0 + tl.starts[i] + .35)); play(sp.close, p0 + tl.photos + .6);
 }
 $("#vPlay").onclick = async () => {
@@ -1704,7 +1686,8 @@ $("#vPlay").onclick = async () => {
   if ((musicIdx() >= 0 || synth) && AC) { V.actx = new AC(); try { V.actx.resume(); } catch (_) {} }
   if (synth) { $("#vPlay").disabled = $("#vRec").disabled = true; try { await vPrepareSpeech(); } catch (_) { const st = $("#vStatus"); st.className = "status err"; st.textContent = "La voix n'a pas pu être chargée. Vérifiez la connexion (première utilisation) et réessayez."; $("#vPlay").disabled = $("#vRec").disabled = false; stopA(); return; } $("#vPlay").disabled = $("#vRec").disabled = false; }
   $("#vPlay").textContent = "Arrêter"; const tl = vTimeline();
-  if (V.actx) { if (musicIdx() >= 0) { const m = V.actx.createGain(); m.gain.value = synth ? .35 : 1; m.connect(V.actx.destination); vMusic(V.actx, m, tl.total, musicIdx()); } vSpeechSchedule(V.actx, V.actx.destination, tl); }
+  let mbuf = null; if (V.actx && musicIdx() >= 0) { try { mbuf = await musicLoad(V.actx, musicIdx()); } catch (_) {} }
+  if (V.actx) { let m = null; if (mbuf) { m = V.actx.createGain(); m.gain.value = 1; m.connect(V.actx.destination); vMusic(V.actx, m, tl.total, mbuf); } vSpeechSchedule(V.actx, V.actx.destination, tl, m); }
   vRun(() => { stopA(); $("#vPlay").textContent = "Aperçu"; });
 };
 $("#vNarr").addEventListener("change", () => { narrNote(); V.speech = null; save(); if (!V.playing) vStill(); });
@@ -1718,11 +1701,13 @@ $("#vNarrTry").onclick = async () => {
   b.disabled = false;
 };
 $("#vMusic").addEventListener("change", save);
-$("#vMusicTry").onclick = () => {
+$("#vMusicTry").onclick = async () => {
   const b = $("#vMusicTry"); if (V.tryCtx) { try { V.tryCtx.close(); } catch (_) {} V.tryCtx = null; clearTimeout(V.tryT); b.textContent = "▶ Écouter"; return; }
   const AC = window.AudioContext || window.webkitAudioContext; if (!AC || musicIdx() < 0) return;
-  V.tryCtx = new AC(); try { V.tryCtx.resume(); } catch (_) {} vMusic(V.tryCtx, V.tryCtx.destination, 12, musicIdx()); b.textContent = "■ Stop";
-  V.tryT = setTimeout(() => { if (V.tryCtx) { try { V.tryCtx.close(); } catch (_) {} V.tryCtx = null; } b.textContent = "▶ Écouter"; }, 12200);
+  const ctx = V.tryCtx = new AC(); try { ctx.resume(); } catch (_) {} b.textContent = "■ Stop";
+  try { const buf = await musicLoad(ctx, musicIdx()); if (V.tryCtx !== ctx) return; vMusic(ctx, ctx.destination, 20, buf); }
+  catch (_) { const st = $("#vStatus"); st.className = "status err"; st.textContent = "La musique n'a pas pu être chargée. Vérifiez la connexion et réessayez."; }
+  V.tryT = setTimeout(() => { if (V.tryCtx === ctx) { try { ctx.close(); } catch (_) {} V.tryCtx = null; b.textContent = "▶ Écouter"; } }, 20200);
 }; $("#vDesc").addEventListener("input", () => { save(); if (!V.playing) vStill(); });
 $("#vRec").onclick = async () => {
   const st = $("#vStatus"); st.className = "status";
@@ -1742,11 +1727,12 @@ $("#vRec").onclick = async () => {
     catch (_) { st.className = "status err"; st.textContent = "Micro refusé : autorisez le micro pour le narrateur, ou choisissez un autre narrateur."; ctx.close(); return; }
   }
   $("#vRec").disabled = true; $("#vPlay").disabled = true;
+  let mbuf = null; if (ctx && wantMusic) { try { mbuf = await musicLoad(ctx, musicIdx()); } catch (_) {} }
   const c = vSetup(), tl = vTimeline(), vs = c.captureStream(30);
   if (ctx) {
     if (mic) { const src = ctx.createMediaStreamSource(mic), g = ctx.createGain(); g.gain.value = 1.2; src.connect(g); g.connect(V.aIn); }
-    if (wantMusic) { const m = ctx.createGain(); m.gain.value = mic || synth ? .35 : 1; m.connect(V.aIn); vMusic(ctx, m, tl.total, musicIdx()); }
-    if (synth) vSpeechSchedule(ctx, V.aIn, tl);
+    let m = null; if (mbuf) { m = ctx.createGain(); m.gain.value = mic ? .35 : 1; m.connect(V.aIn); vMusic(ctx, m, tl.total, mbuf); }
+    if (synth) vSpeechSchedule(ctx, V.aIn, tl, m);
   }
   const stream = dest ? new MediaStream([...vs.getVideoTracks(), ...dest.stream.getAudioTracks()]) : vs;
   let rec; try { rec = new MediaRecorder(stream, { mimeType: type, videoBitsPerSecond: 8e6 }); }
