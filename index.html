@@ -475,7 +475,8 @@ hr{border:0;border-top:1px solid var(--line);margin:2px 0}
           <label class="btn file" id="vClipLbl">Filmer ou ajouter un clip<input type="file" id="vClip" accept="video/*" multiple></label>
           <div id="vClips" class="cliplist"></div>
           <p class="note">Les clips s'enchaînent après les photos (12 s maximum chacun), avec la description, la musique et le narrateur. Le son d'origine du clip est coupé.</p></div>
-        <label class="toggle" for="vMusic"><span>Musique de fond <span class="note">(libre de droits)</span></span><input type="checkbox" id="vMusic" checked></label>
+        <div class="field"><label for="vMusic">Musique de fond <span class="note">(libre de droits)</span></label>
+          <div class="row" style="flex-wrap:nowrap"><select id="vMusic" style="flex:1"></select><button id="vMusicTry" type="button">▶ Écouter</button></div></div>
         <label class="toggle" for="vVoice"><span>Narrateur : ma voix <span class="note">(micro)</span></span><input type="checkbox" id="vVoice"></label>
         <p class="note" id="vVoiceNote" hidden>Pendant la création, lisez à voix haute la description qui s'affiche sur les photos : votre voix est enregistrée dans la vidéo, la musique baisse automatiquement.</p>
         <div class="slider"><span>Par photo</span><input type="range" id="vDur" min="2" max="6" value="3" step="0.5"><output for="vDur">3 s</output></div>
@@ -1330,24 +1331,45 @@ function vDraw(x, W, H, tl, t) {
     if (e > tl.close - .6) { x.globalAlpha = (e - (tl.close - .6)) / .6; x.fillStyle = "#000"; x.fillRect(0, 0, W, H); x.globalAlpha = 1; }
   }
 }
-/* Musique de fond originale, générée sur le téléphone (aucun fichier, libre de droits) */
-function vMusic(ctx, out, total) {
-  const t0 = ctx.currentTime + .05, beat = 60 / 96, bar = 4 * beat, hz = m => 440 * Math.pow(2, (m - 69) / 12);
-  const prog = [[53, 57, 60, 64], [55, 59, 62, 65], [52, 55, 59, 62], [57, 60, 64, 67]];
-  const master = ctx.createGain(), lp = ctx.createBiquadFilter(); lp.type = "lowpass"; lp.frequency.value = 5200; master.connect(lp); lp.connect(out);
-  master.gain.setValueAtTime(0, t0); master.gain.linearRampToValueAtTime(1, t0 + 2); master.gain.setValueAtTime(1, t0 + total - 3); master.gain.linearRampToValueAtTime(0, t0 + total);
+/* Musiques de fond originales, générées sur le téléphone (aucun fichier, libres de droits) */
+const MUSICS = [
+  { n: "Douceur", bpm: 96, prog: [[53, 57, 60, 64], [55, 59, 62, 65], [52, 55, 59, 62], [57, 60, 64, 67]], arp: [0, 1, 2, 3, 2, 1, 3, 2], div: 2, pl: "triangle", kick: [.22, .12, .22, .12], hat: 0 },
+  { n: "Élégance piano", bpm: 76, prog: [[48, 55, 60, 64], [45, 52, 57, 60], [41, 48, 57, 60], [43, 50, 55, 59]], arp: [0, 2, 3, 2, 1, 2, 3, 2], div: 2, pl: "piano", kick: [], hat: 0, pad: .5 },
+  { n: "Lounge", bpm: 92, prog: [[50, 57, 60, 64], [55, 59, 62, 65], [48, 55, 59, 64], [45, 52, 55, 60]], arp: [0, 2, 1, 3], div: 1, pl: "sine", kick: [.2, 0, .12, 0], hat: .02, swing: .12 },
+  { n: "Pop lumineuse", bpm: 112, prog: [[48, 55, 60, 64], [43, 55, 59, 62], [45, 57, 60, 64], [41, 53, 57, 60]], arp: [0, 2, 3, 2, 1, 2, 3, 2], div: 2, pl: "triangle", kick: [.25, .25, .25, .25], hat: .03, oct: 12 },
+  { n: "Cinématique", bpm: 68, prog: [[45, 52, 57, 60], [41, 48, 53, 57], [48, 55, 60, 64], [43, 50, 55, 59]], arp: [3, 2], div: 1, pl: "sine", kick: [.3, 0, 0, 0], hat: 0, pad: 1.6, bass: .14 },
+  { n: "Chill", bpm: 84, prog: [[50, 53, 57, 60], [55, 59, 62, 65], [52, 55, 59, 62], [57, 60, 64, 67]], arp: [0, 3, 1, 2, 3, 1], div: 1.5, pl: "sine", kick: [.18, 0, .1, .06], hat: .015 },
+  { n: "Bord de mer", bpm: 94, prog: [[50, 57, 62, 66], [45, 52, 57, 61], [47, 54, 59, 62], [43, 50, 55, 59]], arp: [0, 1, 2, 3, 2, 3, 1, 2], div: 2, pl: "triangle", kick: [.16, .08, .16, .08], hat: .012, oct: 12 },
+  { n: "Moderne", bpm: 118, prog: [[45, 52, 57, 60], [43, 50, 55, 59], [41, 48, 53, 57], [40, 47, 52, 56]], arp: [0, 3, 2, 3, 1, 3, 2, 3], div: 2, pl: "saw", kick: [.28, .28, .28, .28], hat: .035 },
+  { n: "Classique", bpm: 72, prog: [[48, 52, 55, 60], [45, 48, 52, 57], [41, 45, 48, 53], [43, 47, 50, 55]], arp: [0, 1, 2, 3, 2, 1, 2, 3, 0, 1, 2, 3, 2, 1, 2, 3], div: 4, pl: "piano", kick: [], hat: 0, pad: .3 },
+  { n: "Énergie", bpm: 126, prog: [[45, 52, 57, 60], [41, 48, 53, 57], [48, 55, 60, 64], [43, 50, 55, 59]], arp: [0, 2, 3, 2], div: 2, pl: "saw", kick: [.32, .32, .32, .32], hat: .045, bass: .12 },
+];
+(function () { const sel = $("#vMusic"); sel.innerHTML = '<option value="-1">Sans musique</option>' + MUSICS.map((m, i) => `<option value="${i}">${i + 1}. ${m.n}</option>`).join(""); sel.value = "0"; })();
+const musicIdx = () => +$("#vMusic").value;
+function vMusic(ctx, out, total, idx) {
+  const M = MUSICS[idx == null ? 0 : idx] || MUSICS[0];
+  const t0 = ctx.currentTime + .05, beat = 60 / M.bpm, bar = 4 * beat, hz = m => 440 * Math.pow(2, (m - 69) / 12), end = t0 + total;
+  const master = ctx.createGain(), lp = ctx.createBiquadFilter(); lp.type = "lowpass"; lp.frequency.value = M.pl === "saw" ? 3800 : 5200; master.connect(lp); lp.connect(out);
+  master.gain.setValueAtTime(0, t0); master.gain.linearRampToValueAtTime(1, t0 + 1.5); master.gain.setValueAtTime(1, Math.max(t0 + 1.6, end - 3)); master.gain.linearRampToValueAtTime(0, end);
   const note = (f, st, dur, type, vol, a, r) => { const o = ctx.createOscillator(), g = ctx.createGain(); o.type = type; o.frequency.value = f; o.connect(g); g.connect(master);
     g.gain.setValueAtTime(0, st); g.gain.linearRampToValueAtTime(vol, st + a); g.gain.setValueAtTime(vol, Math.max(st + a, st + dur - r)); g.gain.linearRampToValueAtTime(0, st + dur); o.start(st); o.stop(st + dur + .05); };
-  const pluck = (f, st, vol) => { const o = ctx.createOscillator(), g = ctx.createGain(); o.type = "triangle"; o.frequency.value = f; o.connect(g); g.connect(master);
-    g.gain.setValueAtTime(0, st); g.gain.linearRampToValueAtTime(vol, st + .01); g.gain.exponentialRampToValueAtTime(.0005, st + .7); o.start(st); o.stop(st + .75); };
-  const kick = (st, vol) => { const o = ctx.createOscillator(), g = ctx.createGain(); o.frequency.setValueAtTime(120, st); o.frequency.exponentialRampToValueAtTime(50, st + .12); o.connect(g); g.connect(master);
+  const pluck = (f, st, vol) => {
+    const g = ctx.createGain(); g.connect(master); const dec = M.pl === "piano" ? 1.6 : M.pl === "saw" ? .35 : .7;
+    const parts = M.pl === "piano" ? [[1, "triangle", 1], [2, "sine", .35], [3, "sine", .12]] : M.pl === "saw" ? [[1, "sawtooth", .5]] : [[1, M.pl, 1]];
+    parts.forEach(([mul, ty, v]) => { const o = ctx.createOscillator(), og = ctx.createGain(); o.type = ty; o.frequency.value = f * mul; og.gain.value = v; o.connect(og); og.connect(g); o.start(st); o.stop(st + dec + .05); });
+    g.gain.setValueAtTime(0, st); g.gain.linearRampToValueAtTime(vol, st + .008); g.gain.exponentialRampToValueAtTime(.0005, st + dec); };
+  const kick = (st, vol) => { const o = ctx.createOscillator(), g = ctx.createGain(); o.frequency.setValueAtTime(120, st); o.frequency.exponentialRampToValueAtTime(48, st + .12); o.connect(g); g.connect(master);
     g.gain.setValueAtTime(vol, st); g.gain.exponentialRampToValueAtTime(.0005, st + .25); o.start(st); o.stop(st + .3); };
-  for (let k = 0, st = t0; st < t0 + total; k++, st += bar) {
-    const ch = prog[k % 4], len = Math.min(bar, t0 + total - st);
-    ch.forEach(m => { note(hz(m), st, len + .4, "sine", .035, .8, .8); note(hz(m) * 1.003, st, len + .4, "sine", .02, .8, .8); });
-    note(hz(ch[0] - 12), st, len, "sine", .09, .05, .6);
-    const arp = [0, 1, 2, 3, 2, 1, 3, 2]; arp.forEach((a, i) => { const s2 = st + i * beat / 2; if (s2 < t0 + total - .5) pluck(hz(ch[a] + 12), s2, .045); });
-    for (let b = 0; b < 4; b++) { const s3 = st + b * beat; if (s3 < t0 + total - .5) kick(s3, b % 2 ? .12 : .22); }
+  let noise = null; if (M.hat) { noise = ctx.createBuffer(1, ctx.sampleRate * .06, ctx.sampleRate); const d = noise.getChannelData(0); for (let i = 0; i < d.length; i++) d[i] = (Math.random() * 2 - 1) * Math.exp(-i / d.length * 6); }
+  const hat = (st, vol) => { const b = ctx.createBufferSource(), hp = ctx.createBiquadFilter(), g = ctx.createGain(); hp.type = "highpass"; hp.frequency.value = 7000; b.buffer = noise; g.gain.value = vol; b.connect(hp); hp.connect(g); g.connect(master); b.start(st); };
+  const padV = M.pad == null ? 1 : M.pad;
+  for (let k = 0, st = t0; st < end; k++, st += bar) {
+    const ch = M.prog[k % M.prog.length], len = Math.min(bar, end - st);
+    if (padV) ch.forEach(m => { note(hz(m), st, len + .4, "sine", .035 * padV, .8, .8); note(hz(m) * 1.003, st, len + .4, "sine", .02 * padV, .8, .8); });
+    note(hz(ch[0] - 12), st, len, "sine", M.bass || .09, .05, .6);
+    const step = beat / M.div;
+    for (let i = 0; i * step < bar - 1e-6; i++) { let s2 = st + i * step; if (M.swing && i % 2) s2 += step * M.swing; if (s2 < end - .5) pluck(hz(ch[M.arp[i % M.arp.length]] + 12 + (M.oct || 0)), s2, M.pl === "saw" ? .035 : .045); }
+    for (let bt = 0; bt < 4; bt++) { const s3 = st + bt * beat; if (s3 >= end - .5) continue; const kv = M.kick[bt]; if (kv) kick(s3, kv); if (M.hat) hat(s3 + beat / 2, M.hat); }
   }
   return master;
 }
@@ -1371,14 +1393,20 @@ $("#vPlay").onclick = () => {
   const stopA = () => { if (V.actx) { try { V.actx.close(); } catch (_) {} V.actx = null; } };
   if (V.playing) { V.playing = false; stopA(); $("#vPlay").textContent = "Aperçu"; return; }
   $("#vPlay").textContent = "Arrêter"; const AC = window.AudioContext || window.webkitAudioContext;
-  if ($("#vMusic").checked && AC) { V.actx = new AC(); try { V.actx.resume(); } catch (_) {} vMusic(V.actx, V.actx.destination, vTimeline().total); }
+  if (musicIdx() >= 0 && AC) { V.actx = new AC(); try { V.actx.resume(); } catch (_) {} vMusic(V.actx, V.actx.destination, vTimeline().total, musicIdx()); }
   vRun(() => { stopA(); $("#vPlay").textContent = "Aperçu"; });
 };
 $("#vVoice").addEventListener("change", e => { $("#vVoiceNote").hidden = !e.target.checked; save(); });
-$("#vMusic").addEventListener("change", save); $("#vDesc").addEventListener("input", () => { save(); if (!V.playing) vStill(); });
+$("#vMusic").addEventListener("change", save);
+$("#vMusicTry").onclick = () => {
+  const b = $("#vMusicTry"); if (V.tryCtx) { try { V.tryCtx.close(); } catch (_) {} V.tryCtx = null; clearTimeout(V.tryT); b.textContent = "▶ Écouter"; return; }
+  const AC = window.AudioContext || window.webkitAudioContext; if (!AC || musicIdx() < 0) return;
+  V.tryCtx = new AC(); try { V.tryCtx.resume(); } catch (_) {} vMusic(V.tryCtx, V.tryCtx.destination, 12, musicIdx()); b.textContent = "■ Stop";
+  V.tryT = setTimeout(() => { if (V.tryCtx) { try { V.tryCtx.close(); } catch (_) {} V.tryCtx = null; } b.textContent = "▶ Écouter"; }, 12200);
+}; $("#vDesc").addEventListener("input", () => { save(); if (!V.playing) vStill(); });
 $("#vRec").onclick = async () => {
   const st = $("#vStatus"); st.className = "status";
-  const wantMusic = $("#vMusic").checked, wantVoice = $("#vVoice").checked, withAudio = wantMusic || wantVoice;
+  const wantMusic = musicIdx() >= 0, wantVoice = $("#vVoice").checked, withAudio = wantMusic || wantVoice;
   const types = withAudio ? ["video/mp4;codecs=avc1,mp4a.40.2", "video/mp4", "video/webm;codecs=vp9,opus", "video/webm;codecs=vp8,opus", "video/webm"]
                           : ["video/mp4;codecs=avc1", "video/mp4", "video/webm;codecs=vp9", "video/webm;codecs=vp8", "video/webm"];
   const type = window.MediaRecorder ? types.find(t => MediaRecorder.isTypeSupported(t)) : null;
@@ -1395,7 +1423,7 @@ $("#vRec").onclick = async () => {
   const c = vSetup(), tl = vTimeline(), vs = c.captureStream(30);
   if (ctx) {
     if (mic) { const src = ctx.createMediaStreamSource(mic), g = ctx.createGain(); g.gain.value = 1.2; src.connect(g); g.connect(V.aIn); }
-    if (wantMusic) { const m = ctx.createGain(); m.gain.value = mic ? .35 : 1; m.connect(V.aIn); vMusic(ctx, m, tl.total); }
+    if (wantMusic) { const m = ctx.createGain(); m.gain.value = mic ? .35 : 1; m.connect(V.aIn); vMusic(ctx, m, tl.total, musicIdx()); }
   }
   const stream = dest ? new MediaStream([...vs.getVideoTracks(), ...dest.stream.getAudioTracks()]) : vs;
   let rec; try { rec = new MediaRecorder(stream, { mimeType: type, videoBitsPerSecond: 8e6 }); }
@@ -1611,10 +1639,10 @@ async function save3d() {
 /* ============ Sauvegarde sur ce téléphone ============ */
 let saveT = 0;
 function save() { clearTimeout(saveT); saveT = setTimeout(() => { try {
-  localStorage.setItem("studio-habitat", JSON.stringify({ v: { t: $("#vTitle").value, s: $("#vSub").value, p: $("#vPrice").value, a: $("#vAgent").value, dpe: V.dpe, d: $("#vDesc").value, m: $("#vMusic").checked, n: $("#vVoice").checked },
+  localStorage.setItem("studio-habitat", JSON.stringify({ v: { t: $("#vTitle").value, s: $("#vSub").value, p: $("#vPrice").value, a: $("#vAgent").value, dpe: V.dpe, d: $("#vDesc").value, m: musicIdx(), n: $("#vVoice").checked },
     plan: PL.isSample ? null : { title: $("#planTitle").value, rooms: PL.rooms } })); } catch (_) {} }, 400); }
 function restore() { try { const d = JSON.parse(localStorage.getItem("studio-habitat") || "null"); if (!d) return;
-  if (d.v) { $("#vTitle").value = d.v.t; $("#vSub").value = d.v.s; $("#vPrice").value = d.v.p; $("#vAgent").value = d.v.a; V.dpe = d.v.dpe || "C"; $("#vDesc").value = d.v.d || ""; if ("m" in d.v) $("#vMusic").checked = d.v.m; $("#vVoice").checked = !!d.v.n; $("#vVoiceNote").hidden = !d.v.n; [...$("#dpe").children].forEach(o => o.setAttribute("aria-pressed", o.textContent === V.dpe)); }
+  if (d.v) { $("#vTitle").value = d.v.t; $("#vSub").value = d.v.s; $("#vPrice").value = d.v.p; $("#vAgent").value = d.v.a; V.dpe = d.v.dpe || "C"; $("#vDesc").value = d.v.d || ""; if ("m" in d.v) $("#vMusic").value = String(d.v.m === true ? 0 : d.v.m === false ? -1 : d.v.m); $("#vVoice").checked = !!d.v.n; $("#vVoiceNote").hidden = !d.v.n; [...$("#dpe").children].forEach(o => o.setAttribute("aria-pressed", o.textContent === V.dpe)); }
   if (d.plan && d.plan.rooms && d.plan.rooms.length) { PL.rooms = d.plan.rooms; PL.isSample = false; PL.sel = 0; $("#planTitle").value = d.plan.title || ""; $("#planEx").hidden = true; }
 } catch (_) {} }
 $("#planTitle").addEventListener("input", save);
