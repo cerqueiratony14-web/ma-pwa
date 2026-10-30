@@ -1,0 +1,1275 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Studio Habitat</title>
+<meta name="description" content="Photos HDR, visites 360°, vidéos et plans pour les annonces de maisons et d'appartements.">
+<meta name="theme-color" content="#1D6B57">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icon-192.png">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Studio Habitat">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<script>window.__PWA = true;</script>
+<style>:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0;font:14px system-ui,sans-serif}img{max-width:100%}[hidden]{display:none!important}</style>
+</head>
+<body>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,700&family=Public+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@500&display=swap">
+<style>
+/* Layout : barre d'outils en haut, onglets par métier (photo, visite, vidéo, plan, mise en scène), espace de travail plein écran sur téléphone */
+:root{
+  --bg:#EEF2F6; --surface:#FFFFFF; --sunk:#E3E9F0; --ink:#0F1B2D; --muted:#5A6779; --line:#CFD8E3;
+  --accent:#1D6B57; --accent-ink:#FFFFFF; --signal:#E39B1B; --ok:#1D8A55; --warn:#B4520E;
+  --display:"Bricolage Grotesque", "Avenir Next", "Segoe UI", system-ui, sans-serif;
+  --body:"Public Sans", "Segoe UI", system-ui, -apple-system, sans-serif;
+  --mono:"IBM Plex Mono", ui-monospace, "SF Mono", Menlo, monospace;
+  --radius:10px;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#0A1119; --surface:#111B27; --sunk:#0D151F; --ink:#E5ECF4; --muted:#93A1B4; --line:#24324A;
+  --accent:#4FB596; --accent-ink:#04140F; --signal:#F2AE36; --ok:#43C186; --warn:#F08A47; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0A1119; --surface:#111B27; --sunk:#0D151F; --ink:#E5ECF4; --muted:#93A1B4; --line:#24324A;
+  --accent:#4FB596; --accent-ink:#04140F; --signal:#F2AE36; --ok:#43C186; --warn:#F08A47; color-scheme:dark}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font-family:var(--body);font-size:15px;line-height:1.5}
+.wrap{max-width:1180px;margin:0 auto;padding-left:max(16px, env(safe-area-inset-left, 0px));padding-right:max(16px, env(safe-area-inset-right, 0px));padding-block:14px 40px}
+header.top{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;padding-bottom:10px}
+.brand{display:flex;align-items:center;gap:10px}
+.brand svg{flex:none}
+.brand b{font-family:var(--display);font-size:22px;letter-spacing:-.01em}
+.brand span{display:block;color:var(--muted);font-size:12.5px;line-height:1.2}
+.privacy{font-size:12.5px;color:var(--muted);display:flex;align-items:center;gap:6px}
+.privacy i{width:8px;height:8px;border-radius:50%;background:var(--ok);display:inline-block}
+nav.tabs{display:flex;gap:4px;overflow-x:auto;scrollbar-width:none;border-bottom:1px solid var(--line);margin-bottom:16px}
+nav.tabs::-webkit-scrollbar{display:none}
+nav.tabs a{flex:none;text-decoration:none;color:var(--muted);font-weight:600;font-size:14px;padding:10px 12px;border-bottom:3px solid transparent;margin-bottom:-1px;white-space:nowrap}
+nav.tabs a[aria-current="page"]{color:var(--ink);border-bottom-color:var(--signal)}
+nav.tabs a:focus-visible{outline:2px solid var(--accent);outline-offset:-2px}
+h1,h2,h3{font-family:var(--display);text-wrap:balance;margin:0;letter-spacing:-.01em}
+h2{font-size:24px}
+h3{font-size:16px}
+.lede{color:var(--muted);max-width:62ch;margin:4px 0 14px}
+.grid{display:grid;grid-template-columns:minmax(0,1fr) 320px;gap:16px;align-items:start}
+@media (max-width:860px){.grid{grid-template-columns:minmax(0,1fr)}}
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:14px;display:flex;flex-direction:column;gap:12px;min-width:0}
+.stage{background:var(--sunk);border-radius:var(--radius);position:relative;overflow:hidden;min-width:0}
+.row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+button,.btn{font:inherit;font-weight:600;font-size:14px;border-radius:8px;border:1px solid var(--line);background:var(--surface);color:var(--ink);padding:9px 13px;cursor:pointer;display:inline-flex;align-items:center;gap:6px;text-decoration:none}
+button:hover{border-color:var(--muted)}
+button.primary,.btn.primary{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+button.ghost{background:transparent}
+button:disabled{opacity:.5;cursor:not-allowed}
+button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+label.file{position:relative;overflow:hidden}
+label.file input{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%}
+.seg{display:inline-flex;border:1px solid var(--line);border-radius:8px;overflow:hidden}
+.seg button{border:0;border-radius:0;background:transparent;font-weight:500}
+.seg button[aria-pressed="true"]{background:var(--ink);color:var(--surface)}
+.field{display:flex;flex-direction:column;gap:4px;min-width:0}
+.field label,.lbl{font-size:12px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.05em}
+.field input[type=text],.field input[type=number],.field select,.field textarea,input.txt,select.txt{font:inherit;color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:7px;padding:8px 10px;width:100%;min-width:0}
+.slider{display:grid;grid-template-columns:96px minmax(0,1fr) 44px;align-items:center;gap:8px;font-size:13.5px}
+.slider output{font-family:var(--mono);font-size:12px;color:var(--muted);text-align:right;font-variant-numeric:tabular-nums}
+input[type=range]{width:100%;accent-color:var(--accent)}
+.badge{display:inline-flex;align-items:center;gap:5px;font-size:11.5px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;padding:3px 8px;border-radius:99px;background:var(--sunk);color:var(--muted)}
+.badge.ex{background:color-mix(in srgb,var(--signal) 22%,transparent);color:var(--ink)}
+.note{font-size:13px;color:var(--muted)}
+.status{font-size:13px;color:var(--muted);min-height:1.4em}
+.status.err{color:var(--warn)}
+.mono{font-family:var(--mono);font-variant-numeric:tabular-nums}
+hr{border:0;border-top:1px solid var(--line);margin:2px 0}
+.install{display:flex;align-items:center;gap:10px;background:color-mix(in srgb,var(--accent) 12%,var(--surface));border:1px solid color-mix(in srgb,var(--accent) 35%,transparent);border-radius:var(--radius);padding:10px 12px;margin-bottom:12px;font-size:14px}
+.install span{flex:1;min-width:0}
+.install button{padding:6px 10px}
+.toggle{display:flex;align-items:center;justify-content:space-between;gap:10px;font-size:14px}
+.toggle input{width:20px;height:20px;accent-color:var(--accent)}
+.compare.blurring input[type=range]{pointer-events:none}
+.compare.blurring{cursor:crosshair}
+.dpe{display:flex;gap:4px;flex-wrap:wrap}
+.dpe button{width:34px;height:32px;padding:0;justify-content:center;font-weight:700;border-radius:6px}
+.dpe button[aria-pressed="true"]{outline:3px solid var(--ink);outline-offset:1px}
+/* comparaison avant/après */
+.compare{position:relative;width:100%;aspect-ratio:3/2;max-width:100%;touch-action:pan-y;user-select:none}
+.compare canvas{position:absolute;inset:0;width:100%;height:100%;object-fit:contain}
+.compare .before{clip-path:inset(0 calc(100% - var(--cut,50%)) 0 0)}
+.compare .handle{position:absolute;top:0;bottom:0;left:var(--cut,50%);width:2px;background:#fff;box-shadow:0 0 0 1px rgba(0,0,0,.25);pointer-events:none}
+.compare .handle::after{content:"";position:absolute;top:50%;left:50%;width:30px;height:30px;margin:-15px 0 0 -15px;border-radius:50%;background:#fff;box-shadow:0 1px 4px rgba(0,0,0,.35)}
+.compare .tag{position:absolute;top:10px;font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;background:rgba(10,17,25,.62);color:#fff;padding:3px 8px;border-radius:5px;pointer-events:none}
+.compare .tag.l{left:10px}.compare .tag.r{right:10px}
+.compare input[type=range]{position:absolute;inset:0;width:100%;height:100%;opacity:0;cursor:ew-resize;margin:0}
+.strip{display:flex;gap:8px;overflow-x:auto;padding-bottom:4px}
+.strip .th{flex:none;width:96px;border-radius:7px;overflow:hidden;border:2px solid transparent;cursor:pointer;background:var(--sunk);padding:0;position:relative}
+.strip .th[aria-selected="true"]{border-color:var(--signal)}
+.strip .th img{display:block;width:100%;height:64px;object-fit:cover}
+.strip .th small{display:block;font-size:11px;padding:2px 5px;text-align:left;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+/* visite */
+.tour{width:100%;aspect-ratio:16/10;max-height:70vh;position:relative}
+.tour canvas{display:block;width:100%;height:100%;touch-action:none;cursor:grab}
+.tour .fade{position:absolute;inset:0;background:#000;opacity:0;pointer-events:none;transition:opacity .35s}
+.tour .hint{position:absolute;left:10px;bottom:10px;font-size:12px;background:rgba(10,17,25,.62);color:#fff;padding:4px 9px;border-radius:5px;pointer-events:none}
+.tour .roomname{position:absolute;left:10px;top:10px;font-family:var(--display);font-weight:700;font-size:16px;background:rgba(10,17,25,.62);color:#fff;padding:4px 10px;border-radius:6px;pointer-events:none}
+.tour.editing canvas{cursor:crosshair}
+.scenes{display:flex;flex-direction:column;gap:6px}
+.scene{display:grid;grid-template-columns:52px minmax(0,1fr) auto;gap:8px;align-items:center;padding:6px;border-radius:8px;border:1px solid var(--line)}
+.scene[aria-current="true"]{border-color:var(--signal);background:color-mix(in srgb,var(--signal) 8%,transparent)}
+.scene img{width:52px;height:34px;object-fit:cover;border-radius:5px;display:block}
+.scene input{font:inherit;font-size:14px;border:0;background:transparent;color:var(--ink);padding:3px;min-width:0;width:100%}
+.scene button{padding:5px 8px;font-size:12px}
+/* vidéo */
+.videobox{display:flex;justify-content:center;align-items:center;padding:12px;min-height:280px}
+.videobox canvas,.videobox video{max-width:100%;max-height:62vh;border-radius:8px;background:#000;display:block}
+/* plan */
+.plan{width:100%;aspect-ratio:4/3;max-height:68vh;touch-action:none}
+.plan canvas{display:block;width:100%;height:100%;cursor:default}
+.rooms{display:flex;flex-direction:column;gap:6px}
+.room{display:grid;grid-template-columns:minmax(0,1fr) 54px 54px 24px 30px;gap:6px;align-items:center}
+.room input.hab{width:20px;height:20px;padding:0;accent-color:var(--accent)}
+.room input{font:inherit;font-size:13.5px;color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:6px;padding:6px 7px;min-width:0;width:100%}
+.room[aria-current="true"] input:first-child{border-color:var(--signal)}
+.room button{padding:5px;justify-content:center}
+.total{display:flex;justify-content:space-between;align-items:baseline;font-weight:600}
+.total .mono{font-size:20px}
+/* mise en scène */
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chips button{font-weight:500;padding:6px 11px;border-radius:99px;font-size:13px}
+.chips button[aria-pressed="true"]{background:var(--ink);color:var(--surface);border-color:var(--ink)}
+.idea{border-left:3px solid var(--signal);padding:2px 0 2px 12px}
+.idea ul{margin:6px 0 0;padding-left:18px}
+.cost{display:flex;gap:10px;align-items:flex-start;background:var(--sunk);border-radius:8px;padding:10px 12px;font-size:13.5px}
+.cost b{font-family:var(--mono)}
+/* boîte de récupération quand l'enregistrement direct n'est pas possible */
+.save-fallback{position:fixed;inset:0;background:rgba(5,10,16,.8);display:flex;align-items:center;justify-content:center;z-index:50;padding:max(16px,env(safe-area-inset-top,0px)) max(16px,env(safe-area-inset-right,0px)) max(16px,env(safe-area-inset-bottom,0px)) max(16px,env(safe-area-inset-left,0px))}
+.save-fallback .box{background:var(--surface);border-radius:12px;padding:16px;max-width:560px;width:100%;display:flex;flex-direction:column;gap:10px;max-height:100%;overflow:auto}
+.save-fallback img,.save-fallback video{max-width:100%;max-height:55vh;border-radius:8px;display:block;margin:0 auto}
+@media (prefers-reduced-motion: reduce){.tour .fade{transition:none}}
+</style>
+
+<div class="wrap">
+  <header class="top">
+    <div class="brand">
+      <svg width="34" height="34" viewBox="0 0 34 34" aria-hidden="true"><rect x="1" y="1" width="32" height="32" rx="9" fill="var(--accent)"/><path d="M8 17.5 L17 9.5 L26 17.5 V26 H8 Z" fill="none" stroke="var(--accent-ink)" stroke-width="2" stroke-linejoin="round"/><circle cx="17" cy="20" r="3.6" fill="none" stroke="var(--signal)" stroke-width="2"/></svg>
+      <div><b>Studio Habitat</b><span>Photos, visites, vidéos et plans de vos maisons et appartements</span></div>
+    </div>
+    <div class="privacy"><i></i>Vos photos restent sur votre téléphone</div>
+  </header>
+
+  <div class="install" id="install" hidden>
+    <svg width="22" height="22" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v12M7 8l5-5 5 5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><rect x="4" y="11" width="16" height="10" rx="2" fill="none" stroke="currentColor" stroke-width="2"/></svg>
+    <span id="installText">Installez l'application : touchez <b>Partager</b>, puis <b>Sur l'écran d'accueil</b>.</span>
+    <button class="ghost" id="installBtn" hidden>Installer</button>
+    <button class="ghost" id="installClose" aria-label="Fermer">✕</button>
+  </div>
+
+  <nav class="tabs" aria-label="Outils">
+    <a href="#photos">Photos HDR</a>
+    <a href="#visite">Visite 360°</a>
+    <a href="#video">Vidéo</a>
+    <a href="#plan">Plan 2D</a>
+    <a href="#staging">Mise en scène</a>
+  </nav>
+
+  <!-- PHOTOS -->
+  <section id="v-photos" data-view="photos">
+    <h2>Photos HDR et retouche automatique</h2>
+    <p class="lede">Prenez la photo avec votre téléphone : l'application équilibre la lumière, corrige les couleurs et redresse l'image. Pour une façade, elle remplace un ciel gris par un ciel bleu. Floutez d'un geste les photos de famille, les visages ou une plaque d'immatriculation.</p>
+    <div class="grid">
+      <div class="stage">
+        <div class="compare" id="cmp">
+          <canvas id="cAfter"></canvas>
+          <canvas id="cBefore" class="before"></canvas>
+          <div class="handle"></div>
+          <span class="tag l">Avant</span><span class="tag r">Après</span>
+          <input type="range" id="cut" min="0" max="100" value="50" aria-label="Comparer avant et après">
+        </div>
+      </div>
+      <div class="panel">
+        <div class="row" style="justify-content:space-between">
+          <div class="seg" role="group" aria-label="Mode">
+            <button id="mSingle" aria-pressed="true">Une photo</button>
+            <button id="mFusion" aria-pressed="false">Fusion HDR</button>
+          </div>
+          <span class="badge ex" id="exBadge">Exemple</span>
+        </div>
+        <label class="btn file primary" id="pickLbl">Prendre ou choisir une photo
+          <input type="file" id="pick" accept="image/*">
+        </label>
+        <p class="note" id="modeNote">Une seule photo par pièce suffit. Tenez le téléphone droit, à hauteur de poitrine.</p>
+        <div class="status" id="pStatus"></div>
+        <hr>
+        <div class="row" style="justify-content:space-between"><span class="lbl">Réglages</span><button class="ghost" id="resetAuto">Revenir à l'auto</button></div>
+        <div class="slider"><span>Luminosité</span><input type="range" id="sBright" min="-100" max="100" value="0"><output for="sBright">0</output></div>
+        <div class="slider"><span>Contraste</span><input type="range" id="sContrast" min="-100" max="100" value="0"><output for="sContrast">0</output></div>
+        <div class="slider"><span>Chaleur</span><input type="range" id="sWarm" min="-100" max="100" value="0"><output for="sWarm">0</output></div>
+        <div class="slider"><span>Couleurs</span><input type="range" id="sVib" min="-100" max="100" value="0"><output for="sVib">0</output></div>
+        <div class="slider"><span>Netteté</span><input type="range" id="sSharp" min="0" max="100" value="35"><output for="sSharp">35</output></div>
+        <div class="slider"><span>Redresser</span><input type="range" id="sRot" min="-60" max="60" value="0"><output for="sRot">0°</output></div>
+        <hr>
+        <label class="toggle" for="tSky"><span>Ciel bleu <span class="note">(façade, jardin)</span></span><input type="checkbox" id="tSky"></label>
+        <div class="row">
+          <button id="blurBtn" aria-pressed="false">Flouter une zone</button>
+          <button class="ghost" id="blurUndo" hidden>Annuler le dernier flou</button>
+        </div>
+        <p class="note" id="blurNote" hidden>Touchez la photo à l'endroit à flouter : photo de famille, visage, plaque, adresse.</p>
+        <hr>
+        <div class="row">
+          <button class="primary" id="addToShoot">Ajouter au reportage</button>
+          <button id="savePhoto">Enregistrer la photo</button>
+        </div>
+      </div>
+    </div>
+    <div style="margin-top:16px">
+      <div class="row" style="justify-content:space-between;margin-bottom:8px"><h3>Reportage du bien <span class="mono note" id="shootCount">0 photo</span></h3><span class="note">Gardé sur ce téléphone. Sert aussi pour la vidéo.</span></div>
+      <div class="strip" id="shoot"></div>
+    </div>
+  </section>
+
+  <!-- VISITE -->
+  <section id="v-visite" data-view="visite" hidden>
+    <h2>Visite virtuelle 360°</h2>
+    <p class="lede">Ajoutez une photo 360° par pièce (caméra 360) ou un panorama pris avec l'iPhone. Placez ensuite des flèches pour passer d'une pièce à l'autre, puis exportez la visite en une page à mettre en ligne.</p>
+    <div class="grid">
+      <div class="stage">
+        <div class="tour" id="tour"><div class="roomname" id="roomName">Séjour</div><div class="hint" id="tourHint">Glissez pour regarder autour</div><div class="fade" id="tourFade"></div></div>
+      </div>
+      <div class="panel">
+        <div class="row" style="justify-content:space-between"><span class="lbl">Pièces</span><span class="badge ex" id="tourEx">Exemple</span></div>
+        <div class="scenes" id="scenes"></div>
+        <label class="btn file">Ajouter une pièce
+          <input type="file" id="pick360" accept="image/*" multiple>
+        </label>
+        <hr>
+        <div class="row">
+          <button id="editHot" aria-pressed="false">Placer une flèche</button>
+          <button class="ghost" id="autoRot" aria-pressed="true">Rotation auto</button>
+        </div>
+        <div class="field" id="hotTargetWrap" hidden>
+          <label for="hotTarget">La flèche mène vers</label>
+          <select id="hotTarget"></select>
+          <span class="note">Touchez l'endroit de la photo où placer la flèche.</span>
+        </div>
+        <div class="status" id="tStatus"></div>
+        <hr>
+        <button class="primary" id="exportTour">Exporter la visite (page web)</button>
+        <p class="note">La page exportée fonctionne seule : mettez-la en ligne avec l'annonce ou envoyez-la à un acheteur.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- VIDEO -->
+  <section id="v-video" data-view="video" hidden>
+    <h2>Vidéo du bien</h2>
+    <p class="lede">La vidéo est montée automatiquement à partir des photos du reportage : carton d'ouverture avec la classe énergie, mouvements lents sur chaque photo, carton final avec vos coordonnées.</p>
+    <div class="grid">
+      <div class="stage videobox" id="vidBox"><canvas id="vid"></canvas></div>
+      <div class="panel">
+        <div class="row" style="justify-content:space-between">
+          <div class="seg" role="group" aria-label="Format">
+            <button id="fV" aria-pressed="true">Vertical 9:16</button>
+            <button id="fH" aria-pressed="false">Horizontal 16:9</button>
+          </div>
+        </div>
+        <div class="field"><label for="vTitle">Titre</label><input type="text" id="vTitle" value="Maison familiale avec jardin"></div>
+        <div class="field"><label for="vSub">Détails</label><input type="text" id="vSub" value="5 pièces · 3 chambres · 118 m² · terrain 600 m²"></div>
+        <div class="field"><label for="vPrice">Prix</label><input type="text" id="vPrice" value="349 000 € honoraires inclus"></div>
+        <div class="field"><span class="lbl">Classe énergie (DPE)</span><div class="dpe" id="dpe"></div></div>
+        <div class="field"><label for="vAgent">Contact (carton final)</label><input type="text" id="vAgent" value="Votre nom · 06 00 00 00 00"></div>
+        <div class="slider"><span>Par photo</span><input type="range" id="vDur" min="2" max="6" value="3" step="0.5"><output for="vDur">3 s</output></div>
+        <div class="row">
+          <button id="vPlay">Aperçu</button>
+          <button class="primary" id="vRec">Créer la vidéo</button>
+        </div>
+        <div class="status" id="vStatus"></div>
+        <p class="note" id="vInfo"></p>
+      </div>
+    </div>
+  </section>
+
+  <!-- PLAN -->
+  <section id="v-plan" data-view="plan" hidden>
+    <h2>Plan 2D</h2>
+    <p class="lede">Dessinez les pièces avec leurs cotes : la surface habitable et les annexes (balcon, garage, cave) se calculent seules. Faites glisser une pièce pour la déplacer, et le coin orange pour l'agrandir.</p>
+    <div class="grid">
+      <div class="stage plan" id="planBox"><canvas id="planC"></canvas></div>
+      <div class="panel">
+        <div class="field"><label for="planTitle">Nom du bien</label><input type="text" id="planTitle" value="Appartement T3, 2e étage"></div>
+        <div class="row" style="justify-content:space-between"><span class="lbl">Pièce · larg. · long. (m) · habitable</span><span class="badge ex" id="planEx">Exemple</span></div>
+        <div class="rooms" id="rooms"></div>
+        <div class="row"><select id="roomType" class="txt" style="flex:1;min-width:0" aria-label="Type de pièce"><option>Séjour</option><option>Cuisine</option><option>Chambre</option><option>Salle de bains</option><option>Salle d'eau</option><option>WC</option><option>Entrée</option><option>Dégagement</option><option>Bureau</option><option>Buanderie</option><option>Balcon</option><option>Terrasse</option><option>Garage</option><option>Cave</option></select><button id="addRoom">Ajouter</button></div>
+        <hr>
+        <div class="total"><span>Surface habitable</span><span class="mono" id="totalArea">0 m²</span></div>
+        <div class="total" style="font-weight:500"><span class="note">Annexes</span><span class="mono note" id="annexArea">0 m²</span></div>
+        <button class="primary" id="savePlan">Enregistrer le plan (image)</button>
+        <p class="note">Plan indicatif, non contractuel. Ces surfaces ne remplacent pas le mesurage Carrez ou la surface habitable certifiés par un diagnostiqueur.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- STAGING -->
+  <section id="v-staging" data-view="staging" hidden>
+    <h2>Mise en scène d'une pièce vide</h2>
+    <p class="lede">Montrez à l'acheteur ce que deviendrait une pièce vide ou datée une fois meublée : un séjour chaleureux, une chambre d'enfant, un bureau.</p>
+    <div class="grid">
+      <div class="stage videobox"><canvas id="stgC"></canvas></div>
+      <div class="panel">
+        <label class="btn file primary">Choisir la photo de la pièce vide
+          <input type="file" id="pickStg" accept="image/*">
+        </label>
+        <span class="lbl">Pièce</span>
+        <div class="chips" id="roomsStg">
+          <button aria-pressed="true">Séjour</button><button aria-pressed="false">Chambre</button><button aria-pressed="false">Chambre d'enfant</button><button aria-pressed="false">Cuisine</button><button aria-pressed="false">Bureau</button>
+        </div>
+        <span class="lbl">Style</span>
+        <div class="chips" id="styles">
+          <button aria-pressed="true">Scandinave</button><button aria-pressed="false">Contemporain</button><button aria-pressed="false">Bohème</button><button aria-pressed="false">Industriel</button><button aria-pressed="false">Classique</button>
+        </div>
+        <button id="stgIdea">Proposer un aménagement</button>
+        <div class="status" id="sStatus"></div>
+        <div id="stgOut"></div>
+        <div class="cost"><span>€</span><span>L'image meublée est générée dans la version Pro Radar par un service payé à l'image, environ <b>0,20 $</b> par photo. Pas d'abonnement.</span></div>
+      </div>
+    </div>
+  </section>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script>
+"use strict";
+/* ============ Outils communs ============ */
+const $ = (s, r = document) => r.querySelector(s);
+const clamp = (v, a, b) => v < a ? a : v > b ? b : v;
+const sleep = ms => new Promise(r => setTimeout(r, ms));
+const frame = () => new Promise(r => requestAnimationFrame(() => r()));
+let capsCache = null;
+function getCaps() {
+  if (!capsCache) capsCache = (window.claude && window.claude.use) ? Promise.all([
+    window.claude.use("downloads").catch(() => null),
+    window.claude.use("sample").catch(() => null)
+  ]) : Promise.resolve([null, null]);
+  return capsCache;
+}
+
+async function offerFile(filename, blob, kind) {
+  const [dl] = await getCaps();
+  if (dl) {
+    try { await dl.save({ filename, data: blob }); return "saved"; }
+    catch (e) {
+      if (e && e.code === "declined") return "declined";
+      if (e && e.code === "rate_limited") return "busy";
+    }
+  }
+  // Repli : on affiche le fichier pour un appui long ou un lien de téléchargement classique
+  const url = URL.createObjectURL(blob);
+  const ov = document.createElement("div");
+  ov.className = "save-fallback";
+  let media = "";
+  if (kind === "image") media = `<img src="${url}" alt="Fichier prêt">`;
+  else if (kind === "video") media = `<video src="${url}" controls playsinline></video>`;
+  ov.innerHTML = `<div class="box"><h3>Votre fichier est prêt</h3>${media}
+    <p class="note">${kind === "image" ? "Sur téléphone : appui long sur l'image, puis « Enregistrer »." : kind === "video" ? "Sur téléphone : ouvrez la vidéo en plein écran, puis partagez-la ou enregistrez-la." : "Utilisez le lien ci-dessous."}</p>
+    <div class="row"><a class="btn primary" href="${url}" download="${filename}">Télécharger ${filename}</a><button id="ovClose">Fermer</button></div></div>`;
+  document.body.appendChild(ov);
+  ov.querySelector("#ovClose").onclick = () => { ov.remove(); setTimeout(() => URL.revokeObjectURL(url), 60000); };
+  return "fallback";
+}
+
+async function fileToCanvas(file, maxSide) {
+  let bmp;
+  try { bmp = await createImageBitmap(file, { imageOrientation: "from-image" }); }
+  catch (_) {
+    bmp = await new Promise((res, rej) => { const im = new Image(); im.onload = () => res(im); im.onerror = () => rej(new Error("format")); im.src = URL.createObjectURL(file); });
+  }
+  return drawToCanvas(bmp, maxSide);
+}
+function drawToCanvas(src, maxSide) {
+  const w0 = src.width, h0 = src.height, s = Math.min(1, maxSide / Math.max(w0, h0));
+  const c = document.createElement("canvas"); c.width = Math.round(w0 * s); c.height = Math.round(h0 * s);
+  c.getContext("2d").drawImage(src, 0, 0, c.width, c.height);
+  return c;
+}
+
+/* ============ Traitement d'image (fonctions pures, testables) ============ */
+// Image en virgule flottante : {w, h, d: Float32Array RGB entrelacé 0..1}
+function canvasToFloat(c) {
+  const id = c.getContext("2d").getImageData(0, 0, c.width, c.height).data;
+  const n = c.width * c.height, d = new Float32Array(n * 3);
+  for (let i = 0, j = 0; i < n; i++, j += 4) { d[i * 3] = id[j] / 255; d[i * 3 + 1] = id[j + 1] / 255; d[i * 3 + 2] = id[j + 2] / 255; }
+  return { w: c.width, h: c.height, d };
+}
+function floatToCanvas(img, c) {
+  c = c || document.createElement("canvas"); c.width = img.w; c.height = img.h;
+  const ctx = c.getContext("2d"), out = ctx.createImageData(img.w, img.h), o = out.data, d = img.d, n = img.w * img.h;
+  for (let i = 0, j = 0; i < n; i++, j += 4) { o[j] = d[i * 3] * 255 + .5; o[j + 1] = d[i * 3 + 1] * 255 + .5; o[j + 2] = d[i * 3 + 2] * 255 + .5; o[j + 3] = 255; }
+  ctx.putImageData(out, 0, 0); return c;
+}
+function resizeFloat(img, maxSide) {
+  if (Math.max(img.w, img.h) <= maxSide) return img;
+  const c = floatToCanvas(img); return canvasToFloat(drawToCanvas(c, maxSide));
+}
+const lum = (r, g, b) => .2126 * r + .7152 * g + .0722 * b;
+
+function analyse(img) {
+  const d = img.d, n = img.w * img.h, hist = new Uint32Array(256);
+  let sr = 0, sg = 0, sb = 0, cnt = 0;
+  for (let i = 0; i < n; i++) {
+    const r = d[i * 3], g = d[i * 3 + 1], b = d[i * 3 + 2], L = lum(r, g, b);
+    hist[Math.min(255, (L * 255) | 0)]++;
+    if (L > .12 && L < .88) { sr += r; sg += g; sb += b; cnt++; }
+  }
+  const pct = p => { let acc = 0, t = p * n; for (let k = 0; k < 256; k++) { acc += hist[k]; if (acc >= t) return k / 255; } return 1; };
+  const black = Math.min(pct(.004), .15), white = Math.max(pct(.996), .35);
+  let wbR = 1, wbB = 1;
+  if (cnt > n * .05) { wbR = sg / sr; wbB = sg / sb; }
+  wbR = clamp(1 + (wbR - 1) * .6, .82, 1.22); wbB = clamp(1 + (wbB - 1) * .6, .82, 1.22);
+  const med = clamp((pct(.5) - black) / (white - black), .02, .98);
+  const gamma = clamp(Math.log(.47) / Math.log(med), .45, 1.3);
+  return { black, white, wbR, wbB, gamma, contrast: .15, vibrance: .2 };
+}
+
+// réglages utilisateur u : {bright, contrast, warm, vib, sharp} en -1..1 (sharp 0..1)
+function retouch(img, auto, u) {
+  const { w, h } = img, n = w * h, s = img.d, o = new Float32Array(n * 3);
+  const g = auto.gamma * Math.pow(2, -u.bright * .9), c = clamp(auto.contrast + u.contrast * .6, -.6, 1);
+  const LUT = new Float32Array(1025);
+  for (let k = 0; k <= 1024; k++) {
+    let v = Math.pow(k / 1024, g);
+    const sm = v * v * (3 - 2 * v); v = v + c * (sm - v);
+    LUT[k] = clamp(v, 0, 1);
+  }
+  const mR = auto.wbR * (1 + u.warm * .12), mB = auto.wbB * (1 - u.warm * .12);
+  const bl = auto.black, sc = 1 / (auto.white - auto.black), vib = auto.vibrance + u.vib * .6;
+  for (let i = 0; i < n; i++) {
+    const j = i * 3;
+    let r = LUT[(clamp((s[j] * mR - bl) * sc, 0, 1) * 1024) | 0];
+    let gg = LUT[(clamp((s[j + 1] - bl) * sc, 0, 1) * 1024) | 0];
+    let b = LUT[(clamp((s[j + 2] * mB - bl) * sc, 0, 1) * 1024) | 0];
+    const mx = Math.max(r, gg, b), mn = Math.min(r, gg, b), m = (r + gg + b) / 3;
+    const a = vib >= 0 ? vib * (1 - (mx - mn)) : vib;
+    r = m + (r - m) * (1 + a); gg = m + (gg - m) * (1 + a); b = m + (b - m) * (1 + a);
+    o[j] = clamp(r, 0, 1); o[j + 1] = clamp(gg, 0, 1); o[j + 2] = clamp(b, 0, 1);
+  }
+  const out = { w, h, d: o };
+  return u.sharp > 0 ? sharpen(out, u.sharp * 1.2) : out;
+}
+function boxBlur3(img) {
+  const { w, h, d } = img, t = new Float32Array(d.length), o = new Float32Array(d.length);
+  for (let y = 0; y < h; y++) for (let x = 0; x < w; x++) for (let ch = 0; ch < 3; ch++) {
+    const xa = x > 0 ? x - 1 : 0, xb = x < w - 1 ? x + 1 : w - 1, row = y * w;
+    t[(row + x) * 3 + ch] = (d[(row + xa) * 3 + ch] + d[(row + x) * 3 + ch] + d[(row + xb) * 3 + ch]) / 3;
+  }
+  for (let y = 0; y < h; y++) { const ya = y > 0 ? y - 1 : 0, yb = y < h - 1 ? y + 1 : h - 1;
+    for (let x = 0; x < w; x++) for (let ch = 0; ch < 3; ch++)
+      o[(y * w + x) * 3 + ch] = (t[(ya * w + x) * 3 + ch] + t[(y * w + x) * 3 + ch] + t[(yb * w + x) * 3 + ch]) / 3; }
+  return { w, h, d: o };
+}
+function sharpen(img, k) {
+  const b = boxBlur3(img), d = img.d, o = new Float32Array(d.length);
+  for (let i = 0; i < d.length; i++) o[i] = clamp(d[i] + k * (d[i] - b.d[i]), 0, 1);
+  return { w: img.w, h: img.h, d: o };
+}
+
+/* Fusion d'expositions (méthode de Mertens : contraste, saturation, bonne exposition, pyramides de Laplace) */
+function blur5(p, w, h) {
+  // noyau binomial 1-4-6-4-1 séparable, bords en miroir ; boucle intérieure sans test pour la vitesse
+  const t = new Float32Array(w * h), o = new Float32Array(w * h);
+  const rx = x => x < 0 ? Math.min(-x, w - 1) : x >= w ? Math.max(2 * w - x - 2, 0) : x;
+  const ry = y => y < 0 ? Math.min(-y, h - 1) : y >= h ? Math.max(2 * h - y - 2, 0) : y;
+  for (let y = 0; y < h; y++) {
+    const r = y * w;
+    for (let x = 0; x < w; x++) {
+      if (x >= 2 && x < w - 2) { const i = r + x; t[i] = (p[i - 2] + p[i + 2] + 4 * (p[i - 1] + p[i + 1]) + 6 * p[i]) * .0625; }
+      else t[r + x] = (p[r + rx(x - 2)] + p[r + rx(x + 2)] + 4 * (p[r + rx(x - 1)] + p[r + rx(x + 1)]) + 6 * p[r + x]) * .0625;
+    }
+  }
+  for (let y = 0; y < h; y++) {
+    const r = y * w;
+    if (y >= 2 && y < h - 2) { const a = r - 2 * w, b = r - w, c = r + w, d = r + 2 * w;
+      for (let x = 0; x < w; x++) o[r + x] = (t[a + x] + t[d + x] + 4 * (t[b + x] + t[c + x]) + 6 * t[r + x]) * .0625; }
+    else { const a = ry(y - 2) * w, b = ry(y - 1) * w, c = ry(y + 1) * w, d = ry(y + 2) * w;
+      for (let x = 0; x < w; x++) o[r + x] = (t[a + x] + t[d + x] + 4 * (t[b + x] + t[c + x]) + 6 * t[r + x]) * .0625; }
+  }
+  return o;
+}
+function down(p, w, h) {
+  const b = blur5(p, w, h), w2 = (w + 1) >> 1, h2 = (h + 1) >> 1, o = new Float32Array(w2 * h2);
+  for (let y = 0; y < h2; y++) for (let x = 0; x < w2; x++) o[y * w2 + x] = b[(2 * y) * w + 2 * x];
+  return { p: o, w: w2, h: h2 };
+}
+function up(p, w2, h2, W, H) {
+  // interpolation bilinéaire (×2) : stable sur les bords
+  const o = new Float32Array(W * H), xi0 = new Int32Array(W), xi1 = new Int32Array(W), xt = new Float32Array(W);
+  for (let x = 0; x < W; x++) { const fx = Math.min(x / 2, w2 - 1), x0 = fx | 0; xi0[x] = x0; xi1[x] = Math.min(x0 + 1, w2 - 1); xt[x] = fx - x0; }
+  for (let y = 0; y < H; y++) { const fy = Math.min(y / 2, h2 - 1), y0 = fy | 0, y1 = Math.min(y0 + 1, h2 - 1), ty = fy - y0, r0 = y0 * w2, r1 = y1 * w2, ro = y * W;
+    for (let x = 0; x < W; x++) { const tx = xt[x], a = p[r0 + xi0[x]] + (p[r0 + xi1[x]] - p[r0 + xi0[x]]) * tx, b = p[r1 + xi0[x]] + (p[r1 + xi1[x]] - p[r1 + xi0[x]]) * tx; o[ro + x] = a + (b - a) * ty; } }
+  return o;
+}
+function gaussPyr(p, w, h, n) { const L = [{ p, w, h }]; for (let i = 1; i < n; i++) L.push(down(L[i - 1].p, L[i - 1].w, L[i - 1].h)); return L; }
+function lapPyr(p, w, h, n) {
+  const G = gaussPyr(p, w, h, n), L = [];
+  for (let i = 0; i < n - 1; i++) { const u = up(G[i + 1].p, G[i + 1].w, G[i + 1].h, G[i].w, G[i].h), o = new Float32Array(G[i].p.length);
+    for (let k = 0; k < o.length; k++) o[k] = G[i].p[k] - u[k]; L.push({ p: o, w: G[i].w, h: G[i].h }); }
+  L.push(G[n - 1]); return L;
+}
+function fuse(imgs) {
+  const { w, h } = imgs[0], n = w * h, K = imgs.length;
+  const levels = clamp(Math.floor(Math.log2(Math.min(w, h))) - 2, 2, 9);
+  const W = imgs.map(im => {
+    const d = im.d, g = new Float32Array(n), wt = new Float32Array(n);
+    for (let i = 0; i < n; i++) g[i] = lum(d[i * 3], d[i * 3 + 1], d[i * 3 + 2]);
+    for (let y = 0; y < h; y++) for (let x = 0; x < w; x++) {
+      const i = y * w + x, r = d[i * 3], gg = d[i * 3 + 1], b = d[i * 3 + 2];
+      const lap = Math.abs(4 * g[i] - g[y * w + (x > 0 ? x - 1 : x + 1)] - g[y * w + (x < w - 1 ? x + 1 : x - 1)] - g[(y > 0 ? y - 1 : y + 1) * w + x] - g[(y < h - 1 ? y + 1 : y - 1) * w + x]);
+      const m = (r + gg + b) / 3, sat = Math.sqrt(((r - m) ** 2 + (gg - m) ** 2 + (b - m) ** 2) / 3);
+      const ex = Math.exp(-((r - .5) ** 2 + (gg - .5) ** 2 + (b - .5) ** 2) / (2 * .2 * .2));
+      wt[i] = (lap + .02) * (sat + .02) * ex + 1e-12;
+    }
+    return wt;
+  });
+  for (let i = 0; i < n; i++) { let s = 0; for (let k = 0; k < K; k++) s += W[k][i]; for (let k = 0; k < K; k++) W[k][i] /= s; }
+  const out = new Float32Array(n * 3), acc = [null, null, null], plane = new Float32Array(n);
+  for (let k = 0; k < K; k++) {
+    const Gw = gaussPyr(W[k], w, h, levels); W[k] = null;
+    for (let ch = 0; ch < 3; ch++) {
+      const dk = imgs[k].d; for (let i = 0; i < n; i++) plane[i] = dk[i * 3 + ch];
+      const Lp = lapPyr(plane, w, h, levels);
+      if (!acc[ch]) acc[ch] = Lp.map(l => ({ p: new Float32Array(l.p.length), w: l.w, h: l.h }));
+      for (let l = 0; l < levels; l++) { const a = acc[ch][l].p, lp = Lp[l].p, gw = Gw[l].p; for (let i = 0; i < a.length; i++) a[i] += lp[i] * gw[i]; }
+    }
+  }
+  for (let ch = 0; ch < 3; ch++) {
+    const A = acc[ch]; let R = A[levels - 1].p;
+    for (let l = levels - 2; l >= 0; l--) { const u = up(R, A[l + 1].w, A[l + 1].h, A[l].w, A[l].h), a = A[l].p; for (let i = 0; i < u.length; i++) u[i] += a[i]; R = u; }
+    for (let i = 0; i < n; i++) out[i * 3 + ch] = clamp(R[i], 0, 1);
+  }
+  return { w, h, d: out };
+}
+
+/* Ciel bleu : zone claire et peu colorée reliée au bord haut, remplacée par un dégradé bleu, bords adoucis */
+function skyMask(img) {
+  const s = Math.min(1, 320 / img.w), w = Math.max(8, Math.round(img.w * s)), h = Math.max(8, Math.round(img.h * s));
+  const cand = new Uint8Array(w * h), d = img.d, maxY = Math.round(h * .7), px = (x, y) => (Math.min(img.h - 1, Math.round(y / s)) * img.w + Math.min(img.w - 1, Math.round(x / s))) * 3;
+  // couleur de référence : médiane des 4 % du haut
+  const cr = [], cb = [], cl = [];
+  for (let y = 0; y < Math.max(2, h * .04); y++) for (let x = 0; x < w; x += 2) { const j = px(x, y); cr.push(d[j] - d[j + 1]); cb.push(d[j + 2] - d[j + 1]); cl.push(lum(d[j], d[j + 1], d[j + 2])); }
+  const med = a => a.sort((p, q) => p - q)[a.length >> 1], R0 = med(cr), B0 = med(cb), L0 = med(cl);
+  if (L0 < .45) return null;
+  for (let y = 0; y < maxY; y++) for (let x = 0; x < w; x++) {
+    const j = px(x, y), r = d[j], g = d[j + 1], b = d[j + 2], L = lum(r, g, b);
+    const sat = Math.max(r, g, b) - Math.min(r, g, b);
+    if ((Math.abs((r - g) - R0) < .035 && Math.abs((b - g) - B0) < .045 && L > L0 - .14 && L < L0 + .25) || (L > .9 && sat < .06)) cand[y * w + x] = 1;
+  }
+  const m = new Float32Array(w * h), stack = [];
+  for (let x = 0; x < w; x++) if (cand[x]) { m[x] = 1; stack.push(x); }
+  while (stack.length) { const i = stack.pop(), x = i % w, y = (i / w) | 0;
+    const nb = [x > 0 ? i - 1 : -1, x < w - 1 ? i + 1 : -1, y > 0 ? i - w : -1, y < h - 1 ? i + w : -1];
+    for (const k of nb) if (k >= 0 && cand[k] && !m[k]) { m[k] = 1; stack.push(k); } }
+  let area = 0, low = 0; for (let i = 0; i < m.length; i++) if (m[i]) { area++; low = Math.max(low, (i / w) | 0); }
+  if (area < w * h * .03) return null;
+  let f = m; for (let k = 0; k < 3; k++) f = blur5(f, w, h);
+  return { w, h, m: f, horizon: (low + 1) / h };
+}
+function applySky(img, strength, maskFrom) {
+  const mk = skyMask(maskFrom || img); if (!mk) return { img, found: false };
+  const o = new Float32Array(img.d), { w, h } = img, top = [.25, .5, .82], bot = [.72, .84, .95];
+  for (let y = 0; y < h; y++) {
+    const t = clamp(y / h / mk.horizon, 0, 1), sky = [top[0] + (bot[0] - top[0]) * t, top[1] + (bot[1] - top[1]) * t, top[2] + (bot[2] - top[2]) * t];
+    const my = Math.min(mk.h - 1, Math.floor(y / h * mk.h));
+    for (let x = 0; x < w; x++) {
+      const a = mk.m[my * mk.w + Math.min(mk.w - 1, Math.floor(x / w * mk.w))] * strength; if (a < .01) continue;
+      const j = (y * w + x) * 3, L = lum(o[j], o[j + 1], o[j + 2]), tex = (L - .8) * .35;
+      for (let c = 0; c < 3; c++) o[j + c] = o[j + c] * (1 - a) + clamp(sky[c] + tex, 0, 1) * a;
+    }
+  }
+  return { img: { w, h, d: o }, found: true };
+}
+
+/* ============ Exemples générés (aucune photo réelle) ============ */
+function sampleFacade() {
+  const W = 1500, H = 1000, c = document.createElement("canvas"); c.width = W; c.height = H; const x = c.getContext("2d");
+  const sk = x.createLinearGradient(0, 0, 0, 520); sk.addColorStop(0, "#c3c6ca"); sk.addColorStop(1, "#dcdee0"); x.fillStyle = sk; x.fillRect(0, 0, W, 700);
+  x.fillStyle = "#6f8a4d"; x.fillRect(0, 700, W, 300); x.fillStyle = "#7b9656"; x.fillRect(0, 760, W, 240);
+  x.fillStyle = "#b9b1a3"; x.fillRect(560, 700, 160, 300);
+  x.fillStyle = "#e7dcc8"; x.fillRect(330, 380, 820, 330);
+  x.fillStyle = "#4b4b52"; x.beginPath(); x.moveTo(290, 390); x.lineTo(740, 150); x.lineTo(1190, 390); x.closePath(); x.fill();
+  x.fillStyle = "#6a5a4a"; x.fillRect(590, 520, 100, 190);
+  x.fillStyle = "#3b4a57"; [[400, 450], [800, 450], [960, 450], [800, 580], [960, 580], [400, 580]].forEach(([a, b]) => { x.fillRect(a, b, 110, 90); x.fillStyle = "#f1ece2"; x.fillRect(a + 52, b, 6, 90); x.fillStyle = "#3b4a57"; });
+  x.fillStyle = "#3f5a2e"; x.beginPath(); x.arc(1310, 520, 170, 0, 7); x.fill(); x.fillStyle = "#5b4636"; x.fillRect(1295, 600, 30, 120);
+  x.fillStyle = "#4c6b35"; x.beginPath(); x.arc(150, 610, 110, 0, 7); x.fill();
+  const img = x.getImageData(0, 0, W, H), d = img.data;
+  for (let i = 0; i < d.length; i += 4) for (let k = 0; k < 3; k++) d[i + k] = Math.pow(d[i + k] / 255, 1.25) * 245;
+  x.putImageData(img, 0, 0);
+  return c;
+}
+function sampleRoom(kind, exposure) {
+  // kind : 0 local commercial, 1 bureau, 2 réserve ; exposure : gain intérieur (1 = normal)
+  const W = 1500, H = 1000, c = document.createElement("canvas"); c.width = W; c.height = H;
+  const x = c.getContext("2d");
+  const pal = [["#d9d2c5", "#b9b0a2", "#8f8577", "#e9e5dc"], ["#cfd6dc", "#aab4bd", "#6f6a63", "#eef1f3"], ["#c9c4bb", "#a39d92", "#7b7f82", "#e4e2dc"]][kind];
+  const bx0 = 430, by0 = 250, bx1 = 1070, by1 = 640;
+  const poly = (pts, f) => { x.beginPath(); x.moveTo(pts[0], pts[1]); for (let i = 2; i < pts.length; i += 2) x.lineTo(pts[i], pts[i + 1]); x.closePath(); x.fillStyle = f; x.fill(); };
+  poly([0, 0, W, 0, bx1, by0, bx0, by0], pal[3]);
+  poly([0, 0, bx0, by0, bx0, by1, 0, H], pal[1]);
+  poly([W, 0, bx1, by0, bx1, by1, W, H], pal[1]);
+  poly([bx0, by0, bx1, by0, bx1, by1, bx0, by1], pal[0]);
+  const fg = x.createLinearGradient(0, by1, 0, H); fg.addColorStop(0, pal[2]); fg.addColorStop(1, "#5c554c"); poly([bx0, by1, bx1, by1, W, H, 0, H], fg);
+  x.strokeStyle = "rgba(0,0,0,.12)"; x.lineWidth = 2;
+  for (let i = -6; i <= 6; i++) { x.beginPath(); x.moveTo(750 + i * 55, by1); x.lineTo(750 + i * 260, H); x.stroke(); }
+  for (let i = 0; i < 4; i++) { x.fillStyle = "rgba(255,255,240,.85)"; x.fillRect(560 + i * 110, 150 + i * 6 - 120 + 120, 70, 10); }
+  if (kind === 0) { x.fillStyle = "#6b4f3a"; x.fillRect(470, 540, 230, 100); x.fillStyle = "#83654d"; x.fillRect(470, 530, 230, 14); }
+  if (kind === 1) { x.fillStyle = "#4a5560"; x.fillRect(820, 560, 200, 16); x.fillRect(830, 576, 10, 64); x.fillRect(1000, 576, 10, 64); x.fillStyle = "#2f3a44"; x.fillRect(880, 520, 70, 40); }
+  if (kind === 2) { x.fillStyle = "#8a6f57"; x.fillRect(460, 470, 260, 40); x.fillStyle = "#f2eee8"; x.fillRect(460, 520, 260, 100); x.fillStyle = "#9db3c4"; x.fillRect(460, 560, 260, 60); x.fillStyle = "#fff"; x.fillRect(480, 500, 90, 34); x.fillRect(600, 500, 90, 34); }
+  // fenêtre : ciel détaillé visible seulement dans l'exposition sombre
+  const wx = kind === 2 ? 760 : 650, wy = 300, ww = kind === 2 ? 240 : 300, wh = 230;
+  const img = x.getImageData(0, 0, W, H), d = img.data;
+  const tint = [1.0, .97, 1.08];
+  for (let i = 0; i < d.length; i += 4) for (let k = 0; k < 3; k++) { const lin = Math.pow(d[i + k] / 255, 2.2) * exposure * tint[k] * .55; d[i + k] = clamp(Math.pow(lin, 1 / 2.2), 0, 1) * 255; }
+  x.putImageData(img, 0, 0);
+  const sky = x.createLinearGradient(0, wy, 0, wy + wh); sky.addColorStop(0, "#5f95cf"); sky.addColorStop(1, "#cfe3f2");
+  const skyVis = clamp(1.3 - exposure * 1.1, 0, 1);
+  x.fillStyle = "#fff"; x.fillRect(wx, wy, ww, wh);
+  x.globalAlpha = skyVis; x.fillStyle = sky; x.fillRect(wx, wy, ww, wh);
+  x.fillStyle = "#fff"; x.beginPath(); x.ellipse(wx + ww * .3, wy + 60, 50, 18, 0, 0, 7); x.ellipse(wx + ww * .7, wy + 95, 60, 20, 0, 0, 7); x.fill();
+  x.fillStyle = "#6d7f63"; x.fillRect(wx, wy + wh - 60, ww, 60); x.fillStyle = "#8f8a82"; x.fillRect(wx + 30, wy + wh - 110, 90, 110);
+  x.globalAlpha = 1; x.strokeStyle = "#3a3a3a"; x.lineWidth = 8; x.strokeRect(wx, wy, ww, wh); x.beginPath(); x.moveTo(wx + ww / 2, wy); x.lineTo(wx + ww / 2, wy + wh); x.stroke();
+  return c;
+}
+function sampleEquirect(kind) {
+  const W = 2048, H = 1024, c = document.createElement("canvas"); c.width = W; c.height = H; const x = c.getContext("2d");
+  const wall = kind ? "#e6e0ea" : "#ece4d6", floorA = kind ? "#b9a48a" : "#a7825e", floorB = kind ? "#8e7a62" : "#6e5238";
+  const ceil = x.createLinearGradient(0, 0, 0, H * .36); ceil.addColorStop(0, "#f2f0ec"); ceil.addColorStop(1, "#e4e0d8");
+  x.fillStyle = ceil; x.fillRect(0, 0, W, H * .36); x.fillStyle = wall; x.fillRect(0, H * .36, W, H * .24);
+  const fl = x.createLinearGradient(0, H * .6, 0, H); fl.addColorStop(0, floorA); fl.addColorStop(1, floorB); x.fillStyle = fl; x.fillRect(0, H * .6, W, H * .4);
+  x.strokeStyle = "rgba(0,0,0,.10)"; x.lineWidth = 3;
+  for (let i = 0; i < 24; i++) { x.beginPath(); x.moveTo(i * W / 24, H * .6); x.lineTo(i * W / 24, H); x.stroke(); }
+  for (let i = 0; i < 4; i++) { x.fillStyle = "rgba(0,0,0,.14)"; x.fillRect(i * W / 4, H * .34, 5, H * .26); }
+  // fenêtres
+  [[.12, .22], [.62, .22]].forEach(([p, ww]) => { const wx = W * p, wy = H * .37, w2 = W * ww * .5, h2 = H * .2;
+    const sk = x.createLinearGradient(0, wy, 0, wy + h2); sk.addColorStop(0, "#7fb0dc"); sk.addColorStop(1, "#d6e8f3"); x.fillStyle = sk; x.fillRect(wx, wy, w2, h2);
+    x.fillStyle = "#7c9a62"; x.fillRect(wx, wy + h2 * .7, w2, h2 * .3); x.strokeStyle = "#f5f5f5"; x.lineWidth = 10; x.strokeRect(wx, wy, w2, h2); x.beginPath(); x.moveTo(wx + w2 / 2, wy); x.lineTo(wx + w2 / 2, wy + h2); x.stroke(); });
+  if (!kind) { // séjour : canapé, table basse, tapis
+    x.fillStyle = "#c9b79c"; x.fillRect(W * .36, H * .66, W * .16, H * .05);
+    x.fillStyle = "#5d6b78"; x.fillRect(W * .34, H * .55, W * .2, H * .07); x.fillStyle = "#4c5965"; x.fillRect(W * .34, H * .5, W * .2, H * .05);
+    x.fillStyle = "#7a5a3c"; x.fillRect(W * .40, H * .67, W * .08, H * .02);
+    x.fillStyle = "#3d3d3d"; x.fillRect(W * .86, H * .44, W * .1, H * .08); }
+  else { // chambre : lit, chevets
+    x.fillStyle = "#8a6f57"; x.fillRect(W * .38, H * .46, W * .16, H * .06);
+    x.fillStyle = "#f4f1ec"; x.fillRect(W * .38, H * .52, W * .16, H * .1); x.fillStyle = "#9db3c4"; x.fillRect(W * .38, H * .56, W * .16, H * .06);
+    x.fillStyle = "#6e5a48"; x.fillRect(W * .34, H * .53, W * .03, H * .05); x.fillRect(W * .55, H * .53, W * .03, H * .05);
+    x.fillStyle = "#d9cfc0"; x.fillRect(W * .8, H * .38, W * .08, H * .22); }
+  x.fillStyle = "rgba(255,255,240,.95)"; x.beginPath(); x.arc(W * .45, H * .12, 20, 0, 7); x.fill();
+  return c;
+}
+/* ============ Onglet Photos ============ */
+const P = { mode: "single", sources: [], src: null, prev: null, auto: null, isSample: true, shoot: [], sky: false, blurs: [], blurring: false };
+const pIds = ["sBright", "sContrast", "sWarm", "sVib", "sSharp", "sRot"];
+function readU() {
+  return { bright: +$("#sBright").value / 100, contrast: +$("#sContrast").value / 100, warm: +$("#sWarm").value / 100, vib: +$("#sVib").value / 100, sharp: +$("#sSharp").value / 100, rot: +$("#sRot").value / 10 };
+}
+function drawRotated(srcCanvas, deg, target) {
+  const w = srcCanvas.width, h = srcCanvas.height, a = Math.abs(deg) * Math.PI / 180;
+  const s = Math.cos(a) + Math.sin(a) * Math.max(w / h, h / w);
+  target.width = w; target.height = h; const x = target.getContext("2d");
+  x.save(); x.translate(w / 2, h / 2); x.rotate(deg * Math.PI / 180); x.scale(s, s); x.drawImage(srcCanvas, -w / 2, -h / 2); x.restore();
+  return target;
+}
+function setCompareAspect(img) { $("#cmp").style.aspectRatio = img.w + " / " + img.h; }
+let renderPending = false;
+function renderPhoto() {
+  if (!P.prev) return;
+  if (renderPending) return; renderPending = true;
+  requestAnimationFrame(() => {
+    renderPending = false;
+    const u = readU();
+    let r = retouch(P.prev, P.auto, u);
+    if (P.sky) { const k = applySky(r, 1, P.prev); r = k.img; skyInfo(k.found); }
+    drawRotated(floatToCanvas(r), u.rot, $("#cAfter")); applyBlurs($("#cAfter"));
+    floatToCanvas(P.prevBefore, $("#cBefore"));
+    for (const id of pIds) { const el = $("#" + id); el.nextElementSibling.textContent = id === "sRot" ? (u.rot.toFixed(1) + "°") : el.value; }
+  });
+}
+async function setPhotoSource(img, beforeImg, isSample) {
+  P.src = img; P.isSample = !!isSample; P.blurs = []; if ($("#blurUndo")) $("#blurUndo").hidden = true;
+  P.prev = resizeFloat(img, 1100); P.prevBefore = resizeFloat(beforeImg || img, 1100);
+  P.auto = analyse(P.prev); P.autoFull = analyse(P.src);
+  $("#exBadge").hidden = !isSample;
+  setCompareAspect(P.prev); renderPhoto();
+}
+async function runFusion(canvases, isSample) {
+  const st = $("#pStatus"); st.className = "status"; st.textContent = "Fusion des expositions en cours…"; await frame(); await sleep(30);
+  const maxS = 1400, base = canvases.map(c => canvasToFloat(drawToCanvas(c, maxS)));
+  const w = Math.min(...base.map(b => b.w)), h = Math.min(...base.map(b => b.h));
+  const same = base.map(b => (b.w === w && b.h === h) ? b : canvasToFloat((() => { const c = document.createElement("canvas"); c.width = w; c.height = h; c.getContext("2d").drawImage(floatToCanvas(b), 0, 0, w, h); return c; })()));
+  const t0 = performance.now(); const fused = fuse(same);
+  // l'image « avant » est l'exposition la plus proche du milieu
+  const mid = same.slice().sort((a, b) => Math.abs(meanL(a) - .45) - Math.abs(meanL(b) - .45))[0];
+  await setPhotoSource(fused, mid, isSample);
+  st.textContent = `${canvases.length} expositions fusionnées en ${((performance.now() - t0) / 1000).toFixed(1)} s.`;
+}
+function meanL(img) { let s = 0; const d = img.d, n = img.w * img.h; for (let i = 0; i < n; i += 7) s += lum(d[i * 3], d[i * 3 + 1], d[i * 3 + 2]); return s / Math.ceil(n / 7); }
+
+function setMode(m) {
+  P.mode = m; $("#mSingle").setAttribute("aria-pressed", m === "single"); $("#mFusion").setAttribute("aria-pressed", m === "fusion");
+  const pick = $("#pick");
+  if (m === "fusion") { pick.multiple = true; $("#pickLbl").firstChild.textContent = "Choisir 2 à 5 expositions ";
+    $("#modeNote").textContent = "Téléphone posé ou sur trépied, prenez la même vue en sombre, normal et clair. Les photos doivent être cadrées à l'identique."; }
+  else { pick.multiple = false; $("#pickLbl").firstChild.textContent = "Prendre ou choisir une photo ";
+    $("#modeNote").textContent = "Une seule photo par pièce suffit. Tenez le téléphone droit, à hauteur de poitrine."; }
+}
+$("#mSingle").onclick = async () => { setMode("single"); if (P.isSample) { const c = sampleRoom(0, .5); await setPhotoSource(canvasToFloat(c), null, true); $("#pStatus").textContent = ""; } };
+$("#mFusion").onclick = async () => { setMode("fusion"); if (P.isSample) await runFusion([sampleRoom(0, .35), sampleRoom(0, 1), sampleRoom(0, 2.4)], true); };
+$("#pick").onchange = async e => {
+  const files = [...e.target.files]; e.target.value = ""; if (!files.length) return;
+  const st = $("#pStatus"); st.className = "status"; st.textContent = "Chargement…";
+  try {
+    if (P.mode === "fusion") {
+      if (files.length < 2) { st.className = "status err"; st.textContent = "Choisissez au moins 2 photos de la même vue pour la fusion."; return; }
+      const cs = []; for (const f of files.slice(0, 5)) cs.push(await fileToCanvas(f, 1600));
+      await runFusion(cs, false);
+    } else {
+      const c = await fileToCanvas(files[0], 2400); await setPhotoSource(canvasToFloat(c), null, false); st.textContent = "";
+    }
+    resetSliders();
+  } catch (err) { st.className = "status err"; st.textContent = "Cette photo n'a pas pu être ouverte. Essayez en JPEG ou PNG."; }
+};
+function resetSliders() { $("#sBright").value = 0; $("#sContrast").value = 0; $("#sWarm").value = 0; $("#sVib").value = 0; $("#sSharp").value = 35; $("#sRot").value = 0; renderPhoto(); }
+$("#resetAuto").onclick = resetSliders;
+for (const id of pIds) $("#" + id).addEventListener("input", renderPhoto);
+$("#cut").addEventListener("input", e => $("#cmp").style.setProperty("--cut", e.target.value + "%"));
+
+function finalPhotoCanvas() {
+  const u = readU(); let r = retouch(P.src, P.autoFull, u);
+  if (P.sky) r = applySky(r, 1, P.src).img;
+  return applyBlurs(drawRotated(floatToCanvas(r), u.rot, document.createElement("canvas")));
+}
+function skyInfo(found) { const st = $("#pStatus"); if (!found) { st.className = "status"; st.textContent = "Pas de ciel détecté en haut de la photo."; } else if (st.textContent.startsWith("Pas de ciel")) st.textContent = ""; }
+function applyBlurs(c) {
+  if (!P.blurs.length) return c;
+  const x = c.getContext("2d"), W = c.width, H = c.height, t = document.createElement("canvas");
+  for (const b of P.blurs) {
+    const r = b.r * W, cx = b.x * W, cy = b.y * H, cell = Math.max(6, Math.round(W / 70));
+    t.width = Math.max(1, Math.ceil(2 * r / cell)); t.height = t.width;
+    const tx = t.getContext("2d"); tx.imageSmoothingEnabled = true; tx.drawImage(c, cx - r, cy - r, 2 * r, 2 * r, 0, 0, t.width, t.height);
+    x.save(); x.beginPath(); x.arc(cx, cy, r, 0, 7); x.clip(); x.imageSmoothingEnabled = false; x.drawImage(t, 0, 0, t.width, t.height, cx - r, cy - r, 2 * r, 2 * r); x.restore();
+  }
+  return c;
+}
+$("#tSky").addEventListener("change", async e => {
+  P.sky = e.target.checked;
+  if (P.sky && P.isSample) { await setPhotoSource(canvasToFloat(sampleFacade()), null, true); return; }
+  if (!P.sky && P.isSample) { await setPhotoSource(canvasToFloat(sampleRoom(0, .5)), null, true); $("#pStatus").textContent = ""; return; }
+  if (!P.sky) $("#pStatus").textContent = "";
+  renderPhoto();
+});
+function setBlurring(v) {
+  P.blurring = v; $("#blurBtn").setAttribute("aria-pressed", v); $("#blurBtn").textContent = v ? "Terminer le floutage" : "Flouter une zone";
+  $("#blurNote").hidden = !v; $("#cmp").classList.toggle("blurring", v);
+  if (v) { $("#cut").value = 0; $("#cmp").style.setProperty("--cut", "0%"); }
+}
+$("#blurBtn").onclick = () => setBlurring(!P.blurring);
+$("#blurUndo").onclick = () => { P.blurs.pop(); $("#blurUndo").hidden = !P.blurs.length; renderPhoto(); };
+$("#cmp").addEventListener("click", e => {
+  if (!P.blurring) return; const r = $("#cmp").getBoundingClientRect();
+  P.blurs.push({ x: (e.clientX - r.left) / r.width, y: (e.clientY - r.top) / r.height, r: .06 });
+  $("#blurUndo").hidden = false; renderPhoto();
+});
+const toBlob = (c, type, q) => new Promise(r => c.toBlob(r, type, q));
+$("#savePhoto").onclick = async () => {
+  if (!P.src) return; const st = $("#pStatus"); st.className = "status"; st.textContent = "Préparation de la photo…"; await frame();
+  const c = finalPhotoCanvas(), blob = await toBlob(c, "image/jpeg", .92);
+  const r = await offerFile(`photo-${Date.now().toString(36)}.jpg`, blob, "image");
+  st.textContent = r === "saved" ? "Photo enregistrée." : r === "declined" ? "Enregistrement annulé." : "";
+};
+const DB = {
+  open() { if (this.p) return this.p; this.p = new Promise((res) => { try { const r = indexedDB.open("studio-habitat", 1);
+    r.onupgradeneeded = () => r.result.createObjectStore("shoot", { keyPath: "id" }); r.onsuccess = () => res(r.result); r.onerror = () => res(null); } catch (_) { res(null); } }); return this.p; },
+  async tx(mode, fn) { const db = await this.open(); if (!db) return null; return new Promise(res => { try { const t = db.transaction("shoot", mode), st = t.objectStore("shoot"), out = fn(st); t.oncomplete = () => res(out && out.result !== undefined ? out.result : true); t.onerror = () => res(null); } catch (_) { res(null); } }); },
+  put(v) { return this.tx("readwrite", st => st.put(v)); }, del(id) { return this.tx("readwrite", st => st.delete(id)); }, all() { return this.tx("readonly", st => st.getAll()); }
+};
+async function shootItem(rec) {
+  const bmp = await createImageBitmap(rec.blob), c = drawToCanvas(bmp, 1920);
+  const url = await toBlob(drawToCanvas(c, 240), "image/jpeg", .8).then(b => URL.createObjectURL(b));
+  return { id: rec.id, canvas: c, thumb: url, name: rec.name };
+}
+async function loadShoot() { try { const recs = await DB.all(); if (!recs || !recs.length) return; recs.sort((a, b) => a.id < b.id ? -1 : 1); for (const r of recs) P.shoot.push(await shootItem(r)); renderShoot(); } catch (_) {} }
+$("#addToShoot").onclick = async () => {
+  if (!P.src) return; const c = finalPhotoCanvas(), small = drawToCanvas(c, 1920);
+  const url = await toBlob(drawToCanvas(c, 240), "image/jpeg", .8).then(b => URL.createObjectURL(b));
+  const id = Date.now().toString(36), name = P.isSample ? "Exemple" : "Photo " + (P.shoot.length + 1);
+  P.shoot.push({ id, canvas: small, thumb: url, name });
+  toBlob(small, "image/jpeg", .9).then(blob => DB.put({ id, name, blob }));
+  renderShoot(); $("#pStatus").className = "status"; $("#pStatus").textContent = "Photo ajoutée au reportage.";
+};
+function renderShoot() {
+  const s = $("#shoot"); s.innerHTML = "";
+  P.shoot.forEach((p, i) => { const b = document.createElement("button"); b.className = "th"; b.title = "Retirer du reportage";
+    b.innerHTML = `<img src="${p.thumb}" alt=""><small>${p.name} · retirer</small>`;
+    b.onclick = () => { P.shoot.splice(i, 1); if (p.id) DB.del(p.id); renderShoot(); }; s.appendChild(b); });
+  if (!P.shoot.length) s.innerHTML = '<p class="note">Aucune photo pour l\'instant. Retouchez une photo puis touchez « Ajouter au reportage ».</p>';
+  $("#shootCount").textContent = P.shoot.length + (P.shoot.length > 1 ? " photos" : " photo");
+}
+
+/* ============ Onglet Visite 360° ============ */
+// Visionneuse autonome : réutilisée telle quelle dans la page exportée
+function mountTour(el, tour, opts) {
+  opts = opts || {};
+  const R = new THREE.WebGLRenderer({ antialias: true, preserveDrawingBuffer: false });
+  R.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
+  el.insertBefore(R.domElement, el.firstChild);
+  const scene = new THREE.Scene(), cam = new THREE.PerspectiveCamera(75, 1, .1, 1100), hot = new THREE.Group();
+  scene.add(hot);
+  let mesh = null, cur = null, lon = 0, lat = 0, fov = 75, auto = opts.autorotate !== false, idle = 0, limits = null, alive = true;
+  const VF = 65;
+  const dir = (lo, la) => { const a = lo * Math.PI / 180, b = la * Math.PI / 180; return new THREE.Vector3(Math.cos(b) * Math.cos(a), Math.sin(b), Math.cos(b) * Math.sin(a)); };
+  function arrowTex(label) {
+    const c = document.createElement("canvas"); c.width = 256; c.height = 160; const x = c.getContext("2d");
+    x.fillStyle = "rgba(10,17,25,.72)"; x.beginPath(); x.arc(128, 52, 46, 0, 7); x.fill();
+    x.strokeStyle = "#fff"; x.lineWidth = 5; x.beginPath(); x.arc(128, 52, 46, 0, 7); x.stroke();
+    x.fillStyle = "#F2AE36"; x.beginPath(); x.moveTo(128, 22); x.lineTo(156, 62); x.lineTo(138, 62); x.lineTo(138, 80); x.lineTo(118, 80); x.lineTo(118, 62); x.lineTo(100, 62); x.closePath(); x.fill();
+    x.font = "600 26px sans-serif"; x.textAlign = "center"; const tw = Math.min(250, x.measureText(label).width + 22);
+    x.fillStyle = "rgba(10,17,25,.72)"; x.fillRect(128 - tw / 2, 110, tw, 40); x.fillStyle = "#fff"; x.fillText(label, 128, 139, 236);
+    const t = new THREE.CanvasTexture(c); return t;
+  }
+  function buildHot() {
+    while (hot.children.length) { const s = hot.children.pop(); s.material.map.dispose(); s.material.dispose(); }
+    (cur.hotspots || []).forEach(h => {
+      const tgt = tour.scenes.find(s => s.id === h.target); if (!tgt) return;
+      const sp = new THREE.Sprite(new THREE.SpriteMaterial({ map: arrowTex(tgt.name), depthTest: false }));
+      sp.position.copy(dir(h.lon, h.lat).multiplyScalar(400)); sp.scale.set(64, 40, 1); sp.userData = h; hot.add(sp);
+    });
+  }
+  function go(id, keepView) {
+    const sc = tour.scenes.find(s => s.id === id); if (!sc) return;
+    const fade = el.querySelector(".fade"); if (fade && cur) fade.style.opacity = 1;
+    setTimeout(() => {
+      new THREE.TextureLoader().load(sc.src, tex => {
+        if (!alive) return;
+        if (mesh) { scene.remove(mesh); mesh.geometry.dispose(); mesh.material.map.dispose(); mesh.material.dispose(); }
+        const ratio = sc.ratio || 2, full = ratio > 1.85 && ratio < 2.15;
+        let geo;
+        if (full) { geo = new THREE.SphereGeometry(500, 64, 40, -Math.PI, 2 * Math.PI); limits = null; }
+        else {
+          const vf = VF * Math.PI / 180, pl = Math.min(2 * Math.PI, ratio * vf);
+          geo = new THREE.SphereGeometry(500, 64, 24, -pl / 2, pl, Math.PI / 2 - vf / 2, vf);
+          limits = { lat: VF / 2, lon: pl < 2 * Math.PI ? pl * 90 / Math.PI : null };
+        }
+        geo.scale(-1, 1, 1);
+        tex.minFilter = THREE.LinearFilter; if (THREE.sRGBEncoding) tex.encoding = THREE.sRGBEncoding;
+        mesh = new THREE.Mesh(geo, new THREE.MeshBasicMaterial({ map: tex })); scene.add(mesh);
+        cur = sc; if (!keepView) { lon = 0; lat = 0; } buildHot();
+        if (fade) fade.style.opacity = 0;
+        opts.onScene && opts.onScene(sc);
+      });
+    }, cur ? 300 : 0);
+  }
+  function resize() { const w = el.clientWidth, h = el.clientHeight || w * .62; R.setSize(w, h, false); cam.aspect = w / h; cam.updateProjectionMatrix(); }
+  const ro = window.ResizeObserver ? new ResizeObserver(resize) : null; ro ? ro.observe(el) : window.addEventListener("resize", resize); resize();
+  const pts = new Map(); let start = null, pinch0 = 0, fov0 = fov, moved = 0;
+  const cv = R.domElement;
+  cv.addEventListener("pointerdown", e => { cv.setPointerCapture(e.pointerId); pts.set(e.pointerId, { x: e.clientX, y: e.clientY }); idle = 0;
+    if (pts.size === 1) { start = { x: e.clientX, y: e.clientY, lon, lat }; moved = 0; }
+    if (pts.size === 2) { const [a, b] = [...pts.values()]; pinch0 = Math.hypot(a.x - b.x, a.y - b.y); fov0 = fov; } });
+  cv.addEventListener("pointermove", e => { if (!pts.has(e.pointerId)) return; pts.set(e.pointerId, { x: e.clientX, y: e.clientY });
+    if (pts.size === 2) { const [a, b] = [...pts.values()]; const d = Math.hypot(a.x - b.x, a.y - b.y); fov = Math.max(35, Math.min(90, fov0 * pinch0 / d)); moved = 99; return; }
+    if (start) { const k = .12 * fov / 75; lon = start.lon - (e.clientX - start.x) * k; lat = start.lat + (e.clientY - start.y) * k; moved = Math.max(moved, Math.hypot(e.clientX - start.x, e.clientY - start.y)); } });
+  const end = e => { const wasTap = pts.size === 1 && moved < 6; pts.delete(e.pointerId); if (pts.size === 0) { if (wasTap && e.type === "pointerup") tap(e); start = null; } };
+  cv.addEventListener("pointerup", end); cv.addEventListener("pointercancel", end);
+  cv.addEventListener("wheel", e => { e.preventDefault(); fov = Math.max(35, Math.min(90, fov + e.deltaY * .04)); idle = 0; }, { passive: false });
+  const ray = new THREE.Raycaster();
+  function tap(e) {
+    const r = cv.getBoundingClientRect(), m = new THREE.Vector2(((e.clientX - r.left) / r.width) * 2 - 1, -((e.clientY - r.top) / r.height) * 2 + 1);
+    ray.setFromCamera(m, cam);
+    const hit = ray.intersectObjects(hot.children)[0];
+    if (hit && !opts.editing) { go(hit.object.userData.target); return; }
+    if (opts.editing && opts.onPick) { const d = ray.ray.direction; opts.onPick(Math.atan2(d.z, d.x) * 180 / Math.PI, Math.asin(Math.max(-1, Math.min(1, d.y))) * 180 / Math.PI); }
+  }
+  (function loop() {
+    if (!alive) return; requestAnimationFrame(loop);
+    idle++; if (auto && idle > 180 && pts.size === 0) lon += .04;
+    if (limits) { lat = Math.max(-limits.lat + 8, Math.min(limits.lat - 8, lat)); if (limits.lon !== null) { const hf = fov * cam.aspect / 2; lon = Math.max(-limits.lon + hf * .6, Math.min(limits.lon - hf * .6, lon)); } }
+    else lat = Math.max(-85, Math.min(85, lat));
+    cam.fov = fov; cam.updateProjectionMatrix(); cam.lookAt(dir(lon, lat)); R.render(scene, cam);
+  })();
+  go(tour.start || tour.scenes[0].id);
+  return {
+    go, current: () => cur, refresh: () => cur && buildHot(), setAuto: v => { auto = v; },
+    setEditing: v => { opts.editing = v; }, view: () => ({ lon, lat }),
+    dispose: () => { alive = false; ro && ro.disconnect(); R.dispose(); cv.remove(); }
+  };
+}
+
+const T = { scenes: [], start: null, isSample: true, viewer: null, editing: false };
+let sid = 0;
+function canvasToDataURL(c, max) { const s = drawToCanvas(c, max); return s.toDataURL("image/jpeg", .86); }
+function addScene(name, canvas) {
+  const id = "p" + (++sid);
+  T.scenes.push({ id, name, src: canvasToDataURL(canvas, 4096), thumb: canvasToDataURL(canvas, 160), ratio: canvas.width / canvas.height, hotspots: [] });
+  return id;
+}
+function initSampleTour() {
+  const a = addScene("Séjour", sampleEquirect(0)), b = addScene("Chambre", sampleEquirect(1));
+  T.scenes[0].hotspots.push({ lon: 25, lat: -12, target: b });
+  T.scenes[1].hotspots.push({ lon: 180, lat: -12, target: a });
+  T.start = a;
+}
+function renderScenes() {
+  const box = $("#scenes"), curId = T.viewer && T.viewer.current() ? T.viewer.current().id : T.start; box.innerHTML = "";
+  T.scenes.forEach((s, i) => {
+    const row = document.createElement("div"); row.className = "scene"; row.setAttribute("aria-current", s.id === curId);
+    row.innerHTML = `<img src="${s.thumb}" alt=""><input value="" aria-label="Nom de la pièce" id="sn-${s.id}"><button aria-label="Supprimer ${s.name}">Retirer</button>`;
+    const inp = row.querySelector("input"); inp.value = s.name;
+    inp.onchange = () => { s.name = inp.value.trim() || "Pièce"; T.viewer.refresh(); if (s.id === curId) $("#roomName").textContent = s.name; renderHotTargets(); };
+    row.querySelector("img").onclick = () => T.viewer.go(s.id);
+    row.querySelector("button").onclick = () => {
+      if (T.scenes.length === 1) { $("#tStatus").textContent = "La visite doit garder au moins une pièce."; return; }
+      T.scenes.splice(i, 1); T.scenes.forEach(o => o.hotspots = o.hotspots.filter(h => h.target !== s.id));
+      if (s.id === curId) T.viewer.go(T.scenes[0].id); else T.viewer.refresh();
+      T.start = T.scenes[0].id; renderScenes(); renderHotTargets();
+    };
+    box.appendChild(row);
+  });
+}
+function renderHotTargets() {
+  const sel = $("#hotTarget"), cur = T.viewer && T.viewer.current(); sel.innerHTML = "";
+  T.scenes.filter(s => !cur || s.id !== cur.id).forEach(s => { const o = document.createElement("option"); o.value = s.id; o.textContent = s.name; sel.appendChild(o); });
+}
+let tourStarted = false;
+function startTour() {
+  if (tourStarted) return; tourStarted = true;
+  if (!window.THREE) { $("#tStatus").className = "status err"; $("#tStatus").textContent = "La visionneuse 360° n'a pas pu se charger. Vérifiez la connexion puis rechargez la page."; return; }
+  initSampleTour();
+  T.viewer = mountTour($("#tour"), T, {
+    autorotate: true,
+    onScene: sc => { $("#roomName").textContent = sc.name; renderScenes(); renderHotTargets(); },
+    onPick: (lo, la) => {
+      const cur = T.viewer.current(), tgt = $("#hotTarget").value;
+      if (!tgt) { $("#tStatus").textContent = "Ajoutez d'abord une deuxième pièce."; return; }
+      cur.hotspots.push({ lon: lo, lat: la, target: tgt }); T.viewer.refresh();
+      $("#tStatus").textContent = "Flèche placée. Touchez-la (hors mode placement) pour changer de pièce.";
+      toggleEdit(false);
+    }
+  });
+  renderScenes();
+}
+function toggleEdit(v) {
+  T.editing = v; T.viewer.setEditing(v); $("#editHot").setAttribute("aria-pressed", v); $("#editHot").textContent = v ? "Annuler" : "Placer une flèche";
+  $("#hotTargetWrap").hidden = !v; $("#tour").classList.toggle("editing", v);
+  $("#tourHint").textContent = v ? "Touchez l'endroit où placer la flèche" : "Glissez pour regarder autour";
+  if (v) { T.viewer.setAuto(false); renderHotTargets(); } else T.viewer.setAuto($("#autoRot").getAttribute("aria-pressed") === "true");
+}
+$("#editHot").onclick = () => toggleEdit(!T.editing);
+$("#autoRot").onclick = e => { const v = e.currentTarget.getAttribute("aria-pressed") !== "true"; e.currentTarget.setAttribute("aria-pressed", v); T.viewer.setAuto(v); };
+$("#pick360").onchange = async e => {
+  const files = [...e.target.files]; e.target.value = ""; if (!files.length) return;
+  const st = $("#tStatus"); st.className = "status"; st.textContent = "Chargement…";
+  try {
+    if (T.isSample) { T.scenes.length = 0; T.isSample = false; $("#tourEx").hidden = true; }
+    let first = null;
+    for (const f of files) { const c = await fileToCanvas(f, 6000); const id = addScene(f.name.replace(/\.[^.]+$/, "").slice(0, 30) || "Pièce", c); first = first || id;
+      if (Math.abs(c.width / c.height - 2) > .15) st.textContent = "Panorama non 360° détecté : il s'affiche en vue partielle."; }
+    T.start = T.scenes[0].id; T.viewer.go(first); if (!st.textContent.startsWith("Panorama")) st.textContent = "";
+  } catch (_) { st.className = "status err"; st.textContent = "Cette photo n'a pas pu être ouverte. Essayez en JPEG."; }
+};
+$("#exportTour").onclick = async () => {
+  const data = { start: T.start, scenes: T.scenes.map(s => ({ id: s.id, name: s.name, src: s.src, ratio: s.ratio, hotspots: s.hotspots })) };
+  const title = T.scenes[0] ? "Visite virtuelle" : "Visite";
+  const html = `<!doctype html><html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>${title}</title>
+<style>html,body{margin:0;height:100%;background:#000;font-family:system-ui,sans-serif}#v{position:fixed;inset:0}#v canvas{width:100%;height:100%;display:block;touch-action:none;cursor:grab}.fade{position:absolute;inset:0;background:#000;opacity:0;pointer-events:none;transition:opacity .35s}
+.bar{position:fixed;left:0;right:0;bottom:0;display:flex;gap:8px;overflow-x:auto;padding:12px;background:linear-gradient(transparent,rgba(0,0,0,.7))}.bar button{flex:none;font:600 14px system-ui;border:1px solid rgba(255,255,255,.5);background:rgba(10,17,25,.6);color:#fff;border-radius:99px;padding:8px 14px;cursor:pointer}.bar button.on{background:#F2AE36;color:#111;border-color:#F2AE36}</style></head>
+<body><div id="v"><div class="fade"></div></div><div class="bar" id="bar"></div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"><\/script>
+<script>const TOUR=${JSON.stringify(data).replace(/</g, "\\u003c")};
+${mountTour.toString()}
+const bar=document.getElementById("bar");const v=mountTour(document.getElementById("v"),TOUR,{autorotate:true,onScene:function(s){[].forEach.call(bar.children,function(b){b.className=b.dataset.id===s.id?"on":""})}});
+TOUR.scenes.forEach(function(s){const b=document.createElement("button");b.textContent=s.name;b.dataset.id=s.id;b.onclick=function(){v.go(s.id)};bar.appendChild(b)});
+<\/script></body></html>`;
+  const r = await offerFile("visite-360.html", new Blob([html], { type: "text/html" }), "html");
+  $("#tStatus").textContent = r === "saved" ? "Visite exportée." : r === "declined" ? "Export annulé." : "";
+};
+
+/* ============ Onglet Vidéo ============ */
+const V = { fmt: "v", playing: false, raf: 0, dpe: "C" };
+const DPE = { A: "#00A06D", B: "#52B153", C: "#A5CC74", D: "#F4E70F", E: "#F0B40F", F: "#EB8235", G: "#D7221F" };
+(function dpeButtons() { const box = $("#dpe"); Object.keys(DPE).forEach(k => { const b = document.createElement("button"); b.textContent = k; b.style.background = DPE[k]; b.style.color = "ABC".includes(k) || k === "G" ? "#fff" : "#1b1b1b"; b.style.borderColor = DPE[k];
+  b.setAttribute("aria-pressed", k === V.dpe); b.setAttribute("aria-label", "Classe " + k);
+  b.onclick = () => { V.dpe = k; [...box.children].forEach(o => o.setAttribute("aria-pressed", o === b)); save(); if (!V.playing) vStill(); }; box.appendChild(b); }); })();
+function dpeBadge(x, cx, cy, size, u) {
+  const k = V.dpe; if (!k) return; x.save(); x.fillStyle = DPE[k]; x.beginPath(); x.roundRect ? x.roundRect(cx - size / 2, cy - size / 2, size, size, 10 * u) : x.rect(cx - size / 2, cy - size / 2, size, size); x.fill();
+  x.fillStyle = "ABC".includes(k) || k === "G" ? "#fff" : "#1b1b1b"; x.textAlign = "center"; x.font = `800 ${size * .62}px "Bricolage Grotesque", system-ui, sans-serif`; x.fillText(k, cx, cy + size * .22);
+  x.fillStyle = "#C9D6E8"; x.font = `500 ${size * .2}px "Public Sans", system-ui, sans-serif`; x.fillText("Classe énergie", cx, cy + size * .5 + size * .26); x.restore();
+}
+function vSize() { return V.fmt === "v" ? [1080, 1920] : [1920, 1080]; }
+function vPhotos() { return P.shoot.length ? P.shoot.map(p => p.canvas) : [sampleFacade(), sampleRoom(0, 1), sampleRoom(2, 1)]; }
+function fitCover(x, img, W, H, zoom, panX, panY) {
+  const s = Math.max(W / img.width, H / img.height) * zoom, w = img.width * s, h = img.height * s;
+  x.drawImage(img, (W - w) / 2 + panX * (w - W) / 2, (H - h) / 2 + panY * (h - H) / 2, w, h);
+}
+function wrapText(x, text, cx, y, maxW, lh) {
+  const words = text.split(" "); let line = "", lines = [];
+  for (const w of words) { const t = line ? line + " " + w : w; if (x.measureText(t).width > maxW && line) { lines.push(line); line = w; } else line = t; }
+  if (line) lines.push(line); lines.forEach((l, i) => x.fillText(l, cx, y + i * lh)); return lines.length;
+}
+function drawCard(x, W, H, kind, t) {
+  const portrait = H > W, u = Math.min(W, H) / 1080;
+  x.fillStyle = "#0E2A23"; x.fillRect(0, 0, W, H);
+  x.strokeStyle = "rgba(79,181,150,.35)"; x.lineWidth = 3 * u;
+  for (let r = 1; r <= 4; r++) { x.beginPath(); x.arc(W / 2, H / 2, r * 140 * u * (1 + t * .15), 0, 7); x.stroke(); }
+  x.textAlign = "center"; x.fillStyle = "#fff"; const cx = W / 2, maxW = W * .82;
+  if (kind === "open") {
+    x.font = `700 ${(portrait ? 92 : 84) * u}px "Bricolage Grotesque", system-ui, sans-serif`;
+    const n = wrapText(x, $("#vTitle").value, cx, H * .42, maxW, 100 * u);
+    x.font = `500 ${44 * u}px "Public Sans", system-ui, sans-serif`; x.fillStyle = "#C9D6E8"; wrapText(x, $("#vSub").value, cx, H * .42 + n * 100 * u + 30 * u, maxW, 54 * u);
+    x.fillStyle = "#F2AE36"; x.font = `700 ${64 * u}px "Bricolage Grotesque", system-ui, sans-serif`; x.fillText($("#vPrice").value, cx, H * .42 + n * 100 * u + 150 * u);
+    dpeBadge(x, cx, H * .42 + n * 100 * u + 290 * u, 110 * u, u);
+  } else {
+    x.font = `700 ${70 * u}px "Bricolage Grotesque", system-ui, sans-serif`; x.fillText("Pour visiter", cx, H * .44);
+    x.font = `500 ${48 * u}px "Public Sans", system-ui, sans-serif`; x.fillStyle = "#C9D6E8"; wrapText(x, $("#vAgent").value, cx, H * .44 + 90 * u, maxW, 60 * u);
+
+  }
+}
+function vTimeline() { const d = +$("#vDur").value, ph = vPhotos(); return { d, ph, card: 2.6, total: 2.6 * 2 + ph.length * d }; }
+function vDraw(x, W, H, tl, t) {
+  const fadeT = .6;
+  if (t < tl.card) { drawCard(x, W, H, "open", t / tl.card); }
+  else if (t < tl.card + tl.ph.length * tl.d) {
+    const lt = t - tl.card, i = Math.min(tl.ph.length - 1, Math.floor(lt / tl.d)), p = (lt - i * tl.d) / tl.d;
+    const kb = j => [[1, 1.12, -.6, .6, 0, 0], [1.12, 1, .5, -.4, .3, -.2], [1, 1.1, 0, 0, .5, -.5]][j % 3];
+    const drawK = (j, pp) => { const k = kb(j); fitCover(x, tl.ph[j], W, H, k[0] + (k[1] - k[0]) * pp, k[2] + (k[3] - k[2]) * pp, k[4] + (k[5] - k[4]) * pp); };
+    drawK(i, p);
+    const intoNext = lt - i * tl.d;
+    if (i > 0 && intoNext < fadeT) { x.globalAlpha = 1 - intoNext / fadeT; drawK(i - 1, 1); x.globalAlpha = 1; }
+    if (i === 0 && intoNext < fadeT) { x.globalAlpha = 1 - intoNext / fadeT; drawCard(x, W, H, "open", 1); x.globalAlpha = 1; }
+    const u = Math.min(W, H) / 1080; x.fillStyle = "rgba(14,42,35,.78)"; x.fillRect(0, H - 110 * u, W, 110 * u);
+    x.fillStyle = "#fff"; x.textAlign = "left"; x.font = `600 ${38 * u}px "Public Sans", system-ui, sans-serif`; x.fillText($("#vTitle").value, 40 * u, H - 44 * u, W * .52);
+    x.textAlign = "right"; x.fillStyle = "#F2AE36"; x.fillText($("#vPrice").value, W - 120 * u, H - 44 * u, W * .34);
+    if (V.dpe) { x.fillStyle = DPE[V.dpe]; x.fillRect(W - 96 * u, H - 92 * u, 66 * u, 66 * u); x.fillStyle = "ABC".includes(V.dpe) || V.dpe === "G" ? "#fff" : "#1b1b1b"; x.textAlign = "center"; x.font = `800 ${46 * u}px "Bricolage Grotesque", system-ui, sans-serif`; x.fillText(V.dpe, W - 63 * u, H - 43 * u); }
+  } else {
+    const e = t - tl.card - tl.ph.length * tl.d; drawCard(x, W, H, "close", e / tl.card);
+    if (e < fadeT) { x.globalAlpha = 1 - e / fadeT; fitCover(x, tl.ph[tl.ph.length - 1], W, H, 1.1, 0, 0); x.globalAlpha = 1; }
+  }
+}
+function vSetup() { const c = $("#vid"), [W, H] = vSize(); c.width = W; c.height = H; c.style.aspectRatio = W + " / " + H; c.style.width = V.fmt === "v" ? "min(100%, 340px)" : "100%"; return c; }
+function vStill() { const c = vSetup(), tl = vTimeline(); vDraw(c.getContext("2d"), c.width, c.height, tl, tl.card + .4);
+  $("#vInfo").textContent = (P.shoot.length ? P.shoot.length + " photo(s) du reportage" : "Exemple : ajoutez vos photos depuis l'onglet Photos") + ` · durée ${Math.round(tl.total)} s`; }
+function vRun(onEnd) {
+  const c = vSetup(), x = c.getContext("2d"), tl = vTimeline(), t0 = performance.now(); V.playing = true;
+  cancelAnimationFrame(V.raf);
+  const step = () => { const t = (performance.now() - t0) / 1000; if (!V.playing) return;
+    if (t >= tl.total) { vDraw(x, c.width, c.height, tl, tl.total - .01); V.playing = false; onEnd && onEnd(); return; }
+    vDraw(x, c.width, c.height, tl, t); V.raf = requestAnimationFrame(step); };
+  step(); return c;
+}
+$("#fV").onclick = () => { V.fmt = "v"; $("#fV").setAttribute("aria-pressed", true); $("#fH").setAttribute("aria-pressed", false); vStill(); };
+$("#fH").onclick = () => { V.fmt = "h"; $("#fH").setAttribute("aria-pressed", true); $("#fV").setAttribute("aria-pressed", false); vStill(); };
+["vTitle", "vSub", "vPrice", "vAgent"].forEach(id => $("#" + id).addEventListener("input", () => { save(); if (!V.playing) vStill(); }));
+$("#vDur").addEventListener("input", e => { e.target.nextElementSibling.textContent = e.target.value + " s"; if (!V.playing) vStill(); });
+$("#vPlay").onclick = () => { if (V.playing) { V.playing = false; $("#vPlay").textContent = "Aperçu"; return; } $("#vPlay").textContent = "Arrêter"; vRun(() => $("#vPlay").textContent = "Aperçu"); };
+$("#vRec").onclick = async () => {
+  const st = $("#vStatus"); st.className = "status";
+  const types = ["video/mp4;codecs=avc1", "video/mp4", "video/webm;codecs=vp9", "video/webm;codecs=vp8", "video/webm"];
+  const type = window.MediaRecorder ? types.find(t => MediaRecorder.isTypeSupported(t)) : null;
+  const c0 = $("#vid");
+  if (!type || !c0.captureStream) { st.className = "status err"; st.textContent = "Ce navigateur ne sait pas créer de vidéo. Essayez avec Safari récent ou Chrome."; return; }
+  $("#vRec").disabled = true; $("#vPlay").disabled = true; st.textContent = "Création de la vidéo en cours… gardez cette page ouverte.";
+  const c = vSetup(), stream = c.captureStream(30), rec = new MediaRecorder(stream, { mimeType: type, videoBitsPerSecond: 8e6 }), chunks = [];
+  rec.ondataavailable = e => e.data.size && chunks.push(e.data);
+  const done = new Promise(r => rec.onstop = r);
+  rec.start(250); await new Promise(r => vRun(r)); await sleep(150); rec.stop(); await done;
+  const ext = type.startsWith("video/mp4") ? "mp4" : "webm", blob = new Blob(chunks, { type: type.split(";")[0] });
+  $("#vRec").disabled = false; $("#vPlay").disabled = false;
+  st.textContent = `Vidéo prête (${(blob.size / 1048576).toFixed(1)} Mo, format ${ext.toUpperCase()}).`;
+  const r = await offerFile(`video-maison.${ext}`, blob, "video");
+  if (r === "declined") st.textContent = "Enregistrement annulé.";
+};
+
+/* ============ Onglet Plan 2D ============ */
+const ANNEX = ["Balcon", "Terrasse", "Garage", "Cave", "Loggia", "Grenier"];
+const PL = { rooms: [
+  { name: "Balcon", x: 0, y: -1.2, w: 5.2, h: 1.2, hab: false },
+  { name: "Séjour", x: 0, y: 0, w: 5.2, h: 4.6, hab: true },
+  { name: "Cuisine", x: 5.2, y: 0, w: 3, h: 2.8, hab: true },
+  { name: "Entrée", x: 5.2, y: 2.8, w: 3, h: 1.8, hab: true },
+  { name: "Chambre 1", x: 0, y: 4.6, w: 3.6, h: 3.2, hab: true },
+  { name: "Salle de bains", x: 3.6, y: 4.6, w: 2.4, h: 2, hab: true },
+  { name: "WC", x: 3.6, y: 6.6, w: 1.2, h: 1.2, hab: true },
+  { name: "Chambre 2", x: 6, y: 4.6, w: 3.2, h: 3.2, hab: true }
+], sel: 1, view: null, drag: null, isSample: true };
+const habArea = () => PL.rooms.filter(r => r.hab !== false).reduce((s, r) => s + r.w * r.h, 0), annexArea = () => PL.rooms.filter(r => r.hab === false).reduce((s, r) => s + r.w * r.h, 0);
+const area = r => r.w * r.h, fmtM = v => (Math.round(v * 100) / 100).toLocaleString("fr-FR"), fmtA = v => (Math.round(v * 10) / 10).toLocaleString("fr-FR");
+function planBounds() { const r = PL.rooms; if (!r.length) return { x0: 0, y0: 0, x1: 10, y1: 8 };
+  return { x0: Math.min(...r.map(o => o.x)), y0: Math.min(...r.map(o => o.y)), x1: Math.max(...r.map(o => o.x + o.w)), y1: Math.max(...r.map(o => o.y + o.h)) }; }
+function planFit(W, H, pad) { const b = planBounds(), s = Math.min((W - 2 * pad) / (b.x1 - b.x0 || 1), (H - 2 * pad) / (b.y1 - b.y0 || 1));
+  return { s, ox: pad + ((W - 2 * pad) - (b.x1 - b.x0) * s) / 2 - b.x0 * s, oy: pad + ((H - 2 * pad) - (b.y1 - b.y0) * s) / 2 - b.y0 * s }; }
+function cssVar(n) { return getComputedStyle(document.documentElement).getPropertyValue(n).trim(); }
+function drawPlan(x, W, H, v, opt) {
+  const ink = opt.print ? "#0F1B2D" : cssVar("--ink"), bg = opt.print ? "#FFFFFF" : cssVar("--sunk"), muted = opt.print ? "#5A6779" : cssVar("--muted"),
+    fill = opt.print ? "#F4F6F8" : cssVar("--surface"), sig = cssVar("--signal") || "#E89A0C", acc = cssVar("--accent");
+  x.fillStyle = bg; x.fillRect(0, 0, W, H);
+  x.strokeStyle = opt.print ? "rgba(15,27,45,.07)" : "rgba(128,140,160,.18)"; x.lineWidth = 1;
+  const gx0 = Math.floor(-v.ox / v.s), gy0 = Math.floor(-v.oy / v.s);
+  for (let g = gx0; g * v.s + v.ox < W; g++) { x.beginPath(); x.moveTo(g * v.s + v.ox, 0); x.lineTo(g * v.s + v.ox, H); x.stroke(); }
+  for (let g = gy0; g * v.s + v.oy < H; g++) { x.beginPath(); x.moveTo(0, g * v.s + v.oy); x.lineTo(W, g * v.s + v.oy); x.stroke(); }
+  const u = opt.u || 1;
+  PL.rooms.forEach((r, i) => {
+    const X = r.x * v.s + v.ox, Y = r.y * v.s + v.oy, Wd = r.w * v.s, Ht = r.h * v.s;
+    x.fillStyle = fill; x.fillRect(X, Y, Wd, Ht);
+    if (r.hab === false) { x.save(); x.beginPath(); x.rect(X, Y, Wd, Ht); x.clip(); x.strokeStyle = opt.print ? "rgba(15,27,45,.16)" : "rgba(128,140,160,.35)"; x.lineWidth = 1.5 * u;
+      for (let k = -Ht; k < Wd; k += 12 * u) { x.beginPath(); x.moveTo(X + k, Y + Ht); x.lineTo(X + k + Ht, Y); x.stroke(); } x.restore(); }
+    x.strokeStyle = ink; x.lineWidth = (r.hab === false ? 2 : 4) * u; x.setLineDash(r.hab === false ? [8 * u, 6 * u] : []); x.strokeRect(X, Y, Wd, Ht); x.setLineDash([]);
+    if (!opt.print && i === PL.sel) { x.strokeStyle = acc; x.lineWidth = 2; x.strokeRect(X + 4, Y + 4, Wd - 8, Ht - 8); x.fillStyle = sig; x.fillRect(X + Wd - 14, Y + Ht - 14, 14, 14); }
+    x.fillStyle = ink; x.textAlign = "center"; x.textBaseline = "middle";
+    const fs = Math.max(10, Math.min(15 * u, Wd / 9, Ht / 4));
+    x.font = `600 ${fs}px "Public Sans", system-ui, sans-serif`; x.fillText(r.name, X + Wd / 2, Y + Ht / 2 - fs * .7, Wd - 10);
+    x.font = `500 ${fs * .85}px "IBM Plex Mono", ui-monospace, monospace`; x.fillStyle = muted;
+    x.fillText(fmtA(area(r)) + " m²", X + Wd / 2, Y + Ht / 2 + fs * .6, Wd - 10);
+    if (Wd > 80 * u && Ht > 70 * u) {
+      x.fillText(fmtM(r.w) + " m", X + Wd / 2, Y + 12 * u + fs * .3, Wd - 10);
+      x.save(); x.translate(X + 12 * u + fs * .3, Y + Ht / 2); x.rotate(-Math.PI / 2); x.fillText(fmtM(r.h) + " m", 0, 0, Ht - 10); x.restore();
+    }
+  });
+  x.textBaseline = "alphabetic";
+}
+function planCanvas() { const box = $("#planBox"), c = $("#planC"), dpr = Math.min(window.devicePixelRatio || 1, 2), W = box.clientWidth, H = box.clientHeight;
+  if (c.width !== W * dpr || c.height !== H * dpr) { c.width = W * dpr; c.height = H * dpr; } return { c, W, H, dpr }; }
+function renderPlan(keepView) {
+  const { c, W, H, dpr } = planCanvas(); if (!W) return;
+  if (!keepView || !PL.view) PL.view = planFit(W, H, 28);
+  const x = c.getContext("2d"); x.setTransform(dpr, 0, 0, dpr, 0, 0); drawPlan(x, W, H, PL.view, { u: 1 });
+  $("#totalArea").textContent = fmtA(habArea()) + " m²"; $("#annexArea").textContent = fmtA(annexArea()) + " m²"; save();
+}
+function renderRooms() {
+  const box = $("#rooms"); box.innerHTML = "";
+  PL.rooms.forEach((r, i) => {
+    const row = document.createElement("div"); row.className = "room"; row.setAttribute("aria-current", i === PL.sel);
+    row.innerHTML = `<input aria-label="Nom" id="rn${i}"><input type="number" step="0.1" min="0.5" aria-label="Largeur en mètres" id="rw${i}"><input type="number" step="0.1" min="0.5" aria-label="Longueur en mètres" id="rh${i}"><input type="checkbox" class="hab" aria-label="Surface habitable" id="rhab${i}"><button aria-label="Supprimer">✕</button>`;
+    const [n, w, h, hb] = row.querySelectorAll("input"); n.value = r.name; w.value = r.w; h.value = r.h; hb.checked = r.hab !== false;
+    hb.onchange = () => { r.hab = hb.checked; renderPlan(true); };
+    n.oninput = () => { r.name = n.value; renderPlan(true); };
+    w.onchange = () => { r.w = Math.max(.5, +w.value || r.w); renderPlan(); };
+    h.onchange = () => { r.h = Math.max(.5, +h.value || r.h); renderPlan(); };
+    [n, w, h].forEach(el => el.onfocus = () => { PL.sel = i; renderPlan(true); [...box.children].forEach((rr, k) => rr.setAttribute("aria-current", k === i)); });
+    row.querySelector("button").onclick = () => { PL.rooms.splice(i, 1); PL.sel = Math.min(PL.sel, PL.rooms.length - 1); renderRooms(); renderPlan(); };
+    box.appendChild(row);
+  });
+}
+$("#addRoom").onclick = () => { const b = planBounds(), t = $("#roomType").value, same = PL.rooms.filter(r => r.name.startsWith(t)).length;
+  const sz = { "Séjour": [5, 4], "Cuisine": [3, 2.8], "Chambre": [3.4, 3], "Salle de bains": [2.4, 2], "Salle d'eau": [2, 1.6], "WC": [1, 1.4], "Entrée": [2, 1.6], "Dégagement": [3, 1], "Bureau": [3, 2.6], "Buanderie": [2, 1.6], "Balcon": [4, 1.2], "Terrasse": [5, 3], "Garage": [3, 5.5], "Cave": [2, 2.5] }[t] || [3, 3];
+  if (PL.isSample) { PL.rooms = []; PL.isSample = false; $("#planEx").hidden = true; }
+  PL.rooms.push({ name: same && t !== "Séjour" ? `${t} ${same + 1}` : t, x: PL.rooms.length ? b.x1 : 0, y: 0, w: sz[0], h: sz[1], hab: !ANNEX.includes(t) }); PL.sel = PL.rooms.length - 1; renderRooms(); renderPlan(); };
+(function planPointer() {
+  const c = $("#planC");
+  const toM = e => { const r = c.getBoundingClientRect(), v = PL.view; return { x: (e.clientX - r.left - v.ox) / v.s, y: (e.clientY - r.top - v.oy) / v.s, px: e.clientX - r.left, py: e.clientY - r.top }; };
+  c.addEventListener("pointerdown", e => {
+    if (PL.isSample) { PL.isSample = false; $("#planEx").hidden = true; }
+    const m = toM(e), v = PL.view; let hit = -1, mode = "move";
+    for (let i = PL.rooms.length - 1; i >= 0; i--) { const r = PL.rooms[i], X1 = (r.x + r.w) * v.s + v.ox, Y1 = (r.y + r.h) * v.s + v.oy;
+      if (i === PL.sel && Math.abs(m.px - (X1 - 7)) < 16 && Math.abs(m.py - (Y1 - 7)) < 16) { hit = i; mode = "size"; break; } }
+    if (hit < 0) for (let i = PL.rooms.length - 1; i >= 0; i--) { const r = PL.rooms[i]; if (m.x >= r.x && m.x <= r.x + r.w && m.y >= r.y && m.y <= r.y + r.h) { hit = i; break; } }
+    if (hit < 0) return;
+    PL.sel = hit; const r = PL.rooms[hit]; PL.drag = { mode, m0: m, r0: { ...r } }; c.setPointerCapture(e.pointerId); renderRooms(); renderPlan(true);
+  });
+  c.addEventListener("pointermove", e => {
+    const m = toM(e);
+    if (!PL.drag) { c.style.cursor = "default"; return; }
+    const r = PL.rooms[PL.sel], d = PL.drag, snap = v => Math.round(v * 10) / 10, dx = m.x - d.m0.x, dy = m.y - d.m0.y;
+    if (d.mode === "move") { r.x = snap(d.r0.x + dx); r.y = snap(d.r0.y + dy); }
+    else { r.w = Math.max(.5, snap(d.r0.w + dx)); r.h = Math.max(.5, snap(d.r0.h + dy)); }
+    renderPlan(true);
+  });
+  const up = () => { if (!PL.drag) return; PL.drag = null; renderRooms(); renderPlan(); };
+  c.addEventListener("pointerup", up); c.addEventListener("pointercancel", up);
+})();
+$("#savePlan").onclick = async () => {
+  const W = 2000, H = 1500, c = document.createElement("canvas"); c.width = W; c.height = H; const x = c.getContext("2d");
+  const v = planFit(W, H - 220, 120); drawPlan(x, W, H - 220, v, { print: true, u: 2.2 });
+  x.fillStyle = "#FFFFFF"; x.fillRect(0, H - 220, W, 220); x.fillStyle = "#0F1B2D"; x.fillRect(0, H - 220, W, 4);
+  x.textAlign = "left"; x.font = '700 54px "Bricolage Grotesque", system-ui, sans-serif'; x.fillText($("#planTitle").value || "Plan", 80, H - 130);
+  x.font = '500 34px "Public Sans", system-ui, sans-serif'; x.fillStyle = "#5A6779";
+  x.fillText("Surface habitable : " + fmtA(habArea()) + " m²" + (annexArea() ? "  ·  Annexes : " + fmtA(annexArea()) + " m²" : "") + "  ·  Plan indicatif, non contractuel  ·  " + new Date().toLocaleDateString("fr-FR"), 80, H - 70, W - 160 - 5 * v.s - 40);
+  const sb = 5 * v.s; x.fillStyle = "#0F1B2D"; x.fillRect(W - 80 - sb, H - 140, sb, 14); x.fillStyle = "#FFFFFF"; x.fillRect(W - 80 - sb / 2, H - 137, sb / 2, 8);
+  x.fillStyle = "#0F1B2D"; x.textAlign = "right"; x.font = '500 30px "IBM Plex Mono", monospace'; x.fillText("5 m", W - 80, H - 80);
+  const blob = await toBlob(c, "image/png");
+  await offerFile("plan-maison.png", blob, "image");
+};
+
+/* ============ Onglet Mise en scène ============ */
+const S = { img: null, style: "Scandinave", room: "Séjour" };
+function stgShow(c, label) { const out = $("#stgC"); out.width = c.width; out.height = c.height; const x = out.getContext("2d"); x.drawImage(c, 0, 0);
+  if (label) { x.fillStyle = "rgba(10,17,25,.62)"; x.fillRect(14, 14, 120, 36); x.fillStyle = "#fff"; x.font = "600 20px system-ui"; x.fillText(label, 26, 39); }
+  out.style.width = "100%"; out.style.height = "auto"; }
+$("#styles").addEventListener("click", e => { const b = e.target.closest("button"); if (!b) return; [...$("#styles").children].forEach(o => o.setAttribute("aria-pressed", o === b)); S.style = b.textContent; });
+$("#roomsStg").addEventListener("click", e => { const b = e.target.closest("button"); if (!b) return; [...$("#roomsStg").children].forEach(o => o.setAttribute("aria-pressed", o === b)); S.room = b.textContent; });
+$("#pickStg").onchange = async e => { const f = e.target.files[0]; e.target.value = ""; if (!f) return; try { S.img = await fileToCanvas(f, 1400); S.sample = false; stgShow(S.img); $("#stgOut").innerHTML = ""; } catch (_) { $("#sStatus").className = "status err"; $("#sStatus").textContent = "Cette photo n'a pas pu être ouverte."; } };
+$("#stgIdea").onclick = async () => {
+  const st = $("#sStatus"); st.className = "status"; const out = $("#stgOut");
+  const [, sample] = await getCaps();
+  let lim = null; try { lim = sample ? await sample.limits() : null; } catch (_) {}
+  if (!sample || !lim || !lim.images) { st.textContent = "Dans cette version d'essai, la proposition d'aménagement n'est pas disponible. Elle sera active dans Pro Radar."; return; }
+  st.textContent = "Analyse de la pièce…"; $("#stgIdea").disabled = true;
+  try {
+    const blob = await toBlob(drawToCanvas(S.img, 1024), "image/jpeg", .85);
+    const res = await sample.json(`Tu es décorateur d'intérieur et tu aides un agent immobilier en France à vendre un logement. La photo montre une pièce vide ou datée. Propose un aménagement de type « ${S.room} » dans le style « ${S.style} », réaliste pour cette pièce et ce budget de vente. Réponds en français simple, au format JSON exact : {"idee": "une phrase", "mobilier": ["4 à 6 meubles ou objets concrets avec leur place"], "conseils": ["2 ou 3 conseils pour la photo de l'annonce"], "capacite": "ce que la pièce peut accueillir (par exemple lit 160, table 6 couverts), sinon chaîne vide"}`, { images: [blob], modelTier: "quick" });
+    out.innerHTML = ""; const d = document.createElement("div"); d.className = "idea";
+    const h = document.createElement("h3"); h.textContent = S.room + " " + S.style.toLowerCase(); d.appendChild(h);
+    const p = document.createElement("p"); p.textContent = res.idee || ""; p.style.margin = "4px 0"; d.appendChild(p);
+    if (res.capacite) { const c = document.createElement("p"); c.className = "note"; c.textContent = res.capacite; d.appendChild(c); }
+    const ul = document.createElement("ul"); (res.mobilier || []).forEach(m => { const li = document.createElement("li"); li.textContent = m; ul.appendChild(li); }); d.appendChild(ul);
+    if (res.conseils && res.conseils.length) { const t = document.createElement("p"); t.className = "lbl"; t.style.marginTop = "8px"; t.textContent = "Pour la photo"; d.appendChild(t); const u2 = document.createElement("ul"); res.conseils.forEach(m => { const li = document.createElement("li"); li.textContent = m; u2.appendChild(li); }); d.appendChild(u2); }
+    out.appendChild(d); st.textContent = "";
+  } catch (e) { st.className = "status err"; st.textContent = e && e.code === "rate_limited" ? "Trop de demandes d'un coup. Réessayez dans une minute." : e && e.code === "not_granted" ? "Autorisation refusée : la proposition n'a pas pu être faite." : "La proposition n'a pas pu être faite. Réessayez."; }
+  $("#stgIdea").disabled = false;
+};
+
+/* ============ Sauvegarde sur ce téléphone ============ */
+let saveT = 0;
+function save() { clearTimeout(saveT); saveT = setTimeout(() => { try {
+  localStorage.setItem("studio-habitat", JSON.stringify({ v: { t: $("#vTitle").value, s: $("#vSub").value, p: $("#vPrice").value, a: $("#vAgent").value, dpe: V.dpe },
+    plan: PL.isSample ? null : { title: $("#planTitle").value, rooms: PL.rooms } })); } catch (_) {} }, 400); }
+function restore() { try { const d = JSON.parse(localStorage.getItem("studio-habitat") || "null"); if (!d) return;
+  if (d.v) { $("#vTitle").value = d.v.t; $("#vSub").value = d.v.s; $("#vPrice").value = d.v.p; $("#vAgent").value = d.v.a; V.dpe = d.v.dpe || "C"; [...$("#dpe").children].forEach(o => o.setAttribute("aria-pressed", o.textContent === V.dpe)); }
+  if (d.plan && d.plan.rooms && d.plan.rooms.length) { PL.rooms = d.plan.rooms; PL.isSample = false; PL.sel = 0; $("#planTitle").value = d.plan.title || ""; $("#planEx").hidden = true; }
+} catch (_) {} }
+$("#planTitle").addEventListener("input", save);
+
+/* ============ Installation de l'application ============ */
+(function installSetup() {
+  if (!window.__PWA) return; // seulement dans la version mise en ligne
+  if ("serviceWorker" in navigator) navigator.serviceWorker.register("sw.js").catch(() => {});
+  const standalone = matchMedia("(display-mode: standalone)").matches || navigator.standalone;
+  let closed = false; try { closed = localStorage.getItem("install-closed") === "1"; } catch (_) {}
+  if (standalone || closed) return;
+  const ios = /iphone|ipad|ipod/i.test(navigator.userAgent), bar = $("#install");
+  if (ios) bar.hidden = false;
+  window.addEventListener("beforeinstallprompt", e => { e.preventDefault(); const btn = $("#installBtn"); bar.hidden = false; btn.hidden = false;
+    $("#installText").textContent = "Installez l'application sur ce téléphone.";
+    btn.onclick = async () => { e.prompt(); await e.userChoice.catch(() => {}); bar.hidden = true; }; });
+  $("#installClose").onclick = () => { bar.hidden = true; try { localStorage.setItem("install-closed", "1"); } catch (_) {} };
+})();
+
+/* ============ Navigation ============ */
+const views = ["photos", "visite", "video", "plan", "staging"];
+function show() {
+  const v = views.includes(location.hash.slice(1)) ? location.hash.slice(1) : "photos";
+  document.querySelectorAll("[data-view]").forEach(s => s.hidden = s.dataset.view !== v);
+  document.querySelectorAll("nav.tabs a").forEach(a => a.getAttribute("href") === "#" + v ? a.setAttribute("aria-current", "page") : a.removeAttribute("aria-current"));
+  if (v === "visite") startTour();
+  if (v === "video") vStill(); else if (V.playing) { V.playing = false; $("#vPlay").textContent = "Aperçu"; }
+  if (v === "plan") requestAnimationFrame(() => renderPlan());
+  if (v === "staging" && !S.img) { S.img = sampleRoom(2, 1.05); stgShow(S.img, "Exemple"); }
+}
+window.addEventListener("hashchange", show);
+window.addEventListener("resize", () => { if (!$("#v-plan").hidden) renderPlan(); });
+
+(async function init() {
+  setMode("single"); restore();
+  await setPhotoSource(canvasToFloat(sampleRoom(0, .5)), null, true);
+  renderShoot(); renderRooms(); show(); loadShoot();
+})();
+</script>
+
+</body>
+</html>
