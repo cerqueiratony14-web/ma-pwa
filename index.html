@@ -201,6 +201,13 @@ hr{border:0;border-top:1px solid var(--line);margin:2px 0}
 .plan{width:100%;aspect-ratio:4/3;max-height:68vh;touch-action:none}
 .plan canvas{display:block;width:100%;height:100%;cursor:default}
 .rooms{display:flex;flex-direction:column;gap:6px}
+.opbtns{display:grid;grid-template-columns:1fr 1fr;gap:6px}.opbtns button{min-height:40px;font-size:14px;padding:6px 10px}
+.opbtns button[aria-pressed="true"]{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
+.opsbox{display:flex;flex-direction:column;gap:8px}.opslist{display:flex;flex-direction:column;gap:6px}
+.oprow{display:grid;grid-template-columns:minmax(0,1fr) 64px auto 40px;gap:6px;align-items:center;padding:6px 8px;border-radius:12px;background:var(--sunk);cursor:pointer}
+.oprow[aria-current="true"]{box-shadow:0 0 0 2px var(--accent) inset}.oprow span{display:flex;flex-direction:column;min-width:0}.oprow b{font-size:14px}.oprow small{color:var(--muted);font-size:12px}
+.oprow input{font:inherit;font-size:16px;border:1px solid transparent;border-radius:10px;padding:7px;width:100%;background:var(--surface);color:var(--ink)}.oprow button{min-height:36px;padding:0}
+#planBox.arming canvas{cursor:crosshair}
 .room{display:grid;grid-template-columns:minmax(0,1fr) 58px 58px 24px 40px;gap:6px;align-items:center}
 .room input.hab{width:20px;height:20px;padding:0;accent-color:var(--accent)}
 .room input{font:inherit;font-size:16px;color:var(--ink);background:var(--sunk);border:1px solid transparent;border-radius:10px;padding:9px 9px;min-width:0;width:100%}
@@ -303,6 +310,18 @@ hr{border:0;border-top:1px solid var(--line);margin:2px 0}
 .save-fallback img,.save-fallback video{max-width:100%;max-height:55vh;border-radius:8px;display:block;margin:0 auto}
 @media (prefers-reduced-motion: reduce){.tour .fade{transition:none}}
 
+/* ===== Accueil ===== */
+.hello{display:flex;align-items:center;justify-content:space-between;gap:12px;margin:6px 0 10px}
+.hometiles{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin-top:16px}
+@media (min-width:761px){.hometiles{grid-template-columns:repeat(4,minmax(0,1fr))}}
+a.tile{display:flex;text-decoration:none;color:inherit}
+.hometile{min-height:112px}
+.homehelp{display:flex;flex-wrap:wrap;gap:8px;margin-top:16px}.homehelp button{flex:1;min-width:200px;border:1px solid var(--line)}
+.curbar{display:flex;align-items:center;justify-content:space-between;gap:10px;margin:12px 0 0;padding:8px 8px 8px 14px;border-radius:16px;background:var(--surface);box-shadow:var(--shadow)}
+.curbar .curname{display:flex;align-items:center;gap:8px;min-width:0;color:var(--ink);text-decoration:none;font-weight:600;font-size:14px}
+.curbar .curname span{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.curbar svg{width:20px;height:20px;fill:none;stroke:var(--accent);stroke-width:2;flex:none}
+.curbar button{min-height:38px;padding:6px 14px;border-radius:999px;font-size:14px;flex:none}
+@media (max-width:760px){nav.tabs a{font-size:10px;padding:6px 0}nav.tabs a svg{width:22px;height:22px}}
 /* ===== Habillage moderne ===== */
 html{scroll-behavior:smooth;-webkit-tap-highlight-color:transparent}
 :root{--radius:22px;--shadow:0 1px 2px rgba(2,6,44,.04),0 10px 30px -8px rgba(2,6,44,.12);--shadow-lg:0 2px 6px rgba(2,6,44,.06),0 20px 44px -12px rgba(2,6,44,.22);--page:#F4F5FB}
@@ -392,18 +411,11 @@ input[type=range]::-moz-range-track{height:6px;border-radius:99px;background:#C9
     <button class="ghost" id="installClose" aria-label="Fermer">✕</button>
   </div>
 
-  <section class="dossier" aria-label="Dossier du bien">
-    <div class="field"><label for="dosName">Dossier du bien</label><input type="text" id="dosName" placeholder="Ex. Maison Touques, T3 Deauville" autocomplete="off"></div>
-    <div class="dosbtns">
-      <button id="dosSave"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v12M7 10l5 5 5-5"/><path d="M4 17v3h16v-3"/></svg>Sauvegarder</button>
-      <label class="btn file" id="dosOpenLbl"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 7h6l2 2h10v10H3z"/></svg>Ouvrir<input type="file" id="dosOpen" accept=".json,application/json,text/plain"></label>
-      <button id="dosNew"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>Nouveau</button>
-    </div>
-    <p class="status" id="dosStatus"></p>
-    <div id="biensWrap" hidden><div class="lbl">Mes biens <span class="badge" id="biensCount"></span></div><div class="biens" id="biens"></div><p class="note">Touchez un bien pour le reprendre là où vous l'aviez laissé. La liste reste sur ce téléphone ; pour un autre téléphone, utilisez « Sauvegarder ».</p></div>
-  </section>
 
+
+  <div class="curbar" id="curBar" hidden><a href="#accueil" class="curname"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 7h6l2 2h10v10H3z"/></svg><span id="curName">Bien en cours</span></a><button type="button" id="curSave">Sauvegarder</button></div>
   <nav class="tabs" aria-label="Outils"><span class="tabpill" aria-hidden="true"></span>
+    <a href="#accueil"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 10.5L12 3l9 7.5"/><path d="M5 9.5V21h14V9.5"/></svg><span>Accueil</span></a>
     <a href="#bien"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 11l8-7 8 7v9H4z"/><path d="M9 20v-6h6v6"/></svg><span>Bien</span></a>
     <a href="#photos"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 8h3l2-3h6l2 3h3v11H4z"/><circle cx="12" cy="13" r="3.5"/></svg><span>Photos</span></a>
     <a href="#visite"><svg viewBox="0 0 24 24" aria-hidden="true"><ellipse cx="12" cy="12" rx="9" ry="4"/><path d="M12 3v18M3 12h18"/></svg><span>Visite 360°</span></a>
@@ -412,6 +424,21 @@ input[type=range]::-moz-range-track{height:6px;border-radius:99px;background:#C9
   </nav>
 
   <!-- PHOTOS -->
+  <section id="v-accueil" data-view="accueil" hidden>
+    <div class="hello"><div><h2 id="helloT">Bonjour</h2><p class="lede" id="helloS">Que voulez-vous préparer aujourd'hui ?</p></div></div>
+  <div class="dossier" aria-label="Dossier du bien">
+    <div class="field"><label for="dosName">Dossier du bien</label><input type="text" id="dosName" placeholder="Ex. Maison Touques, T3 Deauville" autocomplete="off"></div>
+    <div class="dosbtns">
+      <button id="dosSave"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v12M7 10l5 5 5-5"/><path d="M4 17v3h16v-3"/></svg>Sauvegarder</button>
+      <label class="btn file" id="dosOpenLbl"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 7h6l2 2h10v10H3z"/></svg>Ouvrir<input type="file" id="dosOpen" accept=".json,application/json,text/plain"></label>
+      <button id="dosNew"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>Nouveau</button>
+    </div>
+    <p class="status" id="dosStatus"></p>
+    <div id="biensWrap" hidden><div class="lbl">Mes biens <span class="badge" id="biensCount"></span></div><div class="biens" id="biens"></div><p class="note">Touchez un bien pour le reprendre là où vous l'aviez laissé. La liste reste sur ce téléphone ; pour un autre téléphone, utilisez « Sauvegarder ».</p></div>
+  </div>
+    <div class="hometiles"><a class="tile hometile" href="#bien"><i class="ti"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 11l8-7 8 7v9H4z"/><path d="M9 20v-6h6v6"/></svg></i><b>Fiche du bien</b><small>Dictée, annonce, 5 langues</small></a><a class="tile hometile" href="#photos"><i class="ti"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 8h3l2-3h6l2 3h3v11H4z"/><circle cx="12" cy="13" r="3.5"/></svg></i><b>Photos</b><small>Retouche, ciel bleu, logo</small></a><a class="tile hometile" href="#visite"><i class="ti"><svg viewBox="0 0 24 24" aria-hidden="true"><ellipse cx="12" cy="12" rx="9" ry="4"/><path d="M12 3v18M3 12h18"/></svg></i><b>Visite 360°</b><small>Tournez, c'est assemblé</small></a><a class="tile hometile" href="#video"><i class="ti"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="6" width="13" height="12" rx="2"/><path d="M16 10l5-3v10l-5-3z"/></svg></i><b>Vidéo</b><small>Musique et narrateur</small></a><a class="tile hometile" href="#plan"><i class="ti"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 12h9V3M12 12v9"/></svg></i><b>Plan 2D / 3D</b><small>Portes, fenêtres, 3D</small></a><button type="button" class="tile hometile" data-act="avis"><i class="ti t-gold"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 19h16"/><path d="M7 16v-5M12 16V7M17 16v-8"/></svg></i><b>Avis de valeur</b><small>Ventes du secteur</small></button><button type="button" class="tile hometile" data-act="poster"><i class="ti"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="5" y="3" width="14" height="18" rx="2"/><path d="M5 15h14M9 3l10 10"/></svg></i><b>Affiche</b><small>À vendre, Vendu…</small></button><button type="button" class="tile hometile" data-act="vitrine"><i class="ti t-green"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 3h7l5 5v13H7z"/><path d="M14 3v5h5"/><path d="M9.5 15.5h5M9.5 12.5h5"/></svg></i><b>Fiche vitrine</b><small>PDF prêt à afficher</small></button></div>
+    <div class="homehelp"><button type="button" class="ghost" id="homeTour">Revoir la présentation</button><button type="button" class="ghost" id="homeAsk">Poser une question à l'assistant</button></div>
+  </section>
   <section id="v-bien" data-view="bien" hidden>
     <h2>Fiche du bien</h2>
     <p class="lede">Saisissez l'adresse et les caractéristiques une seule fois : elles remplissent la vidéo, le plan, le dossier et l'annonce (en français ou en langue étrangère). D'ici aussi : avis de valeur, documents du mandat, fiche vitrine, affiches et kit annonce.</p>
@@ -648,6 +675,12 @@ input[type=range]::-moz-range-track{height:6px;border-radius:99px;background:#C9
         <div class="row" style="justify-content:space-between"><span class="lbl">Pièce · larg. · long. (m) · habitable</span><span class="badge ex" id="planEx">Exemple</span></div>
         <div class="rooms" id="rooms"></div>
         <div class="row"><select id="roomType" class="txt" style="flex:1;min-width:0" aria-label="Type de pièce"><option>Séjour</option><option>Cuisine</option><option>Chambre</option><option>Salle de bains</option><option>Salle d'eau</option><option>WC</option><option>Entrée</option><option>Dégagement</option><option>Bureau</option><option>Buanderie</option><option>Balcon</option><option>Terrasse</option><option>Garage</option><option>Cave</option></select><button id="addRoom">Ajouter</button></div>
+        <div class="opsbox">
+          <span class="lbl">Portes, fenêtres et ouvertures</span>
+          <div class="opbtns" id="opBtns"><button type="button" data-t="porte">＋ Porte</button><button type="button" data-t="fenetre">＋ Fenêtre</button><button type="button" data-t="baie">＋ Baie vitrée</button><button type="button" data-t="ouverture">＋ Ouverture</button></div>
+          <p class="note" id="opsHint">Choisissez un élément, puis touchez un mur sur le plan. Faites glisser l'élément pour le déplacer le long du mur.</p>
+          <div id="opsList" class="opslist"></div>
+        </div>
         <hr>
         <div class="total"><span>Surface habitable</span><span class="mono" id="totalArea">0 m²</span></div>
         <div class="total" style="font-weight:500"><span class="note">Annexes</span><span class="mono note" id="annexArea">0 m²</span></div>
@@ -1895,14 +1928,20 @@ $("#vRec").onclick = async () => {
 const ANNEX = ["Balcon", "Terrasse", "Garage", "Cave", "Loggia", "Grenier"];
 const PL = { rooms: [
   { name: "Balcon", x: 0, y: -1.2, w: 5.2, h: 1.2, hab: false },
-  { name: "Séjour", x: 0, y: 0, w: 5.2, h: 4.6, hab: true },
-  { name: "Cuisine", x: 5.2, y: 0, w: 3, h: 2.8, hab: true },
-  { name: "Entrée", x: 5.2, y: 2.8, w: 3, h: 1.8, hab: true },
-  { name: "Chambre 1", x: 0, y: 4.6, w: 3.6, h: 3.2, hab: true },
-  { name: "Salle de bains", x: 3.6, y: 4.6, w: 2.4, h: 2, hab: true },
+  { name: "Séjour", x: 0, y: 0, w: 5.2, h: 4.6, hab: true, ops: [{ t: "baie", s: "n", p: .5, w: 2.6 }, { t: "ouverture", s: "e", p: .3, w: 1.6 }] },
+  { name: "Cuisine", x: 5.2, y: 0, w: 3, h: 2.8, hab: true, ops: [{ t: "fenetre", s: "n", p: .55, w: 1.2 }] },
+  { name: "Entrée", x: 5.2, y: 2.8, w: 3, h: 1.8, hab: true, ops: [{ t: "porte", s: "e", p: .5, w: .9 }, { t: "porte", s: "w", p: .45, w: .8 }] },
+  { name: "Chambre 1", x: 0, y: 4.6, w: 3.6, h: 3.2, hab: true, ops: [{ t: "fenetre", s: "s", p: .5, w: 1.2 }, { t: "porte", s: "n", p: .8, w: .8 }] },
+  { name: "Salle de bains", x: 3.6, y: 4.6, w: 2.4, h: 2, hab: true, ops: [{ t: "porte", s: "n", p: .5, w: .7 }] },
   { name: "WC", x: 3.6, y: 6.6, w: 1.2, h: 1.2, hab: true },
-  { name: "Chambre 2", x: 6, y: 4.6, w: 3.2, h: 3.2, hab: true }
-], sel: 1, view: null, drag: null, isSample: true };
+  { name: "Chambre 2", x: 6, y: 4.6, w: 3.2, h: 3.2, hab: true, ops: [{ t: "fenetre", s: "s", p: .5, w: 1.2 }, { t: "porte", s: "n", p: .3, w: .8 }] }
+], sel: 1, view: null, drag: null, isSample: true, arm: null, opSel: null };
+/* Portes, fenêtres, baies vitrées et ouvertures (murs ouverts) */
+const OPS = { porte: { n: "Porte", w: .9 }, fenetre: { n: "Fenêtre", w: 1.2 }, baie: { n: "Baie vitrée", w: 2.4 }, ouverture: { n: "Ouverture (mur ouvert)", w: 1.6 } };
+const SIDES = { n: "mur du haut", s: "mur du bas", w: "mur de gauche", e: "mur de droite" };
+function wallOf(r, sd) { return sd === "n" ? { h: true, c: r.y, a: r.x, b: r.x + r.w } : sd === "s" ? { h: true, c: r.y + r.h, a: r.x, b: r.x + r.w } : sd === "w" ? { h: false, c: r.x, a: r.y, b: r.y + r.h } : { h: false, c: r.x + r.w, a: r.y, b: r.y + r.h }; }
+function opSpan(r, o) { const wl = wallOf(r, o.s), L = wl.b - wl.a, w = Math.min(o.w, L), m = wl.a + clamp(o.p, 0, 1) * L, a0 = clamp(m - w / 2, wl.a, wl.b - w); return { ...wl, a0, a1: a0 + w, w }; }
+function allOps() { const out = []; PL.rooms.forEach((r, ri) => (r.ops || []).forEach((o, oi) => out.push({ r, ri, o, oi, ...opSpan(r, o) }))); return out; }
 const habArea = () => PL.rooms.filter(r => r.hab !== false).reduce((s, r) => s + r.w * r.h, 0), annexArea = () => PL.rooms.filter(r => r.hab === false).reduce((s, r) => s + r.w * r.h, 0);
 const area = r => r.w * r.h, fmtM = v => (Math.round(v * 100) / 100).toLocaleString("fr-FR"), fmtA = v => (Math.round(v * 10) / 10).toLocaleString("fr-FR");
 function planBounds() { const r = PL.rooms; if (!r.length) return { x0: 0, y0: 0, x1: 10, y1: 8 };
@@ -1937,6 +1976,31 @@ function drawPlan(x, W, H, v, opt) {
     }
   });
   x.textBaseline = "alphabetic";
+  // ouvertures : on « perce » le mur puis on dessine le symbole d'architecte
+  allOps().forEach(op => {
+    const P = (along, across) => op.h ? [along * v.s + v.ox, across * v.s + v.oy] : [across * v.s + v.ox, along * v.s + v.oy];
+    const inw = (op.o.s === "n" || op.o.s === "w") ? 1 : -1, th = 7 * u, sel = !opt.print && PL.opSel && PL.opSel.ri === op.ri && PL.opSel.oi === op.oi, col = sel ? acc : ink;
+    const [x0, y0] = P(op.a0, op.c), [x1, y1] = P(op.a1, op.c);
+    x.fillStyle = fill; if (op.h) x.fillRect(x0, y0 - th / 2, x1 - x0, th); else x.fillRect(x0 - th / 2, y0, th, y1 - y0);
+    x.strokeStyle = col; x.lineWidth = 2 * u;
+    const jamb = (xx, yy) => { x.beginPath(); if (op.h) { x.moveTo(xx, yy - th / 2); x.lineTo(xx, yy + th / 2); } else { x.moveTo(xx - th / 2, yy); x.lineTo(xx + th / 2, yy); } x.stroke(); };
+    jamb(x0, y0); jamb(x1, y1);
+    if (op.o.t === "porte") {
+      const L = (op.a1 - op.a0) * v.s, [hx, hy] = [x0, y0], tip = op.h ? [hx, hy + inw * L] : [hx + inw * L, hy];
+      x.lineWidth = 2 * u; x.beginPath(); x.moveTo(hx, hy); x.lineTo(tip[0], tip[1]); x.stroke();
+      x.lineWidth = 1 * u; x.setLineDash([4 * u, 3 * u]); x.beginPath();
+      if (op.h) x.arc(hx, hy, L, inw > 0 ? 0 : -Math.PI / 2, inw > 0 ? Math.PI / 2 : 0); else x.arc(hx, hy, L, inw > 0 ? 0 : Math.PI / 2, inw > 0 ? Math.PI / 2 : Math.PI);
+      x.stroke(); x.setLineDash([]);
+    } else if (op.o.t === "fenetre" || op.o.t === "baie") {
+      x.lineWidth = 1.4 * u; const d = th / 2;
+      const ln = (o1) => { x.beginPath(); if (op.h) { x.moveTo(x0, y0 + o1); x.lineTo(x1, y1 + o1); } else { x.moveTo(x0 + o1, y0); x.lineTo(x1 + o1, y1); } x.stroke(); };
+      ln(-d); ln(d);
+      if (op.o.t === "fenetre") ln(0);
+      else { x.lineWidth = 2.4 * u; x.strokeStyle = sel ? acc : "#2F6FD0"; const mid = op.h ? (x0 + x1) / 2 : (y0 + y1) / 2;
+        x.beginPath(); if (op.h) { x.moveTo(x0, y0 - d / 2); x.lineTo(mid + 6 * u, y0 - d / 2); x.moveTo(mid - 6 * u, y0 + d / 2); x.lineTo(x1, y1 + d / 2); } else { x.moveTo(x0 - d / 2, y0); x.lineTo(x0 - d / 2, mid + 6 * u); x.moveTo(x0 + d / 2, mid - 6 * u); x.lineTo(x1 + d / 2, y1); } x.stroke(); }
+    } else { x.lineWidth = 1 * u; x.setLineDash([3 * u, 3 * u]); x.beginPath(); x.moveTo(x0, y0); x.lineTo(x1, y1); x.stroke(); x.setLineDash([]); }
+    if (sel) { x.fillStyle = acc; x.beginPath(); x.arc((x0 + x1) / 2, (y0 + y1) / 2, 6, 0, 7); x.fill(); }
+  });
 }
 function planCanvas() { const box = $("#planBox"), c = $("#planC"), dpr = Math.min(window.devicePixelRatio || 1, 2), W = box.clientWidth, H = box.clientHeight;
   if (c.width !== W * dpr || c.height !== H * dpr) { c.width = W * dpr; c.height = H * dpr; } return { c, W, H, dpr }; }
@@ -1948,6 +2012,20 @@ function renderPlan(keepView) {
   $("#totalArea").textContent = fmtA(habArea()) + " m²"; $("#annexArea").textContent = fmtA(annexArea()) + " m²"; save();
   if (typeof P3 !== "undefined" && P3.on) build3d();
 }
+function armOp(t) { PL.arm = t; document.querySelectorAll("#opBtns button").forEach(b => b.setAttribute("aria-pressed", b.dataset.t === t));
+  $("#opsHint").textContent = t ? `Touchez le mur où placer : ${OPS[t].n.toLowerCase()}.` : "Choisissez un élément, puis touchez un mur sur le plan. Faites glisser l'élément pour le déplacer le long du mur."; $("#planBox").classList.toggle("arming", !!t); }
+function renderOps() {
+  const box = $("#opsList"), r = PL.rooms[PL.sel]; if (!box) return; box.innerHTML = "";
+  if (!r) return; const ops = r.ops || [];
+  if (!ops.length) { box.innerHTML = `<p class="note">Aucune ouverture sur « ${r.name.replace(/</g, "&lt;")} ».</p>`; return; }
+  ops.forEach((o, oi) => { const row = document.createElement("div"); row.className = "oprow"; row.setAttribute("aria-current", !!(PL.opSel && PL.opSel.ri === PL.sel && PL.opSel.oi === oi));
+    row.innerHTML = `<span><b>${OPS[o.t].n}</b><small>${r.name.replace(/</g, "&lt;")} · ${SIDES[o.s]}</small></span><input type="number" step="0.1" min="0.4" aria-label="Largeur en mètres" value="${o.w}"><small>m</small><button type="button" aria-label="Supprimer">✕</button>`;
+    const [w] = row.querySelectorAll("input"); w.onchange = () => { o.w = Math.max(.4, +w.value || o.w); renderPlan(true); };
+    row.onclick = e => { if (e.target.closest("input,button")) return; PL.opSel = { ri: PL.sel, oi }; renderOps(); renderPlan(true); };
+    row.querySelector("button").onclick = () => { ops.splice(oi, 1); PL.opSel = null; renderOps(); renderPlan(true); };
+    box.appendChild(row); });
+}
+document.querySelectorAll("#opBtns button").forEach(b => b.onclick = () => armOp(PL.arm === b.dataset.t ? null : b.dataset.t));
 function renderRooms() {
   const box = $("#rooms"); box.innerHTML = "";
   PL.rooms.forEach((r, i) => {
@@ -1959,9 +2037,10 @@ function renderRooms() {
     w.onchange = () => { r.w = Math.max(.5, +w.value || r.w); renderPlan(); };
     h.onchange = () => { r.h = Math.max(.5, +h.value || r.h); renderPlan(); };
     [n, w, h].forEach(el => el.onfocus = () => { PL.sel = i; renderPlan(true); [...box.children].forEach((rr, k) => rr.setAttribute("aria-current", k === i)); });
-    row.querySelector("button").onclick = () => { PL.rooms.splice(i, 1); PL.sel = Math.min(PL.sel, PL.rooms.length - 1); renderRooms(); renderPlan(); };
+    row.querySelector("button").onclick = () => { PL.rooms.splice(i, 1); PL.sel = Math.min(PL.sel, PL.rooms.length - 1); PL.opSel = null; renderRooms(); renderPlan(); };
     box.appendChild(row);
   });
+  renderOps();
 }
 $("#addRoom").onclick = () => { const b = planBounds(), t = $("#roomType").value, same = PL.rooms.filter(r => r.name.startsWith(t)).length;
   const sz = { "Séjour": [5, 4], "Cuisine": [3, 2.8], "Chambre": [3.4, 3], "Salle de bains": [2.4, 2], "Salle d'eau": [2, 1.6], "WC": [1, 1.4], "Entrée": [2, 1.6], "Dégagement": [3, 1], "Bureau": [3, 2.6], "Buanderie": [2, 1.6], "Balcon": [4, 1.2], "Terrasse": [5, 3], "Garage": [3, 5.5], "Cave": [2, 2.5] }[t] || [3, 3];
@@ -1973,6 +2052,18 @@ $("#addRoom").onclick = () => { const b = planBounds(), t = $("#roomType").value
   c.addEventListener("pointerdown", e => {
     if (PL.isSample) { PL.isSample = false; $("#planEx").hidden = true; }
     const m = toM(e), v = PL.view; let hit = -1, mode = "move";
+    const tol = 22 / v.s, near = [];
+    if (PL.arm) { // poser une ouverture sur le mur le plus proche
+      PL.rooms.forEach((r, ri) => ["n", "s", "w", "e"].forEach(sd => { const wl = wallOf(r, sd), al = wl.h ? m.x : m.y, ac = wl.h ? m.y : m.x;
+        if (al >= wl.a - tol && al <= wl.b + tol) { const inside = m.x >= r.x && m.x <= r.x + r.w && m.y >= r.y && m.y <= r.y + r.h, dd = Math.abs(ac - wl.c) + (inside ? 0 : .002) + (ri === PL.sel ? 0 : .001); near.push({ ri, sd, dd, p: (clamp(al, wl.a, wl.b) - wl.a) / (wl.b - wl.a) }); } }));
+      near.sort((a, b) => a.dd - b.dd); const n0 = near[0];
+      if (!n0 || n0.dd > tol * 1.5) { $("#opsHint").textContent = "Touchez plus près d'un mur."; return; }
+      const r = PL.rooms[n0.ri]; r.ops = r.ops || []; r.ops.push({ t: PL.arm, s: n0.sd, p: n0.p, w: OPS[PL.arm].w });
+      PL.sel = n0.ri; PL.opSel = { ri: n0.ri, oi: r.ops.length - 1 }; armOp(null); renderRooms(); renderPlan(true); return;
+    }
+    for (const op of allOps()) { const al = op.h ? m.x : m.y, ac = op.h ? m.y : m.x;
+      if (al >= op.a0 - tol * .3 && al <= op.a1 + tol * .3 && Math.abs(ac - op.c) < tol * .8) { PL.sel = op.ri; PL.opSel = { ri: op.ri, oi: op.oi }; PL.drag = { mode: "op", op }; c.setPointerCapture(e.pointerId); renderRooms(); renderPlan(true); return; } }
+    PL.opSel = null;
     for (let i = PL.rooms.length - 1; i >= 0; i--) { const r = PL.rooms[i], X1 = (r.x + r.w) * v.s + v.ox, Y1 = (r.y + r.h) * v.s + v.oy;
       if (i === PL.sel && Math.abs(m.px - (X1 - 7)) < 16 && Math.abs(m.py - (Y1 - 7)) < 16) { hit = i; mode = "size"; break; } }
     if (hit < 0) for (let i = PL.rooms.length - 1; i >= 0; i--) { const r = PL.rooms[i]; if (m.x >= r.x && m.x <= r.x + r.w && m.y >= r.y && m.y <= r.y + r.h) { hit = i; break; } }
@@ -1982,6 +2073,7 @@ $("#addRoom").onclick = () => { const b = planBounds(), t = $("#roomType").value
   c.addEventListener("pointermove", e => {
     const m = toM(e);
     if (!PL.drag) { c.style.cursor = "default"; return; }
+    if (PL.drag.mode === "op") { const op = PL.drag.op, wl = wallOf(op.r, op.o.s), al = wl.h ? m.x : m.y; op.o.p = clamp((al - wl.a) / (wl.b - wl.a), 0, 1); renderPlan(true); return; }
     const r = PL.rooms[PL.sel], d = PL.drag, snap = v => Math.round(v * 10) / 10, dx = m.x - d.m0.x, dy = m.y - d.m0.y;
     if (d.mode === "move") { r.x = snap(d.r0.x + dx); r.y = snap(d.r0.y + dy); }
     else { r.w = Math.max(.5, snap(d.r0.w + dx)); r.h = Math.max(.5, snap(d.r0.h + dy)); }
@@ -2018,14 +2110,28 @@ function build3d() {
   if (P3.group) { P3.scene.remove(P3.group); P3.group.traverse(o => { o.geometry && o.geometry.dispose(); if (o.material) { o.material.map && o.material.map.dispose(); o.material.dispose(); } }); }
   const g = new THREE.Group(), H = +$("#wallH").value, T = 0.12, b = planBounds(), cx = (b.x0 + b.x1) / 2, cz = (b.y0 + b.y1) / 2;
   const wallMat = new THREE.MeshLambertMaterial({ color: 0xF4F5FA }), edgeMat = new THREE.LineBasicMaterial({ color: 0x02062C });
+  const glassMat = new THREE.MeshLambertMaterial({ color: 0x8EC5FF, transparent: true, opacity: .45 }), doorMat = new THREE.MeshLambertMaterial({ color: 0xC8A27A });
   PL.rooms.forEach((r, i) => {
     const hab = r.hab !== false, h = hab ? H : (/garage|cave|grenier/i.test(r.name) ? H : 1.05);
     const fl = new THREE.Mesh(new THREE.BoxGeometry(r.w, 0.06, r.h), new THREE.MeshLambertMaterial({ color: hab ? FLOORS[i % FLOORS.length] : "#D9DBE3" }));
     fl.position.set(r.x + r.w / 2 - cx, -0.03, r.y + r.h / 2 - cz); g.add(fl);
-    const walls = [[r.w, T, r.x + r.w / 2, r.y + T / 2], [r.w, T, r.x + r.w / 2, r.y + r.h - T / 2], [T, r.h - 2 * T, r.x + T / 2, r.y + r.h / 2], [T, r.h - 2 * T, r.x + r.w - T / 2, r.y + r.h / 2]];
-    for (const [w, d, x, z] of walls) {
-      const geo = new THREE.BoxGeometry(w, h, Math.max(d, 0.01)), m = new THREE.Mesh(geo, wallMat); m.position.set(x - cx, h / 2, z - cz); g.add(m);
-      const e = new THREE.LineSegments(new THREE.EdgesGeometry(geo), edgeMat); e.position.copy(m.position); g.add(e);
+    const box = (w, hh, d, X, Y, Z, mat) => { if (w <= .005 || hh <= .005 || d <= .005) return; const geo = new THREE.BoxGeometry(w, hh, d), m = new THREE.Mesh(geo, mat); m.position.set(X - cx, Y, Z - cz); g.add(m);
+      if (mat === wallMat) { const e = new THREE.LineSegments(new THREE.EdgesGeometry(geo), edgeMat); e.position.copy(m.position); g.add(e); } return m; };
+    for (const sd of ["n", "s", "w", "e"]) {
+      const wl = wallOf(r, sd), off = (sd === "n" || sd === "w") ? T / 2 : -T / 2, line = wl.c + off, a0 = wl.h ? wl.a : wl.a + T, a1 = wl.h ? wl.b : wl.b - T;
+      // ouvertures de cette pièce et des pièces voisines sur le même mur
+      const cuts = allOps().filter(op => op.h === wl.h && Math.abs(op.c - wl.c) < .06 && op.a1 > a0 && op.a0 < a1).map(op => ({ a: Math.max(a0, op.a0), b: Math.min(a1, op.a1), t: op.o.t, own: op.r === r, op })).sort((p, q) => p.a - q.a);
+      const seg = (u0, u1, y0, y1, mat) => { const L = u1 - u0, m = (u0 + u1) / 2; return wl.h ? box(L, y1 - y0, T, m, (y0 + y1) / 2, line, mat) : box(T, y1 - y0, L, line, (y0 + y1) / 2, m, mat); };
+      let cur = a0;
+      for (const c of cuts) { if (c.a > cur) seg(cur, c.a, 0, h, wallMat);
+        const top = c.t === "ouverture" ? Math.min(h, 2.3) : 2.15, sill = c.t === "fenetre" ? .95 : 0;
+        if (top < h) seg(c.a, c.b, top, h, wallMat); if (sill > 0) seg(c.a, c.b, 0, Math.min(sill, h), wallMat);
+        if ((c.t === "fenetre" || c.t === "baie") && c.own && sill < h) { const gm = seg(c.a + .02, c.b - .02, sill, Math.min(top, h), glassMat); if (gm) { gm.scale.set(wl.h ? 1 : .25, 1, wl.h ? .25 : 1); } }
+        if (c.t === "porte" && c.own && h > 1.5) { const L = c.b - c.a, ang = (sd === "n" || sd === "w" ? 1 : -1) * Math.PI / 3, leaf = new THREE.Mesh(new THREE.BoxGeometry(L, Math.min(2.1, h), .04), doorMat);
+          const piv = new THREE.Group(); piv.position.set((wl.h ? c.a : line) - cx, 0, (wl.h ? line : c.a) - cz); leaf.position.set(L / 2, Math.min(2.1, h) / 2, 0); piv.add(leaf);
+          piv.rotation.y = wl.h ? -ang : -Math.PI / 2 + ang; g.add(piv); }
+        cur = Math.max(cur, c.b); }
+      if (cur < a1) seg(cur, a1, 0, h, wallMat);
     }
     const lb = label3d(r.name, fmtA(r.w * r.h) + " m²"); const s = Math.min(2.8, Math.max(1.7, Math.min(r.w, r.h) * .85)); lb.scale.set(s, s * 160 / 512, 1);
     lb.position.set(r.x + r.w / 2 - cx, Math.min(h, 1.2) + 0.3, r.y + r.h / 2 - cz); g.add(lb);
@@ -2708,6 +2814,14 @@ function shootDrag(s) {
     document.addEventListener("mousemove", mm); document.addEventListener("mouseup", mu); });
 }
 
+function renderHome() {
+  const h = new Date().getHours(), first = (AG.name || "").split(/\s+/)[0];
+  $("#helloT").textContent = (h >= 18 || h < 5 ? "Bonsoir" : "Bonjour") + (first ? " " + first : "");
+  $("#helloS").textContent = "Que voulez-vous préparer aujourd'hui ?"; renderBiens();
+}
+document.querySelectorAll(".hometile[data-act]").forEach(b => b.onclick = () => { const a = b.dataset.act; if (a === "avis") openAvis(); else if (a === "poster") openPoster(); else if (a === "vitrine") $("#fVitrine").click(); });
+$("#homeTour").onclick = () => openBD("accueil"); $("#homeAsk").onclick = () => $("#asFab").click();
+$("#curSave").onclick = () => { location.hash = "accueil"; setTimeout(() => $("#dosSave").click(), 350); };
 $("#profBtn").onclick = () => openProfile(); $("#vProf").onclick = () => openProfile(); $("#fPoster").onclick = () => openPoster();
 shootDrag($("#shoot"));
 $("#fAvis").onclick = () => openAvis();
@@ -2752,6 +2866,8 @@ const BD_SCREENS = {
   profile: `<rect x="-30" y="-24" width="60" height="44" rx="8" fill="#EDEEF7" stroke="${BD_BLUE}" stroke-width="2.5"/><circle cx="-12" cy="-6" r="9" fill="${BD_BLUE}"/><path d="M-24 12 c0 -8 5 -11 12 -11 s12 3 12 11z" fill="${BD_BLUE}"/><rect x="4" y="-12" width="20" height="5" rx="2.5" fill="${BD_BLUE}"/><rect x="4" y="-2" width="16" height="5" rx="2.5" fill="#8D92B5"/><rect x="4" y="8" width="18" height="5" rx="2.5" fill="#8D92B5"/><circle cx="26" cy="-30" r="9" fill="${BD_GOLD}" stroke="#fff" stroke-width="2"/>`,
   poster: `<rect x="-28" y="-30" width="56" height="64" rx="4" fill="#8FB0D8"/><rect x="-28" y="12" width="56" height="22" fill="${BD_INK}"/><rect x="-6" y="18" width="26" height="5" rx="2" fill="${BD_GOLD}"/><rect x="-22" y="18" width="12" height="5" rx="2" fill="#fff"/><g transform="translate(14 -16) rotate(45)"><rect x="-30" y="-6" width="60" height="12" fill="${BD_GOLD}"/><text x="0" y="4" text-anchor="middle" font-size="8" font-weight="800" fill="${BD_INK}">VENDU</text></g>`,
   order: `${[-26, -2, 22].map((x, i) => `<rect x="${x - 10}" y="-14" width="20" height="26" rx="4" fill="${i === 1 ? BD_GOLD : "#B9C3E6"}"/><text x="${x}" y="4" text-anchor="middle" font-size="11" font-weight="800" fill="${BD_INK}">${i + 1}</text>`).join("")}<path d="M-14 26 h28 M8 20 l6 6 l-6 6" stroke="${BD_BLUE}" stroke-width="3.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/>`,
+  door: `<rect x="-30" y="-4" width="60" height="8" fill="${BD_INK}"/><rect x="-14" y="-5" width="28" height="10" fill="#fff"/><path d="M-14 0 v-28" stroke="${BD_BLUE}" stroke-width="3"/><path d="M-14 -28 a28 28 0 0 1 28 28" stroke="${BD_BLUE}" stroke-width="1.5" stroke-dasharray="3 3" fill="none"/><rect x="-30" y="24" width="60" height="8" fill="${BD_INK}"/><rect x="-12" y="23" width="24" height="10" fill="#fff"/><path d="M-12 26 h24 M-12 30 h24 M-12 28 h24" stroke="#2F6FD0" stroke-width="1.2"/>`,
+  opening: `<rect x="-30" y="-26" width="28" height="52" fill="#EDEEF7" stroke="${BD_INK}" stroke-width="3"/><rect x="2" y="-26" width="28" height="52" fill="#FFF3D1" stroke="${BD_INK}" stroke-width="3"/><rect x="-5" y="-14" width="10" height="28" fill="#fff"/><path d="M0 -14 v28" stroke="${BD_GOLD}" stroke-width="2" stroke-dasharray="3 3"/>`,
   music: `<circle cx="-12" cy="20" r="9" fill="${BD_BLUE}"/><circle cx="16" cy="12" r="9" fill="${BD_BLUE}"/><path d="M-3 20 v-40 l28 -8 v40" stroke="${BD_BLUE}" stroke-width="5" fill="none" stroke-linejoin="round"/><path d="M-3 -12 l28 -8" stroke="${BD_GOLD}" stroke-width="6"/>`,
   voice: `<circle cx="-12" cy="-10" r="11" fill="${BD_BLUE}"/><path d="M-30 26 c0 -16 8 -24 18 -24 s18 8 18 24z" fill="${BD_BLUE}"/><path d="M12 -18 q8 8 0 16 M18 -24 q14 14 0 28 M24 -30 q20 20 0 40" stroke="${BD_GOLD}" stroke-width="3.5" fill="none" stroke-linecap="round"/><text x="0" y="44" text-anchor="middle" font-size="11" font-weight="700" fill="${BD_INK}">2 ♀ · 2 ♂</text>`,
   mic: `<rect x="-10" y="-30" width="20" height="36" rx="10" fill="${BD_BLUE}"/><path d="M-18 -2 a18 18 0 0 0 36 0 M0 16 v12 M-10 28 h20" stroke="${BD_BLUE}" stroke-width="4" fill="none" stroke-linecap="round"/><path d="M24 -20 q6 6 0 12 M30 -26 q12 12 0 24" stroke="${BD_GOLD}" stroke-width="3" fill="none" stroke-linecap="round"/>`,
@@ -2835,11 +2951,13 @@ const BD = {
     ["video", "Format et contact", [0, 17], "Choisissez Vertical (réseaux sociaux) ou Horizontal (annonce) et vérifiez « Contact » : la vidéo s'ouvre sur le logo du réseau et se termine par le logo et vos coordonnées."],
     ["hourglass", "Créer la vidéo", [0, 0], "Touchez « Aperçu » pour vérifier, puis « Créer la vidéo ». Laissez l'écran allumé et l'application ouverte pendant la création."],
     ["share", "Enregistrer et publier", [0, 36], "« Enregistrer » puis « Enregistrer la vidéo » : elle arrive dans vos Photos, prête pour Instagram, Facebook, WhatsApp ou l'annonce."]] },
-  plan: { title: "Dessiner le plan", steps: [
+  plan: { title: "Dessiner le plan", ver: "2", steps: [
     ["plan", "Ajouter les pièces", [18, 20], "Choisissez le type de pièce dans la liste, puis touchez « Ajouter »."],
     ["ruler", "Saisir les cotes", [0, 0], "Saisissez largeur et longueur en mètres. Sur le dessin, faites glisser une pièce pour la placer et tirez le coin orange pour l'agrandir."],
     ["annex", "Distinguer les annexes", [-20, 38], "Balcon, garage, cave : décochez « habitable ». Ils passent en annexes et la surface habitable reste exacte."],
-    ["cube", "Vue 3D", [0, 0], "Touchez « 3D », faites pivoter avec le doigt, puis « Enregistrer l'image 3D »."]] },
+    ["cube", "Vue 3D", [0, 0], "Touchez « 3D », faites pivoter avec le doigt, puis « Enregistrer l'image 3D »."],
+    ["door", "Portes et fenêtres", [0, 4], "« ＋ Porte », « ＋ Fenêtre » ou « ＋ Baie vitrée », puis touchez le mur sur le plan. Faites glisser l'élément le long du mur ; sa largeur se règle dans la liste."],
+    ["opening", "Ouvrir une pièce", [0, 0], "« ＋ Ouverture » perce le mur entre deux pièces, par exemple pour ouvrir la cuisine sur le séjour. Mettez une grande largeur pour supprimer presque tout le mur."]] },
   dossier: { title: "Sauvegarder les dossiers", ver: "4", steps: [
     ["biens", "Mes biens", [0, -4], "Sous les boutons du dossier, « Mes biens » liste vos derniers biens : touchez-en un pour le reprendre là où vous l'aviez laissé. « Nouveau » garde le bien précédent dans la liste."],
     ["folder", "Nommer le dossier", [-4, 37], "Donnez un nom au dossier du bien, par exemple « Maison Touques »."],
@@ -2867,7 +2985,7 @@ function openBD(key, onDone) {
 // Bouton « Comment faire ? » dans chaque onglet et dans le dossier
 (function bdButtons() {
   const help = k => { const bt = document.createElement("button"); bt.className = "helpbtn"; bt.type = "button"; bt.innerHTML = `<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9.5"/><path d="M9.6 9.4a2.5 2.5 0 1 1 3.4 2.3c-.7.3-1 .8-1 1.5v.6"/><circle cx="12" cy="16.9" r=".6" fill="currentColor"/></svg>Comment faire ?`; bt.onclick = () => openBD(k); return bt; };
-  ["bien", "photos", "visite", "video", "plan"].forEach(k => { const h = document.querySelector(`#v-${k} h2`); const wrap = document.createElement("div"); wrap.className = "h2row"; h.before(wrap); wrap.appendChild(h); wrap.appendChild(help(k)); });
+  ["accueil", "bien", "photos", "visite", "video", "plan"].forEach(k => { const h = document.querySelector(`#v-${k} h2`); const wrap = document.createElement("div"); wrap.className = "h2row"; h.before(wrap); wrap.appendChild(h); wrap.appendChild(help(k)); });
   const dl = document.querySelector(".dossier .field label"); const row = document.createElement("div"); row.className = "h2row small"; dl.before(row); row.appendChild(dl); row.appendChild(help("dossier"));
 })();
 function bdFirstTime(v) {
@@ -2978,6 +3096,8 @@ const KB = [
   { k: "anglais traduire traduction langue english allemand espagnol neerlandais italien etranger", q: "Comment avoir l'annonce en anglais ?", a: "Onglet Bien, au-dessus du texte de l'annonce, choisissez la « Langue de l'annonce » : anglais, allemand, espagnol, néerlandais ou italien. La description est traduite automatiquement quand le téléphone a du réseau ; relisez-la avant de publier.", tab: "bien", guide: "bien" },
   { k: "mes biens liste dossiers reprendre retrouver bien precedent accueil", q: "Comment retrouver un bien sur lequel je travaillais ?", a: "Sur l'accueil, sous le dossier du bien, « Mes biens » affiche vos derniers biens : touchez-en un pour le reprendre. La liste reste sur ce téléphone ; pour un autre téléphone, utilisez « Sauvegarder ».", guide: "dossier" },
   { k: "home staging meubler piece vide virtuel decorer amenager ia", q: "Peut-on faire du home staging ?", a: "Pas dans l'application : le home staging par intelligence artificielle se fait avec un service extérieur payant. Onglet Photos, touchez « Ouvrir le service de home staging ». Enregistrez d'abord votre photo, puis indiquez « Aménagement virtuel » dans l'annonce.", tab: "photos" },
+  { k: "porte fenetre baie vitree ouverture mur ouvrir piece cuisine ouverte salon plan 3d", q: "Comment mettre des portes et des fenêtres sur le plan ?", a: "Onglet Plan, touchez « ＋ Porte », « ＋ Fenêtre », « ＋ Baie vitrée » ou « ＋ Ouverture », puis touchez le mur sur le plan. Faites glisser l'élément pour le déplacer le long du mur et réglez sa largeur dans la liste. Une ouverture perce le mur entre deux pièces, par exemple pour ouvrir la cuisine sur le séjour. Tout apparaît aussi en 3D.", tab: "plan", guide: "plan" },
+  { k: "accueil page d'accueil menu demarrage ouvrir application debut tableau bord", q: "À quoi sert la page d'accueil ?", a: "L'accueil s'affiche à chaque ouverture : vous y retrouvez le dossier du bien en cours, « Mes biens » pour reprendre un bien, et des raccourcis vers chaque outil (fiche, photos, 360°, vidéo, plan, avis de valeur, affiche, fiche vitrine)." },
   { k: "gratuit gratuite payant prix cout coute combien abonnement payer tarif", q: "L'application est-elle payante ?", a: "Non. L'application est entièrement gratuite, sans abonnement ni achat. Les musiques, les voix du narrateur et la prise de vue 360° sont incluses." },
   { k: "hors ligne sans internet reseau connexion offline", q: "Fonctionne-t-elle sans internet ?", a: "Oui. Après une première ouverture avec internet, tout fonctionne hors connexion. Seules les suggestions d'adresse demandent du réseau." },
   { k: "mise a jour nouvelle version actualiser update", q: "Comment avoir la dernière version ?", a: "Ouvrez l'application avec une connexion internet : elle se met à jour toute seule. Si l'icône a changé, supprimez l'ancienne de l'écran d'accueil et réinstallez-la depuis Safari." },
@@ -3231,9 +3351,10 @@ function showKit(files) {
 }
 
 /* ============ Navigation ============ */
-const views = ["bien", "photos", "visite", "video", "plan"];
+const views = ["accueil", "bien", "photos", "visite", "video", "plan"];
 function show() {
-  const v = views.includes(location.hash.slice(1)) ? location.hash.slice(1) : "photos";
+  const v = views.includes(location.hash.slice(1)) ? location.hash.slice(1) : "accueil";
+  $("#curBar").hidden = v === "accueil"; $("#curName").textContent = ($("#dosName").value || "").trim() || "Bien en cours (sans nom)"; if (v === "accueil") renderHome();
   bdFirstTime(v);
   document.querySelectorAll("[data-view]").forEach(s => s.hidden = s.dataset.view !== v);
   document.querySelectorAll("nav.tabs a").forEach(a => a.getAttribute("href") === "#" + v ? a.setAttribute("aria-current", "page") : a.removeAttribute("aria-current"));
@@ -3246,6 +3367,8 @@ window.addEventListener("hashchange", () => { show(); requestAnimationFrame(move
 window.addEventListener("resize", () => { if (!$("#v-plan").hidden) renderPlan(); });
 
 (async function init() {
+  let keep = false; try { keep = sessionStorage.getItem("sh-keephash") === "1"; } catch (_) {}
+  if (!keep && location.hash !== "#accueil") history.replaceState(null, "", "#accueil");
   setMode("single"); restore(); renderProfBtn(); applyAgent(false);
   await setPhotoSource(canvasToFloat(sampleRoom(0, .5)), null, true);
   renderShoot(); renderRooms(); show(); loadShoot();
