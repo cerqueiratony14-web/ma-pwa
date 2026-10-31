@@ -41,7 +41,7 @@ body{background:var(--bg);color:var(--ink);font-family:var(--body);font-size:15p
 .wrap{max-width:1180px;margin:0 auto;padding-left:max(16px, env(safe-area-inset-left, 0px));padding-right:max(16px, env(safe-area-inset-right, 0px));padding-block:14px 40px}
 header.top{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;background:#FFFFFF;color:#02062C;margin:-14px calc(-1 * max(16px, env(safe-area-inset-left, 0px))) 0;padding:18px max(16px, env(safe-area-inset-right, 0px)) 20px max(16px, env(safe-area-inset-left, 0px));border-radius:0 0 26px 26px;box-shadow:inset 0 -5px 0 #070C9B,0 6px 20px rgba(2,6,44,.08)}
 header.top .brand{flex-direction:column;align-items:flex-start;gap:10px;width:100%}
-header.top .logo{display:block;height:auto;width:min(300px,78%);max-width:100%}
+header.top .logo{display:block;height:auto;width:min(280px,68%);max-width:100%}
 header.top .appname{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap;border-top:1px solid #E3E5F2;padding-top:10px;width:100%}
 header.top .appname b{font-family:var(--display);font-size:20px;color:#070C9B;letter-spacing:-.01em}
 header.top .appname span{display:inline;font-size:12.5px;color:#4A4E6B;opacity:1}
@@ -106,6 +106,23 @@ label.file{position:relative;overflow:hidden}
 @keyframes panoFlash{from{opacity:.75}to{opacity:0}}
 .applied{background:#E8F6EF;border:1px solid #9BD3B6;color:#0B4F33;border-radius:14px;padding:12px 14px;font-size:14px;line-height:1.45}
 .applied b{display:block;margin-bottom:4px}.applied ul{margin:4px 0 8px 18px;padding:0}.applied .row{gap:8px}.applied button{min-height:38px;padding:8px 12px;font-size:14px}
+header.top{position:relative}
+.profbtn{position:absolute;top:12px;right:max(14px,env(safe-area-inset-right,0px));display:flex;flex-direction:column;align-items:center;gap:3px;background:transparent;border:0;padding:4px;min-height:0;font-size:11.5px;font-weight:700;color:#070C9B;max-width:84px}
+.profbtn .av{width:44px;height:44px;border-radius:50%;background:#070C9B;color:#fff;display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:800;overflow:hidden;box-shadow:0 0 0 2px #F0B00A}
+.profbtn .av img{width:100%;height:100%;object-fit:cover}.profbtn .av svg{width:24px;height:24px;fill:none;stroke:#fff;stroke-width:2}
+.profbtn .pl{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:84px}
+@media (min-width:761px){.profbtn{top:50%;transform:translateY(-50%)}}
+.bd-box.prof,.bd-box.poster{padding:0 16px 16px;gap:12px;display:flex;flex-direction:column;overflow:auto;max-height:92vh}
+.profrow{display:flex;align-items:center;gap:14px}.profav{width:84px;height:84px;border-radius:50%;background:#070C9B;color:#fff;display:flex;align-items:center;justify-content:center;font-size:30px;font-weight:800;overflow:hidden;flex:none;box-shadow:0 0 0 3px #F0B00A}
+.profav img{width:100%;height:100%;object-fit:cover}.profbtns{display:flex;flex-direction:column;gap:6px;flex:1}
+.pstwrap{background:#E9EBF6;border-radius:14px;padding:10px;display:flex;justify-content:center}.pstwrap canvas{max-width:100%;max-height:46vh;width:auto;height:auto;border-radius:6px;box-shadow:0 6px 20px rgba(2,6,44,.25)}
+#pstPh .th[aria-pressed="true"]{border-color:var(--accent)}
+.strip .th .mini-row{display:flex;justify-content:space-between;padding:3px 4px 4px;gap:2px}
+.strip .th button.mini{min-height:26px;height:26px;width:30px;padding:0;font-size:13px;border-radius:8px;background:#FFFFFF;border:1px solid var(--line)}
+.strip .th button.mini.del{color:#D7221F}.strip .th .num{position:absolute;top:4px;left:4px;background:rgba(2,6,44,.8);color:#fff;font-size:11px;font-weight:700;border-radius:99px;padding:1px 7px}
+.strip .th{-webkit-touch-callout:none;user-select:none;-webkit-user-select:none;transition:transform .12s}.strip .th.dragging{transition:none;z-index:3;box-shadow:0 10px 24px rgba(2,6,44,.35);border-color:var(--accent)}
+.strip.sorting{overflow-x:hidden}
+.linkbtn{background:none;border:0;padding:0;min-height:0;color:var(--accent);font:inherit;font-weight:700;text-decoration:underline;text-transform:none;letter-spacing:0;cursor:pointer}
 .cliplist{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}.cliplist span{display:inline-flex;align-items:center;gap:6px;background:#EEF0FB;color:#02062C;border-radius:999px;padding:5px 6px 5px 12px;font-size:13px;font-weight:600}
 .cliplist button{border:0;background:#02062C;color:#fff;border-radius:999px;width:24px;height:24px;padding:0;font-size:14px;line-height:24px;min-height:0}
 label.file input{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%}
@@ -114,7 +131,7 @@ label.file input{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%}
 .seg button[aria-pressed="true"]{background:var(--accent);color:var(--accent-ink)}
 .field{display:flex;flex-direction:column;gap:4px;min-width:0}
 .field label,.lbl{font-size:12px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.05em}
-.field input[type=text],.field input[type=number],.field select,.field textarea,input.txt,select.txt{font:inherit;font-size:16px;color:var(--ink);background:var(--sunk);border:1px solid transparent;border-radius:12px;padding:12px 14px;width:100%;min-width:0}
+.field input[type=text],.field input[type=tel],.field input[type=email],.field input[type=number],.field select,.field textarea,input.txt,select.txt{font:inherit;font-size:16px;color:var(--ink);background:var(--sunk);border:1px solid transparent;border-radius:12px;padding:12px 14px;width:100%;min-width:0}
 .field input:focus,select.txt:focus{border-color:var(--accent);background:var(--surface);outline:none}
 .slider{display:grid;grid-template-columns:96px minmax(0,1fr) 44px;align-items:center;gap:8px;font-size:13.5px}
 .slider output{font-family:var(--mono);font-size:12px;color:var(--muted);text-align:right;font-variant-numeric:tabular-nums}
@@ -268,7 +285,7 @@ hr{border:0;border-top:1px solid var(--line);margin:2px 0}
 .kitlist li small{color:var(--muted);flex:none}
 .kitlist li .btn{min-height:36px;padding:6px 12px;font-size:13px}
 /* boîte de récupération quand l'enregistrement direct n'est pas possible */
-.save-fallback{position:fixed;inset:0;background:rgba(5,10,16,.8);display:flex;align-items:center;justify-content:center;z-index:50;padding:max(16px,env(safe-area-inset-top,0px)) max(16px,env(safe-area-inset-right,0px)) max(16px,env(safe-area-inset-bottom,0px)) max(16px,env(safe-area-inset-left,0px))}
+.save-fallback{position:fixed;inset:0;background:rgba(5,10,16,.8);display:flex;align-items:center;justify-content:center;z-index:90;padding:max(16px,env(safe-area-inset-top,0px)) max(16px,env(safe-area-inset-right,0px)) max(16px,env(safe-area-inset-bottom,0px)) max(16px,env(safe-area-inset-left,0px))}
 .save-fallback .box{background:var(--surface);border-radius:22px;padding:16px;max-width:560px;width:100%;display:flex;flex-direction:column;gap:10px;max-height:100%;overflow:auto}
 .save-fallback img,.save-fallback video{max-width:100%;max-height:55vh;border-radius:8px;display:block;margin:0 auto}
 @media (prefers-reduced-motion: reduce){.tour .fade{transition:none}}
@@ -281,6 +298,7 @@ hr{border:0;border-top:1px solid var(--line);margin:2px 0}
       <div class="appname"><b>Studio Habitat</b><span>Photos · Visites 360° · Vidéos · Plans</span></div>
     </div>
     <div class="privacy"><i></i>Vos photos restent sur votre téléphone</div>
+    <button type="button" class="profbtn" id="profBtn" aria-label="Mon profil d'agent"><span class="av"></span><span class="pl">Mon profil</span></button>
   </header>
 
   <div class="install" id="install" hidden>
@@ -370,6 +388,7 @@ hr{border:0;border-top:1px solid var(--line);margin:2px 0}
         <hr>
         <span class="lbl">Diffuser le bien</span>
         <button class="primary" id="fVitrine">Créer la fiche vitrine (PDF)</button>
+        <button id="fPoster">Créer une affiche (À vendre, Vendu…)</button>
         <button id="fKit">Partager le kit annonce</button>
         <p class="note">Le kit regroupe les photos du reportage, le texte de l'annonce, la fiche vitrine, le plan et la dernière vidéo créée.</p>
         <p class="status" id="fKitStatus"></p>
@@ -489,7 +508,7 @@ hr{border:0;border-top:1px solid var(--line);margin:2px 0}
         <div class="field"><label for="vPrice">Prix</label><input type="text" id="vPrice" value="349 000 € honoraires inclus"></div>
         <div class="field"><span class="lbl">Classe énergie (DPE)</span><div class="dpe" id="dpe"></div></div>
         <div class="field"><label for="vDesc">Description qui défile sur les photos</label><textarea id="vDesc" rows="4" placeholder="Ex. : Grand séjour lumineux ouvert sur le jardin. Cuisine équipée avec îlot. Suite parentale avec dressing."></textarea></div>
-        <div class="field"><label for="vAgent">Contact (carton final)</label><input type="text" id="vAgent" value="" placeholder="Ex. : Marie Dupont · 06 12 34 56 78"></div>
+        <div class="field"><label for="vAgent">Contact (carton final) — <button type="button" class="linkbtn" id="vProf">repris de « Mon profil »</button></label><input type="text" id="vAgent" value="" placeholder="Ex. : Marie Dupont · 06 12 34 56 78"></div>
         <div class="field"><span class="lbl">Clips vidéo <span class="note">(facultatif)</span></span>
           <label class="btn file" id="vClipLbl">Filmer ou ajouter un clip<input type="file" id="vClip" accept="video/*" multiple></label>
           <div id="vClips" class="cliplist"></div>
@@ -545,6 +564,10 @@ hr{border:0;border-top:1px solid var(--line);margin:2px 0}
 const $ = (s, r = document) => r.querySelector(s);
 const clamp = (v, a, b) => v < a ? a : v > b ? b : v;
 const sleep = ms => new Promise(r => setTimeout(r, ms));
+// profil de l'agent (défini tôt : utilisé par le texte d'annonce dès le chargement)
+const AG = (() => { try { return JSON.parse(localStorage.getItem("studio-habitat-agent") || "null") || {}; } catch (_) { return {}; } })();
+const agentLine = () => [AG.name, AG.tel].map(x => (x || "").trim()).filter(Boolean).join(" · ");
+const agentImg = new Image(); if (AG.photo) agentImg.src = AG.photo;
 const frame = () => new Promise(r => requestAnimationFrame(() => r()));
 let capsCache = null;
 function getCaps() {
@@ -1013,20 +1036,23 @@ async function shootItem(rec) {
   const url = await toBlob(drawToCanvas(c, 240), "image/jpeg", .8).then(b => URL.createObjectURL(b));
   return { id: rec.id, canvas: c, thumb: url, name: rec.name };
 }
-async function loadShoot() { try { const recs = await DB.all(); if (!recs || !recs.length) return; recs.sort((a, b) => a.id < b.id ? -1 : 1); for (const r of recs) P.shoot.push(await shootItem(r)); renderShoot(); } catch (_) {} }
+async function loadShoot() { try { const recs = await DB.all(); if (!recs || !recs.length) return; let ord = []; try { ord = JSON.parse(localStorage.getItem("studio-habitat-order") || "[]"); } catch (_) {}
+  const pos = id => { const k = ord.indexOf(id); return k < 0 ? 1e9 : k; }; recs.sort((a, b) => pos(a.id) - pos(b.id) || (a.id < b.id ? -1 : 1)); for (const r of recs) P.shoot.push(await shootItem(r)); renderShoot(); } catch (_) {} }
 $("#addToShoot").onclick = async () => {
   if (!P.src) return; const c = finalPhotoCanvas(), small = drawToCanvas(c, 1920);
   const url = await toBlob(drawToCanvas(c, 240), "image/jpeg", .8).then(b => URL.createObjectURL(b));
   const id = Date.now().toString(36), name = P.isSample ? "Exemple" : "Photo " + (P.shoot.length + 1);
   P.shoot.push({ id, canvas: small, thumb: url, name });
   toBlob(small, "image/jpeg", .9).then(blob => DB.put({ id, name, blob }));
-  renderShoot(); $("#pStatus").className = "status"; $("#pStatus").textContent = "Photo ajoutée au reportage.";
+  saveShootOrder(); renderShoot(); $("#pStatus").className = "status"; $("#pStatus").textContent = "Photo ajoutée au reportage.";
 };
 function renderShoot() {
   const s = $("#shoot"); s.innerHTML = "";
-  P.shoot.forEach((p, i) => { const b = document.createElement("button"); b.className = "th"; b.title = "Retirer du reportage";
-    b.innerHTML = `<img src="${p.thumb}" alt=""><small>${p.name} · retirer</small>`;
-    b.onclick = () => { P.shoot.splice(i, 1); if (p.id) DB.del(p.id); renderShoot(); }; s.appendChild(b); });
+  P.shoot.forEach((p, i) => { const b = document.createElement("div"); b.className = "th"; b.dataset.i = i;
+    b.innerHTML = `<img src="${p.thumb}" alt="" draggable="false"><span class="num">${i + 1}</span><div class="mini-row"><button type="button" class="mini" aria-label="Avancer la photo ${i + 1}" ${i ? "" : "disabled"}>◀</button><button type="button" class="mini" aria-label="Reculer la photo ${i + 1}" ${i < P.shoot.length - 1 ? "" : "disabled"}>▶</button><button type="button" class="mini del" aria-label="Retirer la photo ${i + 1}">✕</button></div>`;
+    const [bl, br, bx] = b.querySelectorAll("button.mini");
+    bl.onclick = () => moveShoot(i, i - 1); br.onclick = () => moveShoot(i, i + 1);
+    bx.onclick = () => { P.shoot.splice(i, 1); if (p.id) DB.del(p.id); saveShootOrder(); renderShoot(); }; s.appendChild(b); });
   if (!P.shoot.length) s.innerHTML = '<p class="note">Aucune photo pour l\'instant. Retouchez une photo puis touchez « Ajouter au reportage ».</p>';
   $("#shootCount").textContent = P.shoot.length + (P.shoot.length > 1 ? " photos" : " photo");
 }
@@ -1475,11 +1501,15 @@ function drawCard(x, W, H, kind, t) {
     const lg = $("#logoImg"); if (lg && lg.complete && lg.naturalWidth) { const lw = Math.min(W * .78, 760 * u), lh = lw * lg.naturalHeight / lg.naturalWidth, pd = 36 * u, ly = H * .16;
       x.fillStyle = "#FFFFFF"; x.beginPath(); x.roundRect ? x.roundRect(cx - lw / 2 - pd, ly - pd, lw + 2 * pd, lh + 2 * pd, 28 * u) : x.rect(cx - lw / 2 - pd, ly - pd, lw + 2 * pd, lh + 2 * pd); x.fill();
       x.drawImage(lg, cx - lw / 2, ly, lw, lh); x.fillStyle = "#FFFFFF"; }
+    const mine = !contactMissing() && $("#vAgent").value.trim() === agentLine();
+    if (mine && (AG.photo || AG.name)) drawAgentPhoto(x, cx, portrait ? H * .335 : H * .41, (portrait ? 96 : 66) * u);
+    x.fillStyle = "#FFFFFF"; x.textAlign = "center";
     const y0 = portrait ? H * .46 : H * .54;
     x.font = `700 ${72 * u}px "Bricolage Grotesque", system-ui, sans-serif`; x.fillText("Pour visiter", cx, y0);
     x.fillStyle = "#F0B00A"; x.fillRect(cx - 60 * u, y0 + 40 * u, 120 * u, 7 * u);
     const parts = (contactMissing() ? "Votre conseiller Les Professionnels de l'Immobilier" : $("#vAgent").value).split(/\s*[·|•]\s*/).filter(Boolean); let yy = y0 + 130 * u;
-    parts.forEach((p, i) => { x.fillStyle = i === 0 ? "#FFFFFF" : "#F0B00A"; x.font = `${i === 0 ? 700 : 600} ${(i === 0 ? 58 : 54) * u}px "Public Sans", system-ui, sans-serif`; yy += wrapText(x, p, cx, yy, maxW, 68 * u) * 68 * u + 12 * u; });
+    if (mine && AG.mail) parts.push(AG.mail);
+    parts.forEach((p, i) => { x.fillStyle = i === 0 ? "#FFFFFF" : "#F0B00A"; x.font = `${i === 0 ? 700 : 600} ${(i === 0 ? 58 : p.includes("@") ? 40 : 54) * u}px "Public Sans", system-ui, sans-serif`; yy += wrapText(x, p, cx, yy, maxW, 68 * u) * 68 * u + 12 * u; });
 
   }
 }
@@ -1715,7 +1745,7 @@ $("#vMusicTry").onclick = async () => {
 function contactMissing() { const a = $("#vAgent").value.trim(); return !a || /votre nom|06 00 00 00 00/i.test(a); }
 $("#vRec").onclick = async () => {
   const st = $("#vStatus"); st.className = "status";
-  if (contactMissing()) { st.className = "status err"; st.textContent = "Renseignez d'abord votre nom et votre téléphone dans « Contact » : ils s'affichent à la fin de la vidéo."; const f = $("#vAgent"); f.scrollIntoView({ block: "center", behavior: "smooth" }); setTimeout(() => f.focus(), 400); return; }
+  if (contactMissing()) { st.className = "status err"; st.textContent = "Renseignez d'abord vos coordonnées : touchez « Mon profil » en haut de l'écran (ou remplissez « Contact »). Elles s'affichent à la fin de la vidéo."; const f = $("#vAgent"); f.scrollIntoView({ block: "center", behavior: "smooth" }); setTimeout(() => f.focus(), 400); return; }
   const wantMusic = musicIdx() >= 0, wantVoice = narr() === "mic", synth = isSynth(narr()), withAudio = wantMusic || wantVoice || synth;
   const types = withAudio ? ["video/mp4;codecs=avc1,mp4a.40.2", "video/mp4", "video/webm;codecs=vp9,opus", "video/webm;codecs=vp8,opus", "video/webm"]
                           : ["video/mp4;codecs=avc1", "video/mp4", "video/webm;codecs=vp9", "video/webm;codecs=vp8", "video/webm"];
@@ -2020,6 +2050,7 @@ function adText() {
   if (nb(d.fTax)) L.push(`Taxe foncière : ${euro(nb(d.fTax))} / an`); if (nb(d.fCopro)) L.push(`Charges de copropriété : ${euro(nb(d.fCopro))} / an`);
   if (d.dpe || d.ges) L.push(`Classe énergie (DPE) : ${d.dpe || "non communiquée"} · Émissions (GES) : ${d.ges || "non communiquées"}`);
   if (d.fMandat.trim()) L.push(`Mandat n° ${d.fMandat.trim()}`);
+  if (AG.name) { L.push(""); L.push(`Contact : ${[AG.name, AG.tel, AG.mail].filter(Boolean).join(" · ")}`); }
   L.push(""); L.push("Les Professionnels de l'Immobilier – Réseau national");
   $("#fAd").value = L.join("\n").replace(/\n{3,}/g, "\n\n");
 }
@@ -2147,6 +2178,157 @@ $("#dosNew").onclick = async () => {
   save(); dosMsg("Nouveau dossier prêt.");
 };
 
+/* ============ Profil de l'agent (saisi une fois, repris partout) ============ */
+function agentInitials() { return (AG.name || "").split(/\s+/).filter(Boolean).slice(0, 2).map(w => w[0].toUpperCase()).join(""); }
+function renderProfBtn() {
+  const b = $("#profBtn"); if (!b) return;
+  b.querySelector(".av").innerHTML = AG.photo ? `<img src="${AG.photo}" alt="">` : (agentInitials() || `<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4.4 3.6-7 8-7s8 2.6 8 7"/></svg>`);
+  b.querySelector(".pl").textContent = AG.name ? AG.name.split(/\s+/)[0] : "Mon profil";
+}
+function applyAgent(force) {
+  const line = agentLine(); if (!line) return;
+  if (force || !$("#vAgent").value.trim() || contactMissing()) { $("#vAgent").value = line; V.speech = null; try { save(); } catch (_) {} }
+}
+function drawAgentPhoto(x, cx, cy, r) {
+  x.save(); x.beginPath(); x.arc(cx, cy, r, 0, Math.PI * 2); x.closePath();
+  if (AG.photo && agentImg.complete && agentImg.naturalWidth) { x.save(); x.clip(); const s = Math.max(2 * r / agentImg.naturalWidth, 2 * r / agentImg.naturalHeight), w = agentImg.naturalWidth * s, h = agentImg.naturalHeight * s; x.drawImage(agentImg, cx - w / 2, cy - h / 2, w, h); x.restore(); }
+  else { x.fillStyle = "#070C9B"; x.fill(); x.fillStyle = "#FFFFFF"; x.textAlign = "center"; x.textBaseline = "middle"; x.font = `700 ${r * .8}px "Public Sans", system-ui, sans-serif`; x.fillText(agentInitials() || "", cx, cy + r * .04); x.textBaseline = "alphabetic"; }
+  x.lineWidth = Math.max(2, r * .07); x.strokeStyle = "#F0B00A"; x.beginPath(); x.arc(cx, cy, r, 0, Math.PI * 2); x.stroke(); x.restore();
+}
+function openProfile(afterSave) {
+  const ov = document.createElement("div"); ov.className = "bd-ov"; ov.setAttribute("role", "dialog"); ov.setAttribute("aria-modal", "true"); ov.setAttribute("aria-label", "Mon profil");
+  ov.innerHTML = `<div class="bd-box prof"><div class="bd-head"><b>Mon profil d'agent</b><button class="ghost bd-x" aria-label="Fermer">✕</button></div>
+    <p class="note">À remplir une seule fois : vos coordonnées sont reprises automatiquement à la fin des vidéos, sur la fiche vitrine, les affiches et le texte de l'annonce. Elles restent sur votre téléphone.</p>
+    <div class="profrow"><div class="profav" id="pfAv"></div><div class="profbtns"><label class="btn file">Ajouter ma photo<input type="file" id="pfPhoto" accept="image/*,image/heic,image/heif"></label><button type="button" class="ghost" id="pfPhotoDel">Retirer la photo</button></div></div>
+    <div class="field"><label for="pfName">Prénom et nom</label><input type="text" id="pfName" autocomplete="name" placeholder="Ex. : Marie Dupont"></div>
+    <div class="field"><label for="pfTel">Téléphone</label><input type="tel" id="pfTel" autocomplete="tel" placeholder="Ex. : 06 12 34 56 78"></div>
+    <div class="field"><label for="pfMail">E-mail</label><input type="email" id="pfMail" autocomplete="email" placeholder="Ex. : m.dupont@les-professionnels.immo"></div>
+    <p class="status" id="pfStatus"></p>
+    <div class="row"><button class="primary" id="pfSave" type="button">Enregistrer mon profil</button></div>
+    <button class="ghost" id="pfTuto" type="button">Revoir la présentation de l'application</button></div>`;
+  document.body.appendChild(ov);
+  let photo = AG.photo || "";
+  const showAv = () => { $("#pfAv").innerHTML = photo ? `<img src="${photo}" alt="Ma photo">` : `<span>${agentInitials() || "?"}</span>`; $("#pfPhotoDel").hidden = !photo; };
+  $("#pfName").value = AG.name || ""; $("#pfTel").value = AG.tel || ""; $("#pfMail").value = AG.mail || ""; showAv();
+  const close = () => ov.remove();
+  ov.querySelector(".bd-x").onclick = close; ov.addEventListener("click", e => { if (e.target === ov) close(); });
+  $("#pfPhoto").onchange = async e => { const f = e.target.files[0]; e.target.value = ""; if (!f) return;
+    try { const c = await fileToCanvas(f, 600), s = Math.min(c.width, c.height), q = document.createElement("canvas"); q.width = q.height = 320;
+      q.getContext("2d").drawImage(c, (c.width - s) / 2, Math.max(0, (c.height - s) / 2 - s * .08), s, s, 0, 0, 320, 320); photo = q.toDataURL("image/jpeg", .86); showAv(); }
+    catch (_) { $("#pfStatus").className = "status err"; $("#pfStatus").textContent = "Cette photo n'a pas pu être ouverte."; } };
+  $("#pfPhotoDel").onclick = () => { photo = ""; showAv(); };
+  $("#pfTuto").onclick = () => { close(); openBD("accueil"); };
+  $("#pfSave").onclick = () => {
+    const name = $("#pfName").value.trim(), tel = $("#pfTel").value.trim(), mail = $("#pfMail").value.trim();
+    if (!name || !tel) { $("#pfStatus").className = "status err"; $("#pfStatus").textContent = "Indiquez au moins votre nom et votre téléphone."; return; }
+    Object.assign(AG, { name, tel, mail, photo }); try { localStorage.setItem("studio-habitat-agent", JSON.stringify(AG)); } catch (_) {}
+    if (photo) agentImg.src = photo; applyAgent(true); renderProfBtn(); try { adText(); } catch (_) {}
+    if (!$("#v-video").hidden && !V.playing) vStill(); close(); afterSave && afterSave();
+  };
+  setTimeout(() => $(AG.name ? "#pfSave" : "#pfName").focus(), 50);
+}
+
+/* ============ Affiche « À vendre / Vendu » ============ */
+const POSTER_TYPES = [
+  { t: "À VENDRE", bg: "#070C9B", fg: "#FFFFFF", price: true }, { t: "VENDU", bg: "#F0B00A", fg: "#02062C", price: false },
+  { t: "SOUS COMPROMIS", bg: "#F0B00A", fg: "#02062C", price: false }, { t: "NOUVEAUTÉ", bg: "#070C9B", fg: "#FFFFFF", price: true },
+  { t: "BAISSE DE PRIX", bg: "#D7221F", fg: "#FFFFFF", price: true }, { t: "À LOUER", bg: "#070C9B", fg: "#FFFFFF", price: true },
+  { t: "LOUÉ", bg: "#F0B00A", fg: "#02062C", price: false }, { t: "EXCLUSIVITÉ", bg: "#02062C", fg: "#F0B00A", price: true }];
+const POSTER_FMT = { sq: [1080, 1080, "Carré (réseaux sociaux)"], st: [1080, 1920, "Story (vertical)"], a4: [1240, 1754, "A4 vitrine (PDF)"] };
+function posterCanvas(o) {
+  const [W, H] = POSTER_FMT[o.fmt], c = document.createElement("canvas"); c.width = W; c.height = H; const x = c.getContext("2d"), d = ficheData(), u = W / 1080;
+  const disp = '"Bricolage Grotesque", system-ui, sans-serif', body = '"Public Sans", system-ui, sans-serif', ty = POSTER_TYPES[o.type];
+  const infoH = o.fmt === "sq" ? 440 * u : o.fmt === "st" ? 560 * u : 640 * u, phH = H - infoH;
+  x.fillStyle = "#02062C"; x.fillRect(0, 0, W, H);
+  const img = o.photo; if (img) coverDraw(x, img, 0, 0, W, phH + 4, 0); else { x.fillStyle = "#1A1F5C"; x.fillRect(0, 0, W, phH); }
+  const gr = x.createLinearGradient(0, phH - 220 * u, 0, phH); gr.addColorStop(0, "rgba(2,6,44,0)"); gr.addColorStop(1, "rgba(2,6,44,.85)"); x.fillStyle = gr; x.fillRect(0, phH - 220 * u, W, 220 * u);
+  // ruban en diagonale
+  x.save(); x.translate(W - 250 * u, 250 * u); x.rotate(Math.PI / 4); const rw = 1000 * u, rh = 112 * u;
+  x.shadowColor = "rgba(0,0,0,.35)"; x.shadowBlur = 24 * u; x.fillStyle = ty.bg; x.fillRect(-rw / 2, -rh / 2, rw, rh); x.shadowBlur = 0;
+  x.fillStyle = ty.fg; x.textAlign = "center"; x.textBaseline = "middle"; let fs = 64; x.font = `800 ${fs * u}px ${disp}`; while (x.measureText(ty.t).width > 560 * u && fs > 30) { fs -= 2; x.font = `800 ${fs * u}px ${disp}`; }
+  x.fillText(ty.t, 0, 4 * u); x.restore();
+  // logo
+  const lg = $("#logoImg"); if (lg && lg.naturalWidth) { const lw = 360 * u, lh = lw * lg.naturalHeight / lg.naturalWidth, pd = 18 * u; x.fillStyle = "rgba(255,255,255,.95)"; x.beginPath(); x.roundRect ? x.roundRect(32 * u, 32 * u, lw + 2 * pd, lh + 2 * pd, 16 * u) : x.rect(32 * u, 32 * u, lw + 2 * pd, lh + 2 * pd); x.fill(); x.drawImage(lg, 32 * u + pd, 32 * u + pd, lw, lh); }
+  // bloc d'informations
+  const M = 56 * u; let y = phH + (o.fmt === "sq" ? 66 : 70) * u; x.textAlign = "left"; x.textBaseline = "alphabetic";
+  x.fillStyle = "#F0B00A"; x.fillRect(0, phH, W, 8 * u);
+  x.fillStyle = "#FFFFFF"; let tfs = o.fmt === "sq" ? 54 : 60; x.font = `700 ${tfs * u}px ${disp}`;
+  if (o.fmt === "sq") while (tfs > 34 && x.measureText(ficheTitle(d)).width > W - 2 * M - 120 * u) { tfs -= 2; x.font = `700 ${tfs * u}px ${disp}`; }
+  const tl = wrapLines(x, ficheTitle(d), W - 2 * M - (V.dpe || d.dpe ? 120 * u : 0), o.fmt === "sq" ? 1 : 2); tl.forEach((l, i) => x.fillText(l, M, y + i * 64 * u)); y += tl.length * 64 * u;
+  const det = ficheDetails(d); if (det) { x.fillStyle = "#C9CCE6"; x.font = `500 ${32 * u}px ${body}`; x.fillText(det, M, y + 6 * u, W - 2 * M); y += 52 * u; }
+  const showPrice = o.price && ty.price && nb(d.fPrice);
+  if (showPrice) { x.fillStyle = "#F0B00A"; x.font = `800 ${66 * u}px ${disp}`; x.fillText(euro(nb(d.fPrice)), M, y + 62 * u); const pw = x.measureText(euro(nb(d.fPrice))).width; x.fillStyle = "#C9CCE6"; x.font = `500 ${26 * u}px ${body}`; x.fillText(d.fFees || "", M + pw + 16 * u, y + 58 * u); y += 92 * u; }
+  const dpe = d.dpe || V.dpe; if (dpe && ty.price) { const s = 92 * u, bx = W - M - s, by = phH + 34 * u; x.fillStyle = DPE[dpe]; x.beginPath(); x.roundRect ? x.roundRect(bx, by, s, s, 14 * u) : x.rect(bx, by, s, s); x.fill(); x.fillStyle = "ABC".includes(dpe) || dpe === "G" ? "#fff" : "#1b1b1b"; x.textAlign = "center"; x.font = `800 ${60 * u}px ${disp}`; x.fillText(dpe, bx + s / 2, by + s * .72); x.fillStyle = "#C9CCE6"; x.font = `600 ${17 * u}px ${body}`; x.fillText("DPE", bx + s / 2, by + s + 24 * u); x.textAlign = "left"; }
+  // agent
+  const line = agentLine() || $("#vAgent").value.trim();
+  if (line) { const ay = H - 70 * u, r = 46 * u; if (AG.name) drawAgentPhoto(x, M + r, ay - 8 * u, r); const tx = M + (AG.name ? 2 * r + 22 * u : 0);
+    x.fillStyle = "#FFFFFF"; x.font = `700 ${30 * u}px ${body}`; x.fillText(AG.name || line, tx, ay - 14 * u, W - tx - M); x.fillStyle = "#F0B00A"; x.font = `600 ${28 * u}px ${body}`; x.fillText([AG.tel, AG.mail].filter(Boolean).join(" · ") || "", tx, ay + 24 * u, W - tx - M); }
+  return c;
+}
+function openPoster() {
+  const st = $("#fKitStatus");
+  const ov = document.createElement("div"); ov.className = "bd-ov"; ov.setAttribute("role", "dialog"); ov.setAttribute("aria-modal", "true"); ov.setAttribute("aria-label", "Créer une affiche");
+  ov.innerHTML = `<div class="bd-box poster"><div class="bd-head"><b>Créer une affiche</b><button class="ghost bd-x" aria-label="Fermer">✕</button></div>
+    <div class="pstwrap"><canvas id="pstC"></canvas></div>
+    <div class="field"><span class="lbl">Bandeau</span><div class="chips" id="pstType">${POSTER_TYPES.map((p, i) => `<button type="button" data-i="${i}" aria-pressed="${i === 0}">${p.t[0] + p.t.slice(1).toLowerCase()}</button>`).join("")}</div></div>
+    <div class="field"><span class="lbl">Format</span><div class="seg" id="pstFmt">${Object.entries(POSTER_FMT).map(([k, f], i) => `<button type="button" data-k="${k}" aria-pressed="${i === 0}">${f[2]}</button>`).join("")}</div></div>
+    <div class="field"><span class="lbl">Photo</span><div class="strip" id="pstPh"></div></div>
+    <label class="toggle" for="pstPrice"><span>Afficher le prix</span><input type="checkbox" id="pstPrice" checked></label>
+    <p class="status" id="pstSt"></p>
+    <button class="primary" id="pstSave" type="button">Enregistrer l'affiche</button></div>`;
+  document.body.appendChild(ov);
+  const o = { type: 0, fmt: "sq", price: true, photo: P.shoot[0] ? P.shoot[0].canvas : null };
+  const draw = () => { const c = posterCanvas(o), v = $("#pstC"); v.width = c.width; v.height = c.height; v.getContext("2d").drawImage(c, 0, 0); v.style.aspectRatio = c.width + " / " + c.height; };
+  const phs = $("#pstPh");
+  if (!P.shoot.length) phs.innerHTML = '<p class="note">Ajoutez d\'abord des photos au reportage (onglet Photos).</p>';
+  P.shoot.forEach((p, i) => { const b = document.createElement("button"); b.type = "button"; b.className = "th"; b.setAttribute("aria-pressed", i === 0); b.innerHTML = `<img src="${p.thumb}" alt="${p.name}">`;
+    b.onclick = () => { o.photo = p.canvas; [...phs.children].forEach(k => k.setAttribute("aria-pressed", k === b)); draw(); }; phs.appendChild(b); });
+  $("#pstType").onclick = e => { const b = e.target.closest("button"); if (!b) return; o.type = +b.dataset.i; [...$("#pstType").children].forEach(k => k.setAttribute("aria-pressed", k === b)); $("#pstPrice").disabled = !POSTER_TYPES[o.type].price; draw(); };
+  $("#pstFmt").onclick = e => { const b = e.target.closest("button"); if (!b) return; o.fmt = b.dataset.k; [...$("#pstFmt").children].forEach(k => k.setAttribute("aria-pressed", k === b)); draw(); };
+  $("#pstPrice").onchange = e => { o.price = e.target.checked; draw(); };
+  ov.querySelector(".bd-x").onclick = () => ov.remove(); ov.addEventListener("click", e => { if (e.target === ov) ov.remove(); });
+  $("#pstSave").onclick = async () => {
+    const s = $("#pstSt"); s.className = "status"; s.textContent = "Préparation…"; await frame();
+    try { const c = posterCanvas(o), name = `Affiche ${POSTER_TYPES[o.type].t.toLowerCase()} - ${kitName()}`; let r;
+      if (o.fmt === "a4") { const jb = await toBlob(c, "image/jpeg", .92); r = await offerFile(name + ".pdf", pdfFromJpeg(new Uint8Array(await jb.arrayBuffer()), c.width, c.height), "pdf"); }
+      else r = await offerFile(name + ".jpg", await toBlob(c, "image/jpeg", .92), "image");
+      s.textContent = r === "declined" ? "Enregistrement annulé." : "Affiche prête."; }
+    catch (_) { s.className = "status err"; s.textContent = "L'affiche n'a pas pu être créée. Réessayez."; }
+  };
+  draw(); if (!agentLine()) { $("#pstSt").className = "status"; $("#pstSt").textContent = "Astuce : remplissez « Mon profil » (en haut) pour ajouter votre nom, téléphone et photo sur l'affiche."; }
+  st.textContent = "";
+}
+
+/* ============ Ordre des photos du reportage ============ */
+function saveShootOrder() { try { localStorage.setItem("studio-habitat-order", JSON.stringify(P.shoot.map(p => p.id).filter(Boolean))); } catch (_) {} }
+function moveShoot(from, to) {
+  if (to < 0 || to >= P.shoot.length || from === to) return; const [it] = P.shoot.splice(from, 1); P.shoot.splice(to, 0, it); saveShootOrder(); renderShoot();
+  const st = $("#pStatus"); st.className = "status"; st.textContent = `Photo déplacée en position ${to + 1}.`;
+}
+function shootDrag(s) {
+  // appui long puis glisser (doigt) ou glisser (souris) pour changer l'ordre
+  let drag = null, timer = 0;
+  const items = () => [...s.querySelectorAll(".th")];
+  const start = (el, px, py) => { drag = { el, from: +el.dataset.i, x0: px, y0: py }; el.classList.add("dragging"); s.classList.add("sorting"); if (navigator.vibrate) navigator.vibrate(15); };
+  const moveTo = px => { if (!drag) return; drag.el.style.transform = `translateX(${px - drag.x0}px) scale(1.06)`;
+    const r = s.getBoundingClientRect(); if (px < r.left + 30) s.scrollLeft -= 12; else if (px > r.right - 30) s.scrollLeft += 12; };
+  const end = px => { if (!drag) return; const el = drag.el, from = drag.from; let to = from;
+    items().forEach((k, i) => { if (k === el) return; const b = k.getBoundingClientRect(), mid = b.left + b.width / 2; if (i < from && px < mid) to = Math.min(to, i); if (i > from && px > mid) to = Math.max(to, i); });
+    el.style.transform = ""; el.classList.remove("dragging"); s.classList.remove("sorting"); drag = null; if (to !== from) moveShoot(from, to); };
+  s.addEventListener("touchstart", e => { const el = e.target.closest(".th"); if (!el || e.target.closest("button.mini") || e.touches.length > 1) return; const t = e.touches[0];
+    clearTimeout(timer); const px = t.clientX, py = t.clientY; timer = setTimeout(() => start(el, px, py), 350);
+    const cancel = ev => { const q = ev.touches[0]; if (!drag && q && (Math.abs(q.clientX - px) > 10 || Math.abs(q.clientY - py) > 10)) clearTimeout(timer); };
+    el.addEventListener("touchmove", cancel, { passive: true, once: false }); }, { passive: true });
+  s.addEventListener("touchmove", e => { if (drag) { e.preventDefault(); moveTo(e.touches[0].clientX); } }, { passive: false });
+  s.addEventListener("touchend", e => { clearTimeout(timer); if (drag) { e.preventDefault(); end(e.changedTouches[0].clientX); } });
+  s.addEventListener("touchcancel", () => { clearTimeout(timer); if (drag) { drag.el.style.transform = ""; drag.el.classList.remove("dragging"); s.classList.remove("sorting"); drag = null; } });
+  s.addEventListener("mousedown", e => { const el = e.target.closest(".th"); if (!el || e.target.closest("button.mini") || e.button) return; e.preventDefault(); start(el, e.clientX, e.clientY);
+    const mm = ev => moveTo(ev.clientX), mu = ev => { document.removeEventListener("mousemove", mm); document.removeEventListener("mouseup", mu); end(ev.clientX); };
+    document.addEventListener("mousemove", mm); document.addEventListener("mouseup", mu); });
+}
+
+$("#profBtn").onclick = () => openProfile(); $("#vProf").onclick = () => openProfile(); $("#fPoster").onclick = () => openPoster();
+shootDrag($("#shoot"));
 /* ============ Guide en images « Comment faire ? » ============ */
 const BD_INK = "#02062C", BD_BLUE = "#070C9B", BD_GOLD = "#F0B00A";
 const BD_SCREENS = {
@@ -2173,6 +2355,9 @@ const BD_SCREENS = {
   folder: `<path d="M-30 -16 h22 l6 7 h32 v34 h-60z" fill="${BD_GOLD}" stroke="${BD_INK}" stroke-width="2" stroke-linejoin="round"/><rect x="-30" y="32" width="60" height="10" rx="3" fill="#EDEEF7"/><rect x="-26" y="34" width="34" height="6" rx="3" fill="#8D92B5"/>`,
   cloud: `<path d="M-20 14 a12 12 0 0 1 2 -24 a16 16 0 0 1 30 -2 a12 12 0 0 1 8 26z" fill="#E3EEFB" stroke="${BD_BLUE}" stroke-width="3"/><path d="M0 -2 v14 M-6 6 l6 6 l6 -6" stroke="${BD_BLUE}" stroke-width="3" fill="none" stroke-linecap="round"/><text x="0" y="36" text-anchor="middle" font-size="11" font-weight="700" fill="${BD_INK}">iCloud Drive</text>`,
   phones: `<rect x="-30" y="-24" width="24" height="44" rx="5" fill="${BD_BLUE}"/><rect x="6" y="-24" width="24" height="44" rx="5" fill="${BD_BLUE}"/><path d="M-4 -2 h10 M2 -6 l4 4 l-4 4" stroke="${BD_GOLD}" stroke-width="3" fill="none" stroke-linecap="round"/><rect x="-24" y="-16" width="12" height="9" fill="${BD_GOLD}"/><rect x="12" y="-16" width="12" height="9" fill="${BD_GOLD}"/>`,
+  profile: `<rect x="-30" y="-24" width="60" height="44" rx="8" fill="#EDEEF7" stroke="${BD_BLUE}" stroke-width="2.5"/><circle cx="-12" cy="-6" r="9" fill="${BD_BLUE}"/><path d="M-24 12 c0 -8 5 -11 12 -11 s12 3 12 11z" fill="${BD_BLUE}"/><rect x="4" y="-12" width="20" height="5" rx="2.5" fill="${BD_BLUE}"/><rect x="4" y="-2" width="16" height="5" rx="2.5" fill="#8D92B5"/><rect x="4" y="8" width="18" height="5" rx="2.5" fill="#8D92B5"/><circle cx="26" cy="-30" r="9" fill="${BD_GOLD}" stroke="#fff" stroke-width="2"/>`,
+  poster: `<rect x="-28" y="-30" width="56" height="64" rx="4" fill="#8FB0D8"/><rect x="-28" y="12" width="56" height="22" fill="${BD_INK}"/><rect x="-6" y="18" width="26" height="5" rx="2" fill="${BD_GOLD}"/><rect x="-22" y="18" width="12" height="5" rx="2" fill="#fff"/><g transform="translate(14 -16) rotate(45)"><rect x="-30" y="-6" width="60" height="12" fill="${BD_GOLD}"/><text x="0" y="4" text-anchor="middle" font-size="8" font-weight="800" fill="${BD_INK}">VENDU</text></g>`,
+  order: `${[-26, -2, 22].map((x, i) => `<rect x="${x - 10}" y="-14" width="20" height="26" rx="4" fill="${i === 1 ? BD_GOLD : "#B9C3E6"}"/><text x="${x}" y="4" text-anchor="middle" font-size="11" font-weight="800" fill="${BD_INK}">${i + 1}</text>`).join("")}<path d="M-14 26 h28 M8 20 l6 6 l-6 6" stroke="${BD_BLUE}" stroke-width="3.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/>`,
   music: `<circle cx="-12" cy="20" r="9" fill="${BD_BLUE}"/><circle cx="16" cy="12" r="9" fill="${BD_BLUE}"/><path d="M-3 20 v-40 l28 -8 v40" stroke="${BD_BLUE}" stroke-width="5" fill="none" stroke-linejoin="round"/><path d="M-3 -12 l28 -8" stroke="${BD_GOLD}" stroke-width="6"/>`,
   voice: `<circle cx="-12" cy="-10" r="11" fill="${BD_BLUE}"/><path d="M-30 26 c0 -16 8 -24 18 -24 s18 8 18 24z" fill="${BD_BLUE}"/><path d="M12 -18 q8 8 0 16 M18 -24 q14 14 0 28 M24 -30 q20 20 0 40" stroke="${BD_GOLD}" stroke-width="3.5" fill="none" stroke-linecap="round"/><text x="0" y="44" text-anchor="middle" font-size="11" font-weight="700" fill="${BD_INK}">2 ♀ · 2 ♂</text>`,
   mic: `<rect x="-10" y="-30" width="20" height="36" rx="10" fill="${BD_BLUE}"/><path d="M-18 -2 a18 18 0 0 0 36 0 M0 16 v12 M-10 28 h20" stroke="${BD_BLUE}" stroke-width="4" fill="none" stroke-linecap="round"/><path d="M24 -20 q6 6 0 12 M30 -26 q12 12 0 24" stroke="${BD_GOLD}" stroke-width="3" fill="none" stroke-linecap="round"/>`,
@@ -2198,17 +2383,21 @@ function bdPanel(screen, title, tap, n, total) {
   </svg>`;
 }
 const BD = {
-  bien: { title: "Remplir la fiche du bien", steps: [
+  bien: { title: "Remplir la fiche du bien", ver: "3", steps: [
+    ["profile", "Votre profil (une seule fois)", [26, -30], "Touchez « Mon profil » en haut à droite : nom, téléphone, e-mail et photo. Ils sont repris sur les vidéos, la fiche vitrine, les affiches et l'annonce."],
     ["house", "Ouvrir la fiche du bien", [0, 20], "Ouvrez l'onglet « Bien » en bas de l'écran."],
     ["pin", "Saisir l'adresse", [0, -8], "Tapez le numéro et la rue, puis touchez la bonne suggestion : le code postal et la ville se remplissent seuls."],
     ["form", "Compléter les caractéristiques", [-12, 38], "Renseignez surfaces, pièces, prix, DPE et équipements."],
-    ["text", "Générer l'annonce", [18, 38], "Touchez « Remplir la vidéo, le plan et le dossier » : un encadré vert confirme ce qui a été recopié (vidéo, description, plan, dossier). Puis « Copier le texte de l'annonce »."]] },
-  photos: { title: "Réaliser les photos", steps: [
+    ["text", "Générer l'annonce", [18, 38], "Touchez « Remplir la vidéo, le plan et le dossier » : un encadré vert confirme ce qui a été recopié (vidéo, description, plan, dossier). Puis « Copier le texte de l'annonce »."],
+    ["poster", "Créer une affiche", [0, -22], "« Créer une affiche » : choisissez le bandeau (À vendre, Vendu, Sous compromis, Baisse de prix…), la photo et le format (carré, story, A4 PDF), puis « Enregistrer l'affiche »."],
+    ["share", "Diffuser le bien", [0, 36], "« Créer la fiche vitrine (PDF) » pour la vitrine, « Partager le kit annonce » pour tout envoyer d'un coup par mail ou WhatsApp."]] },
+  photos: { title: "Réaliser les photos", ver: "3", steps: [
     ["camera", "Prendre la photo", [0, 4], "Touchez « Prendre ou choisir une photo ». Tenez le téléphone droit, à hauteur de poitrine."],
     ["compare", "Retouche automatique", [0, 0], "Lumière et couleurs sont corrigées automatiquement. Faites glisser le curseur pour comparer avant et après."],
     ["sun", "Fusion HDR", [0, 24], "Pièce avec une fenêtre très lumineuse : prenez la même vue trois fois (sombre, normale, claire) sans bouger le téléphone, puis sélectionnez les trois photos."],
     ["sky", "Ciel bleu et floutage", [-21, 39], "Façade : cochez « Ciel bleu ». Photo de famille, visage ou plaque : « Flouter une zone », puis touchez l'endroit concerné."],
-    ["check", "Enregistrer", [0, 29], "« Ajouter au reportage » pour la vidéo, ou « Enregistrer la photo » puis « Enregistrer l'image »."]] },
+    ["check", "Enregistrer", [0, 29], "« Ajouter au reportage » pour la vidéo, ou « Enregistrer la photo » puis « Enregistrer l'image »."],
+    ["order", "Choisir l'ordre des photos", [-14, 30], "Dans le reportage, les flèches ◀ ▶ déplacent une photo ; vous pouvez aussi appuyer longuement sur une photo puis la faire glisser. L'ordre est celui de la vidéo, de la fiche vitrine et du kit."]] },
   visite: { title: "Créer une visite 360°", ver: "3", steps: [
     ["pano", "Prise de vue 360°", [24, -6], "Au centre de la pièce, touchez « Prise de vue 360° », autorisez la caméra et les mouvements, puis « Commencer »."],
     ["camera", "Tourner sur place", [0, 4], "Tournez lentement vers la droite, téléphone droit : quand le point jaune entre dans le cercle, la photo se prend seule (12 photos)."],
@@ -2216,6 +2405,15 @@ const BD = {
     ["check", "Les bons réflexes", [22, -18], "Tournez sur place sans avancer, téléphone toujours droit et à la même hauteur. Évitez les personnes qui bougent. Si l'objectif 0,5× est disponible, il est choisi tout seul : sol et plafond sont mieux visibles."],
     ["arrow", "Relier les pièces", [0, -2], "« Placer une flèche » : choisissez la pièce de destination, puis touchez la porte sur la photo."],
     ["share", "Exporter la visite", [0, 36], "« Exporter la visite » puis « Enregistrer » : transmettez le fichier à l'acquéreur ou joignez-le à l'annonce."]] },
+  accueil: { title: "Bienvenue dans Studio Habitat", steps: [
+    ["house", "Bienvenue !", [0, 20], "Studio Habitat est l'application gratuite du réseau pour tout le marketing d'un bien, depuis votre téléphone. Vos photos restent sur votre téléphone."],
+    ["form", "1. La fiche du bien", [-12, 38], "Onglet « Bien » : dictez la description, la fiche se remplit seule et le texte de l'annonce est rédigé pour vous."],
+    ["camera", "2. Photos et visite 360°", [0, 4], "Onglet « Photos » : retouche automatique, ciel bleu, logo du réseau. Onglet « Visite 360° » : tournez sur vous-même, le panorama se fait tout seul."],
+    ["video", "3. La vidéo", [0, 17], "Onglet « Vidéo » : montage automatique avec logo, description qui défile, 15 musiques et un narrateur (voix d'homme, de femme ou la vôtre)."],
+    ["poster", "4. Plan, affiche et diffusion", [0, -22], "Plan 2D/3D, fiche vitrine PDF, affiche « À vendre / Vendu » et kit annonce à envoyer par mail ou WhatsApp."],
+    ["folder", "5. Sauvegarder", [-4, 37], "En haut : nommez le dossier du bien et touchez « Sauvegarder » pour le retrouver sur n'importe quel téléphone."],
+    ["voice", "Besoin d'aide ?", [26, 4], "Chaque onglet a un bouton « Comment faire ? ». Le micro jaune en bas à droite répond à vos questions à voix haute."],
+    ["profile", "Pour commencer : votre profil", [26, -30], "Renseignez une fois vos nom, téléphone, e-mail et photo : ils seront ajoutés automatiquement à vos vidéos, fiches et affiches."]] },
   video: { title: "Monter la vidéo", ver: "3", steps: [
     ["camera", "Sélectionner les photos", [0, 4], "Dans l'onglet « Photos », ajoutez les meilleures photos au reportage. Elles forment le montage, dans l'ordre."],
     ["clip", "Filmer des clips", [0, 30], "Onglet « Vidéo », touchez « Filmer ou ajouter un clip » : filmez quelques secondes (12 s maximum par clip). Les clips s'enchaînent après les photos."],
@@ -2237,7 +2435,7 @@ const BD = {
     ["phones", "Ouvrir sur un autre appareil", [18, -2], "Touchez « Ouvrir » et sélectionnez le fichier du dossier : toutes les données sont restaurées."],
     ["plus", "Nouveau dossier", [0, 0], "Touchez « Nouveau » deux fois pour démarrer un dossier vide. Pensez à sauvegarder le précédent."]] }
 };
-function openBD(key) {
+function openBD(key, onDone) {
   const b = BD[key]; if (!b) return; let i = 0;
   const ov = document.createElement("div"); ov.className = "bd-ov"; ov.setAttribute("role", "dialog"); ov.setAttribute("aria-modal", "true"); ov.setAttribute("aria-label", b.title);
   ov.innerHTML = `<div class="bd-box"><div class="bd-head"><b>${b.title}</b><button class="ghost bd-x" aria-label="Fermer">✕</button></div>
@@ -2245,7 +2443,7 @@ function openBD(key) {
     <div class="bd-foot"><div class="bd-dots">${b.steps.map((_, k) => `<i data-k="${k}"></i>`).join("")}</div><button class="primary bd-next">Suivant</button></div></div>`;
   document.body.appendChild(ov);
   const track = ov.querySelector(".bd-track"), dots = [...ov.querySelectorAll(".bd-dots i")], next = ov.querySelector(".bd-next");
-  const close = () => { ov.remove(); try { localStorage.setItem("bd-" + key + (b.ver || ""), "1"); } catch (_) {} };
+  const close = () => { ov.remove(); try { localStorage.setItem("bd-" + key + (b.ver || ""), "1"); } catch (_) {} if (onDone) { const f = onDone; onDone = null; setTimeout(f, 200); } };
   const sync = () => { i = Math.round(track.scrollLeft / track.clientWidth); dots.forEach((d, k) => d.classList.toggle("on", k === i)); next.textContent = i >= b.steps.length - 1 ? "J'ai compris" : "Suivant"; };
   track.addEventListener("scroll", () => requestAnimationFrame(sync));
   next.onclick = () => { if (i >= b.steps.length - 1) return close(); track.scrollTo({ left: (i + 1) * track.clientWidth, behavior: matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth" }); };
@@ -2260,7 +2458,9 @@ function openBD(key) {
   ["bien", "photos", "visite", "video", "plan"].forEach(k => { const h = document.querySelector(`#v-${k} h2`); const wrap = document.createElement("div"); wrap.className = "h2row"; h.before(wrap); wrap.appendChild(h); wrap.appendChild(help(k)); });
   const dl = document.querySelector(".dossier .field label"); const row = document.createElement("div"); row.className = "h2row small"; dl.before(row); row.appendChild(dl); row.appendChild(help("dossier"));
 })();
-function bdFirstTime(v) { let seen = false; try { seen = localStorage.getItem("bd-" + v + ((BD[v] && BD[v].ver) || "")) === "1"; } catch (_) { seen = true; } if (!seen && BD[v]) setTimeout(() => { if (!document.querySelector(".bd-ov")) openBD(v); }, 500); }
+function bdFirstTime(v) {
+  let welcomed = true; try { welcomed = localStorage.getItem("bd-accueil") === "1"; } catch (_) {}
+  if (!welcomed) { setTimeout(() => { if (!document.querySelector(".bd-ov")) openBD("accueil", () => { if (!AG.name) openProfile(); }); }, 600); return; } let seen = false; try { seen = localStorage.getItem("bd-" + v + ((BD[v] && BD[v].ver) || "")) === "1"; } catch (_) { seen = true; } if (!seen && BD[v]) setTimeout(() => { if (!document.querySelector(".bd-ov")) openBD(v); }, 500); }
 
 /* ============ Assistant (dictée intelligente + questions sur l'application) ============ */
 // Tout fonctionne sur le téléphone : aucune IA payante, aucun envoi de données.
@@ -2356,6 +2556,10 @@ const KB = [
   { k: "installer installation ecran accueil icone telecharger application iphone android", q: "Comment installer l'application ?", a: "Sur iPhone : ouvrez le lien dans Safari, touchez Partager, puis « Sur l\'écran d\'accueil » et « Ajouter ». Sur Android : ouvrez le lien dans Chrome, touchez le menu ⋮ en haut à droite, puis « Installer l\'application » ou « Ajouter à l\'écran d\'accueil ». L\'icône apparaît comme une application normale." },
   { k: "android samsung google chrome marche fonctionne smartphone", q: "L'application marche-t-elle sur Android ?", a: "Oui, avec Chrome. Ouvrez le lien dans Chrome, menu ⋮, puis « Installer l'application ». Tout fonctionne comme sur iPhone ; les dossiers se sauvegardent dans Google Drive ou « Fichiers ». Évitez le navigateur Samsung ou Firefox, certaines fonctions y sont limitées." },
   { k: "contact fin video nom telephone carton final coordonnees", q: "Comment mettre mes coordonnées à la fin de la vidéo ?", a: "Onglet Vidéo, champ « Contact » : tapez votre nom et votre téléphone séparés par un point, par exemple « Marie Dupont · 06 12 34 56 78 ». Ils s'affichent à la fin, sous le logo, et le narrateur les lit. Ils restent enregistrés pour les vidéos suivantes.", tab: "video" },
+  { k: "profil agent mon nom telephone email mail photo coordonnees signature", q: "Comment remplir mon profil ?", a: "Touchez « Mon profil » en haut à droite de l'écran. Indiquez votre nom, votre téléphone, votre e-mail et ajoutez votre photo, puis « Enregistrer mon profil ». Ces informations sont reprises automatiquement à la fin des vidéos, sur la fiche vitrine, les affiches et dans le texte de l'annonce. À faire une seule fois.", guide: "bien" },
+  { k: "ordre photos deplacer changer ordre classer trier reportage glisser premiere photo", q: "Comment changer l'ordre des photos ?", a: "Onglet Photos, dans le reportage : touchez ◀ ou ▶ sous une photo pour la déplacer, ou appuyez longuement dessus puis faites-la glisser. Le numéro en haut de chaque photo montre sa place. C'est cet ordre qui est utilisé dans la vidéo, la fiche vitrine et le kit.", tab: "photos", guide: "photos" },
+  { k: "affiche vendu a vendre sous compromis baisse prix bandeau panneau exclusivite poster instagram story", q: "Comment faire une affiche « Vendu » ou « À vendre » ?", a: "Onglet Bien, touchez « Créer une affiche (À vendre, Vendu…) ». Choisissez le bandeau (À vendre, Vendu, Sous compromis, Nouveauté, Baisse de prix, Exclusivité…), la photo et le format : carré pour les réseaux, story, ou A4 en PDF pour la vitrine. Puis « Enregistrer l'affiche ».", tab: "bien", guide: "bien" },
+  { k: "presentation tutoriel bienvenue decouvrir revoir debut demarrage", q: "Comment revoir la présentation de l'application ?", a: "Touchez « Mon profil » en haut à droite, puis « Revoir la présentation de l'application »." },
   { k: "gratuit gratuite payant prix cout coute combien abonnement payer tarif", q: "L'application est-elle payante ?", a: "Non. L'application est entièrement gratuite, sans abonnement ni achat. Les musiques, les voix du narrateur et la prise de vue 360° sont incluses." },
   { k: "hors ligne sans internet reseau connexion offline", q: "Fonctionne-t-elle sans internet ?", a: "Oui. Après une première ouverture avec internet, tout fonctionne hors connexion. Seules les suggestions d'adresse demandent du réseau." },
   { k: "mise a jour nouvelle version actualiser update", q: "Comment avoir la dernière version ?", a: "Ouvrez l'application avec une connexion internet : elle se met à jour toute seule. Si l'icône a changé, supprimez l'ancienne de l'écran d'accueil et réinstallez-la depuis Safari." },
@@ -2558,8 +2762,9 @@ async function vitrineCanvas() {
     drawPlan(px, pc.width, pc.height, planFit(pc.width, pc.height, 24), { print: true, u: 1.2 }); x.drawImage(pc, colR, ry, pwid, phh); x.strokeStyle = "#E3E5F2"; x.lineWidth = 2; x.strokeRect(colR, ry, pwid, phh); }
   // pied : contact
   x.fillStyle = NAVY; x.fillRect(0, footY, W, H - footY); x.fillStyle = GOLD; x.fillRect(0, footY, W, 6);
-  x.fillStyle = "#FFFFFF"; x.font = `700 30px ${disp}`; x.fillText("Contact", M, footY + 56);
-  x.font = `600 30px ${body}`; x.fillText($("#vAgent").value || "", M, footY + 102, W * .55);
+  let fx = M; if (AG.name) { drawAgentPhoto(x, M + 48, footY + 75, 48); fx = M + 120; } x.textAlign = "left";
+  x.fillStyle = "#FFFFFF"; x.font = `700 30px ${disp}`; x.fillText(AG.name || "Contact", fx, footY + 56, W * .5);
+  x.font = `600 26px ${body}`; x.fillStyle = "#F0B00A"; x.fillText(AG.name ? [AG.tel, AG.mail].filter(Boolean).join(" · ") : ($("#vAgent").value || ""), fx, footY + 100, W * .55 - (fx - M));
   x.textAlign = "right"; x.fillStyle = "#C9CCE6"; x.font = `500 20px ${body}`; x.fillText("Les Professionnels de l'Immobilier – Réseau national", W - M, footY + 56);
   x.fillText("Document non contractuel · " + new Date().toLocaleDateString("fr-FR"), W - M, footY + 86); x.textAlign = "left";
   return c;
@@ -2571,7 +2776,7 @@ async function vitrineBlob() {
 const kitName = () => safeName(dosName());
 $("#fVitrine").onclick = async () => {
   const st = $("#fKitStatus"); st.className = "status"; st.textContent = "Création de la fiche vitrine…"; await frame();
-  try { const r = await offerFile(`Fiche vitrine - ${kitName()}.pdf`, await vitrineBlob(), "pdf"); st.textContent = r === "declined" ? "Enregistrement annulé." : "Fiche vitrine prête." + (contactMissing() ? " Astuce : ajoutez votre nom et téléphone dans l'onglet Vidéo, champ « Contact », pour qu'ils apparaissent sur la fiche." : ""); }
+  try { const r = await offerFile(`Fiche vitrine - ${kitName()}.pdf`, await vitrineBlob(), "pdf"); st.textContent = r === "declined" ? "Enregistrement annulé." : "Fiche vitrine prête." + (contactMissing() ? " Astuce : remplissez « Mon profil » (en haut de l'écran) pour que vos coordonnées et votre photo apparaissent sur la fiche." : ""); }
   catch (_) { st.className = "status err"; st.textContent = "La fiche vitrine n'a pas pu être créée. Réessayez."; }
 };
 $("#fKit").onclick = async () => {
@@ -2616,7 +2821,7 @@ window.addEventListener("hashchange", show);
 window.addEventListener("resize", () => { if (!$("#v-plan").hidden) renderPlan(); });
 
 (async function init() {
-  setMode("single"); restore();
+  setMode("single"); restore(); renderProfBtn(); applyAgent(false);
   await setPhotoSource(canvasToFloat(sampleRoom(0, .5)), null, true);
   renderShoot(); renderRooms(); show(); loadShoot();
 })();

@@ -1,5 +1,5 @@
 // Mode hors ligne : l'application et ses bibliothèques restent disponibles sans réseau.
-const CACHE = "studio-habitat-v26";
+const CACHE = "studio-habitat-v28";
 const CORE = ["./", "index.html", "manifest.webmanifest", "icon-192.png", "icon-512.png", "apple-touch-icon.png"];
 const LIBS = ["https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"];
 self.addEventListener("install", e => {
