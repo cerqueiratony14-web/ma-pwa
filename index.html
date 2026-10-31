@@ -572,6 +572,7 @@ input[type=range]::-moz-range-track{height:6px;border-radius:99px;background:#C9
         <div class="slider"><span>Netteté</span><input type="range" id="sSharp" min="0" max="100" value="35"><output for="sSharp">35</output></div>
         <div class="slider"><span>Redresser</span><input type="range" id="sRot" min="-60" max="60" value="0"><output for="sRot">0°</output></div>
         <hr>
+        <label class="toggle" for="tHQ"><span>Qualité maximale <span class="note">(pleine résolution, jusqu'à 12 Mpx)</span></span><input type="checkbox" id="tHQ"></label>
         <label class="toggle" for="tLogo"><span>Logo du réseau sur la photo</span><input type="checkbox" id="tLogo"></label>
         <label class="toggle" for="tSky"><span>Ciel bleu <span class="note">(photos d'extérieur seulement)</span></span><input type="checkbox" id="tSky"></label>
         <div class="row">
@@ -889,7 +890,7 @@ function lapPyr(p, w, h, n) {
     for (let k = 0; k < o.length; k++) o[k] = G[i].p[k] - u[k]; L.push({ p: o, w: G[i].w, h: G[i].h }); }
   L.push(G[n - 1]); return L;
 }
-function fuse(imgs) {
+function fuse(imgs, keepW) {
   const { w, h } = imgs[0], n = w * h, K = imgs.length;
   const levels = clamp(Math.floor(Math.log2(Math.min(w, h))) - 2, 2, 9);
   const W = imgs.map(im => {
@@ -905,6 +906,7 @@ function fuse(imgs) {
     return wt;
   });
   for (let i = 0; i < n; i++) { let s = 0; for (let k = 0; k < K; k++) s += W[k][i]; for (let k = 0; k < K; k++) W[k][i] /= s; }
+  if (keepW) for (let k = 0; k < K; k++) { let b = W[k]; for (let r = 0; r < 3; r++) b = blur5(b, w, h); keepW.push(b); }
   const out = new Float32Array(n * 3), acc = [null, null, null], plane = new Float32Array(n);
   for (let k = 0; k < K; k++) {
     const Gw = gaussPyr(W[k], w, h, levels); W[k] = null;
@@ -1052,6 +1054,58 @@ function drawRotated(srcCanvas, deg, target) {
   return target;
 }
 function setCompareAspect(img) { $("#cmp").style.aspectRatio = img.w + " / " + img.h; }
+/* ============ Qualité maximale : rendu final en pleine résolution (jusqu'à 12 Mpx), traité par bandes ============ */
+const HQ_MAX = 4096, HQ_PIX = 16e6;
+const hqOn = () => { try { return localStorage.getItem("photo-hq") !== "0"; } catch (_) { return true; } };
+async function fileToFull(f) { let c = await fileToCanvas(f, HQ_MAX); if (c.width * c.height > HQ_PIX) c = drawToCanvas(c, Math.floor(Math.max(c.width, c.height) * Math.sqrt(HQ_PIX / (c.width * c.height)))); return c; }
+// échantillonnage bilinéaire d'une image basse résolution (float RGB ou plan) aux coordonnées pleine résolution
+function bil(d, w, h, ch, nch, fx, fy) { const x0 = fx | 0, y0 = fy | 0, x1 = x0 < w - 1 ? x0 + 1 : x0, y1 = y0 < h - 1 ? y0 + 1 : y0, tx = fx - x0, ty = fy - y0;
+  const a = d[(y0 * w + x0) * nch + ch], b = d[(y0 * w + x1) * nch + ch], c = d[(y1 * w + x0) * nch + ch], e = d[(y1 * w + x1) * nch + ch]; return (a + (b - a) * tx) + ((c + (e - c) * tx) - (a + (b - a) * tx)) * ty; }
+// Fusion HDR en pleine résolution : tons de la fusion (calculée en petit) + détails de chaque exposition, pondérés par sa bonne exposition
+async function fuseFull(fullCans, low, lowImgs, weights) {
+  const W = fullCans[0].width, H = fullCans[0].height, K = fullCans.length, out = document.createElement("canvas"); out.width = W; out.height = H;
+  const ox = out.getContext("2d"), cxs = fullCans.map(c => c.getContext("2d", { willReadFrequently: true })), lw = low.w, lh = low.h, sx = (lw - 1) / Math.max(1, W - 1), sy = (lh - 1) / Math.max(1, H - 1), S = 192;
+  for (let y0 = 0; y0 < H; y0 += S) {
+    const sh = Math.min(S, H - y0), src = cxs.map(x => x.getImageData(0, y0, W, sh).data), img = ox.createImageData(W, sh), o = img.data;
+    for (let yy = 0; yy < sh; yy++) { const fy = (y0 + yy) * sy;
+      for (let x = 0; x < W; x++) { const fx = x * sx, j = (yy * W + x) * 4;
+        for (let ch = 0; ch < 3; ch++) { let v = bil(low.d, lw, lh, ch, 3, fx, fy);
+          for (let k = 0; k < K; k++) { const wk = bil(weights[k], lw, lh, 0, 1, fx, fy); if (wk < .02) continue; v += wk * (src[k][j + ch] / 255 - bil(lowImgs[k].d, lw, lh, ch, 3, fx, fy)); }
+          o[j + ch] = v <= 0 ? 0 : v >= 1 ? 255 : v * 255 + .5; } o[j + 3] = 255; } }
+    ox.putImageData(img, 0, y0); if ((y0 / S) % 4 === 3) await frame();
+  }
+  return out;
+}
+// Retouche (+ ciel bleu + netteté) appliquée au fichier pleine résolution, par bandes de lignes
+async function retouchFull(full, auto, u, skyFrom) {
+  const W = full.width, H = full.height, out = document.createElement("canvas"); out.width = W; out.height = H;
+  const ix = full.getContext("2d", { willReadFrequently: true }), ox = out.getContext("2d"), S = 160;
+  const g = auto.gamma * Math.pow(2, -u.bright * .9), c = clamp(auto.contrast + u.contrast * .6, -.6, 1), LUT = new Float32Array(1025);
+  for (let k = 0; k <= 1024; k++) { let v = Math.pow(k / 1024, g); const sm = v * v * (3 - 2 * v); v = v + c * (sm - v); LUT[k] = clamp(v, 0, 1); }
+  const mR = auto.wbR * (1 + u.warm * .12), mB = auto.wbB * (1 - u.warm * .12), bl = auto.black, sc = 1 / (auto.white - auto.black), vib = auto.vibrance + u.vib * .6;
+  const mk = skyFrom ? skyMask(skyFrom) : null, top = [.25, .5, .82], bot = [.72, .84, .95], k = u.sharp > 0 ? u.sharp * 1.2 : 0;
+  const tone = new Float32Array(W * (S + 2) * 3);
+  for (let y0 = 0; y0 < H; y0 += S) {
+    const ya = Math.max(0, y0 - 1), yb = Math.min(H, y0 + S + 1), rows = yb - ya, d = ix.getImageData(0, ya, W, rows).data;
+    for (let r = 0; r < rows; r++) { const Y = ya + r, t = mk ? clamp(Y / H / mk.horizon, 0, 1) : 0, my = mk ? Math.min(mk.h - 1, Math.floor(Y / H * mk.h)) : 0;
+      for (let x = 0; x < W; x++) { const i = (r * W + x) * 4, j = (r * W + x) * 3;
+        let R = LUT[(clamp((d[i] / 255 * mR - bl) * sc, 0, 1) * 1024) | 0], G = LUT[(clamp((d[i + 1] / 255 - bl) * sc, 0, 1) * 1024) | 0], B = LUT[(clamp((d[i + 2] / 255 * mB - bl) * sc, 0, 1) * 1024) | 0];
+        const mx = Math.max(R, G, B), mn = Math.min(R, G, B), m = (R + G + B) / 3, a = vib >= 0 ? vib * (1 - (mx - mn)) : vib;
+        R = clamp(m + (R - m) * (1 + a), 0, 1); G = clamp(m + (G - m) * (1 + a), 0, 1); B = clamp(m + (B - m) * (1 + a), 0, 1);
+        if (mk) { const al = bil(mk.m, mk.w, mk.h, 0, 1, Math.min(mk.w - 1, x / W * mk.w), Math.min(mk.h - 1, Y / H * mk.h)); if (al >= .01) { const L = lum(R, G, B), tex = (L - .8) * .35;
+          R = R * (1 - al) + clamp(top[0] + (bot[0] - top[0]) * t + tex, 0, 1) * al; G = G * (1 - al) + clamp(top[1] + (bot[1] - top[1]) * t + tex, 0, 1) * al; B = B * (1 - al) + clamp(top[2] + (bot[2] - top[2]) * t + tex, 0, 1) * al; } }
+        tone[j] = R; tone[j + 1] = G; tone[j + 2] = B; } }
+    const r0 = y0 - ya, n = Math.min(S, H - y0), img = ox.createImageData(W, n), o = img.data;
+    for (let r = 0; r < n; r++) { const rr = r + r0, ru = rr > 0 ? rr - 1 : rr, rd = rr < rows - 1 ? rr + 1 : rr;
+      for (let x = 0; x < W; x++) { const xl = x > 0 ? x - 1 : x, xr = x < W - 1 ? x + 1 : x, j = (rr * W + x) * 3, q = (r * W + x) * 4;
+        for (let ch = 0; ch < 3; ch++) { let v = tone[j + ch];
+          if (k) { let s9 = 0; for (const R2 of [ru, rr, rd]) { const b2 = R2 * W * 3 + ch; s9 += tone[b2 + xl * 3] + tone[b2 + x * 3] + tone[b2 + xr * 3]; } v = v + k * (v - s9 / 9); }
+          o[q + ch] = v <= 0 ? 0 : v >= 1 ? 255 : v * 255 + .5; } o[q + 3] = 255; } }
+    ox.putImageData(img, 0, y0); if ((y0 / S) % 4 === 3) await frame();
+  }
+  return out;
+}
+
 let renderPending = false;
 function renderPhoto() {
   if (!P.prev) return;
@@ -1067,22 +1121,57 @@ function renderPhoto() {
   });
 }
 async function setPhotoSource(img, beforeImg, isSample) {
-  P.src = img; P.isSample = !!isSample; P.blurs = []; if ($("#blurUndo")) $("#blurUndo").hidden = true;
+  P.src = img; P.full = null; P.isSample = !!isSample; P.blurs = []; if ($("#blurUndo")) $("#blurUndo").hidden = true;
   P.prev = resizeFloat(img, 1100); P.prevBefore = resizeFloat(beforeImg || img, 1100);
   P.auto = analyse(P.prev); P.autoFull = analyse(P.src);
   $("#exBadge").hidden = !isSample;
   setCompareAspect(P.prev); renderPhoto();
 }
+
+/* Alignement automatique des expositions (méthode des bitmaps de seuil médian, insensible à l'exposition) */
+function mtbOf(img) { const n = img.w * img.h, g = new Float32Array(n), d = img.d; for (let i = 0; i < n; i++) g[i] = lum(d[i * 3], d[i * 3 + 1], d[i * 3 + 2]);
+  const s = Array.from(g.filter((_, i) => i % 7 === 0)).sort((a, b) => a - b), med = s[s.length >> 1]; return { g, w: img.w, h: img.h, med }; }
+function halfG(m) { const w = m.w >> 1, h = m.h >> 1, g = new Float32Array(w * h); for (let y = 0; y < h; y++) for (let x = 0; x < w; x++) { const i = 2 * y * m.w + 2 * x; g[y * w + x] = (m.g[i] + m.g[i + 1] + m.g[i + m.w] + m.g[i + m.w + 1]) / 4; } return { g, w, h, med: m.med }; }
+function mtbShift(ref, mov) {
+  let A = [ref], B = [mov]; while (A[A.length - 1].w > 48 && A.length < 7) { A.push(halfG(A[A.length - 1])); B.push(halfG(B[B.length - 1])); }
+  let dx = 0, dy = 0;
+  for (let l = A.length - 1; l >= 0; l--) { dx *= 2; dy *= 2; const a = A[l], b = B[l], w = a.w, h = a.h, ex = .016; let best = 1e18, bx = dx, by = dy;
+    for (let oy = -1; oy <= 1; oy++) for (let ox = -1; ox <= 1; ox++) { const sx = dx + ox, sy = dy + oy; let err = 0;
+      for (let y = Math.max(0, -sy); y < Math.min(h, h - sy); y += 1) { const ra = y * w, rb = (y + sy) * w;
+        for (let x = Math.max(0, -sx); x < Math.min(w, w - sx); x++) { const va = a.g[ra + x], vb = b.g[rb + x + sx];
+          if (Math.abs(va - a.med) < ex || Math.abs(vb - b.med) < ex) continue; if ((va > a.med) !== (vb > b.med)) err++; } }
+      if (err < best) { best = err; bx = sx; by = sy; } }
+    dx = bx; dy = by; }
+  return { dx, dy };
+}
+function shiftCrop(img, dx, dy, x0, y0, W, H) { const o = new Float32Array(W * H * 3), d = img.d;
+  for (let y = 0; y < H; y++) for (let x = 0; x < W; x++) { const sx = clamp(x + x0 + dx, 0, img.w - 1), sy = clamp(y + y0 + dy, 0, img.h - 1), j = (sy * img.w + sx) * 3, k = (y * W + x) * 3; o[k] = d[j]; o[k + 1] = d[j + 1]; o[k + 2] = d[j + 2]; }
+  return { w: W, h: H, d: o }; }
 async function runFusion(canvases, isSample) {
   const st = $("#pStatus"); st.className = "status"; st.textContent = "Fusion des expositions en cours…"; await frame(); await sleep(30);
   const maxS = 1400, base = canvases.map(c => canvasToFloat(drawToCanvas(c, maxS)));
   const w = Math.min(...base.map(b => b.w)), h = Math.min(...base.map(b => b.h));
   const same = base.map(b => (b.w === w && b.h === h) ? b : canvasToFloat((() => { const c = document.createElement("canvas"); c.width = w; c.height = h; c.getContext("2d").drawImage(floatToCanvas(b), 0, 0, w, h); return c; })()));
-  const t0 = performance.now(); const fused = fuse(same);
+  // alignement : on recale chaque photo sur l'exposition du milieu (mains qui bougent entre deux photos)
+  const ref = same.slice().sort((a, b) => Math.abs(meanL(a) - .45) - Math.abs(meanL(b) - .45))[0], mref = mtbOf(ref);
+  const sh = same.map(im => im === ref ? { dx: 0, dy: 0 } : mtbShift(mref, mtbOf(im)));
+  const mxL = Math.max(0, ...sh.map(o => -o.dx)), mxR = Math.max(0, ...sh.map(o => o.dx)), myT = Math.max(0, ...sh.map(o => -o.dy)), myB = Math.max(0, ...sh.map(o => o.dy));
+  const CW = w - mxL - mxR, CH = h - myT - myB, aligned = (CW > w * .6 && CH > h * .6) ? same.map((im, k) => shiftCrop(im, sh[k].dx, sh[k].dy, mxL, myT, CW, CH)) : same;
+  const moved = Math.max(...sh.map(o => Math.hypot(o.dx, o.dy)));
+  const t0 = performance.now(), wts = []; const fused = fuse(aligned, wts);
   // l'image « avant » est l'exposition la plus proche du milieu
-  const mid = same.slice().sort((a, b) => Math.abs(meanL(a) - .45) - Math.abs(meanL(b) - .45))[0];
-  await setPhotoSource(fused, mid, isSample);
-  st.textContent = `${canvases.length} expositions fusionnées en ${((performance.now() - t0) / 1000).toFixed(1)} s.`;
+  const mid = aligned[same.indexOf(ref)] || ref;
+  let full = null;
+  if (!isSample && hqOn() && canvases[0].width > w * 1.15) {
+    st.textContent = "Fusion en pleine qualité…"; await frame();
+    const FW0 = canvases[0].width, FH0 = canvases[0].height, sc = FW0 / w, al = aligned !== same;
+    const FW = al ? Math.round(CW * sc) : FW0, FH = al ? Math.round(CH * sc) : FH0;
+    const fulls = canvases.map((c, k) => { const o = document.createElement("canvas"); o.width = FW; o.height = FH;
+      const ox = al ? -(mxL + sh[k].dx) * sc : 0, oy = al ? -(myT + sh[k].dy) * sc : 0; o.getContext("2d").drawImage(c, ox, oy, FW0, FH0); return o; });
+    try { full = await fuseFull(fulls, fused, aligned, wts); } catch (_) { full = null; }
+  }
+  await setPhotoSource(fused, mid, isSample); P.full = full;
+  st.textContent = `${canvases.length} expositions fusionnées en ${((performance.now() - t0) / 1000).toFixed(1).replace(".", ",")} s${moved >= 2 ? " · photos recalées automatiquement" : ""}${full ? ` · pleine qualité ${full.width} × ${full.height} px` : ""}.`;
 }
 function meanL(img) { let s = 0; const d = img.d, n = img.w * img.h; for (let i = 0; i < n; i += 7) s += lum(d[i * 3], d[i * 3 + 1], d[i * 3 + 2]); return s / Math.ceil(n / 7); }
 
@@ -1102,7 +1191,7 @@ $("#pick").onchange = async e => {
   const st = $("#pStatus"); st.className = "status"; st.textContent = "Chargement…";
   try {
     if (P.mode === "fusion") {
-      const cs = []; for (const f of files.slice(0, 5)) cs.push(await fileToCanvas(f, 1600));
+      const cs = []; for (const f of files.slice(0, hqOn() ? 3 : 5)) cs.push(hqOn() ? await fileToFull(f) : await fileToCanvas(f, 1600));
       if (cs.length >= 2) { P.fq = []; renderFuse(); await runFusion(cs, false); }
       else { // photo prise avec l'appareil : on les garde une par une jusqu'à 3
         P.fq = (P.fq || []).concat(cs).slice(0, 5); renderFuse(); st.textContent = "";
@@ -1110,7 +1199,7 @@ $("#pick").onchange = async e => {
         else { $("#fuseBox").scrollIntoView({ block: "nearest", behavior: "smooth" }); return; }
       }
     } else {
-      const c = await fileToCanvas(files[0], 2048); await setPhotoSource(canvasToFloat(c), null, false); st.textContent = "";
+      const full = await fileToFull(files[0]), c = drawToCanvas(full, 2048); await setPhotoSource(canvasToFloat(c), null, false); P.full = full; st.textContent = hqOn() ? `Photo en pleine qualité : ${full.width} × ${full.height} pixels.` : "";
     }
     resetSliders();
   } catch (err) { st.className = "status err"; st.textContent = "Cette photo n'a pas pu être ouverte. Réessayez, ou prenez la photo directement avec « Prendre une photo »."; }
@@ -1136,9 +1225,13 @@ function applyLogo(c) {
   x.globalAlpha = 1; x.drawImage(lg, bx + pd, by + pd, lw, lh); x.restore(); return c;
 }
 try { $("#tLogo").checked = localStorage.getItem("photo-logo") !== "0"; } catch (_) { $("#tLogo").checked = true; }
+$("#tHQ").checked = hqOn(); $("#tHQ").addEventListener("change", e => { try { localStorage.setItem("photo-hq", e.target.checked ? "1" : "0"); } catch (_) {} $("#pStatus").className = "status"; $("#pStatus").textContent = e.target.checked ? "Qualité maximale : les prochaines photos seront traitées en pleine résolution." : "Qualité standard (2 048 pixels) : plus rapide sur les téléphones anciens."; });
 $("#tLogo").addEventListener("change", e => { try { localStorage.setItem("photo-logo", e.target.checked ? "1" : "0"); } catch (_) {} renderPhoto(); });
-function finalPhotoCanvas() {
-  const u = readU(); let r = retouch(P.src, P.autoFull, u);
+
+async function finalPhotoCanvas() {
+  const u = readU();
+  if (P.full && hqOn() && !P.isSample) { const c = await retouchFull(P.full, P.autoFull, u, P.sky ? P.src : null); return applyLogo(applyBlurs(drawRotated(c, u.rot, document.createElement("canvas")))); }
+  let r = retouch(P.src, P.autoFull, u);
   if (P.sky) r = applySky(r, 1, P.src).img;
   return applyLogo(applyBlurs(drawRotated(floatToCanvas(r), u.rot, document.createElement("canvas"))));
 }
@@ -1176,9 +1269,11 @@ $("#cmp").addEventListener("click", e => {
 const toBlob = (c, type, q) => new Promise(r => c.toBlob(r, type, q));
 $("#savePhoto").onclick = async () => {
   if (!P.src) return; const st = $("#pStatus"); st.className = "status"; st.textContent = "Préparation de la photo…"; await frame();
-  const c = finalPhotoCanvas(), blob = await toBlob(c, "image/jpeg", .92);
+  const c = await finalPhotoCanvas(), blob = await toBlob(c, "image/jpeg", .93);
+  st.textContent = `Photo prête : ${c.width} × ${c.height} pixels (${(c.width * c.height / 1e6).toFixed(1).replace(".", ",")} Mpx).`;
+  const info = `${c.width} × ${c.height} pixels (${(c.width * c.height / 1e6).toFixed(1).replace(".", ",")} Mpx)`;
   const r = await offerFile(`photo-${Date.now().toString(36)}.jpg`, blob, "image");
-  st.textContent = r === "saved" ? "Photo enregistrée." : r === "declined" ? "Enregistrement annulé." : "";
+  st.textContent = r === "saved" ? `Photo enregistrée en ${info}.` : r === "declined" ? "Enregistrement annulé." : `Photo prête : ${info}.`;
 };
 const DB = {
   open() { if (this.p) return this.p; this.p = new Promise((res) => { try { const r = indexedDB.open("studio-habitat", 1);
@@ -1189,16 +1284,17 @@ const DB = {
 async function shootItem(rec) {
   const bmp = await createImageBitmap(rec.blob), c = drawToCanvas(bmp, 1920);
   const url = await toBlob(drawToCanvas(c, 240), "image/jpeg", .8).then(b => URL.createObjectURL(b));
-  return { id: rec.id, canvas: c, thumb: url, name: rec.name };
+  return { id: rec.id, canvas: c, thumb: url, name: rec.name, blob: rec.blob };
 }
 async function loadShoot() { try { const recs = await DB.all(); if (!recs || !recs.length) return; let ord = []; try { ord = JSON.parse(localStorage.getItem("studio-habitat-order") || "[]"); } catch (_) {}
   const pos = id => { const k = ord.indexOf(id); return k < 0 ? 1e9 : k; }; recs.sort((a, b) => pos(a.id) - pos(b.id) || (a.id < b.id ? -1 : 1)); for (const r of recs) P.shoot.push(await shootItem(r)); renderShoot(); } catch (_) {} }
 $("#addToShoot").onclick = async () => {
-  if (!P.src) return; const c = finalPhotoCanvas(), small = drawToCanvas(c, 1920);
+  if (!P.src) return; $("#pStatus").className = "status"; $("#pStatus").textContent = "Ajout au reportage…"; await frame();
+  const c = await finalPhotoCanvas(), small = drawToCanvas(c, 1920);
   const url = await toBlob(drawToCanvas(c, 240), "image/jpeg", .8).then(b => URL.createObjectURL(b));
   const id = Date.now().toString(36), name = P.isSample ? "Exemple" : "Photo " + (P.shoot.length + 1);
-  P.shoot.push({ id, canvas: small, thumb: url, name });
-  toBlob(small, "image/jpeg", .9).then(blob => DB.put({ id, name, blob }));
+  const full = await toBlob(c, "image/jpeg", .92); P.shoot.push({ id, canvas: small, thumb: url, name, blob: full });
+  DB.put({ id, name, blob: full });
   saveShootOrder(); renderShoot(); $("#pStatus").className = "status"; $("#pStatus").textContent = "Photo ajoutée au reportage.";
 };
 function renderShoot() {
@@ -2926,7 +3022,7 @@ const BD = {
     ["compare", "Retouche automatique", [0, 0], "Lumière et couleurs sont corrigées automatiquement. Faites glisser le curseur pour comparer avant et après."],
     ["sun", "Fusion HDR", [0, 24], "Pièce avec une fenêtre très lumineuse : touchez « Fusion HDR », puis prenez la même vue 2 ou 3 fois sans bouger (sombre, normale, claire). Les photos s'ajoutent une par une et la fusion se lance à la 3e, ou avec « Fusionner »."],
     ["sky", "Ciel bleu et floutage", [-21, 39], "Façade : cochez « Ciel bleu ». Photo de famille, visage ou plaque : « Flouter une zone », puis touchez l'endroit concerné."],
-    ["check", "Enregistrer", [0, 29], "« Ajouter au reportage » pour la vidéo, ou « Enregistrer la photo » puis « Enregistrer l'image »."],
+    ["check", "Enregistrer", [0, 29], "« Ajouter au reportage » pour la vidéo, ou « Enregistrer la photo » puis « Enregistrer l'image ». Avec « Qualité maximale », la photo est enregistrée en pleine résolution (jusqu'à 12 Mpx)."],
     ["order", "Choisir l'ordre des photos", [-14, 30], "Dans le reportage, les flèches ◀ ▶ déplacent une photo ; vous pouvez aussi appuyer longuement sur une photo puis la faire glisser. L'ordre est celui de la vidéo, de la fiche vitrine et du kit."],
     ["share", "Home staging virtuel", [0, 36], "Pour meubler une pièce vide par intelligence artificielle : « Ouvrir le service de home staging » (service extérieur payant). Enregistrez d'abord la photo, puis indiquez « Aménagement virtuel » dans l'annonce."]] },
   visite: { title: "Créer une visite 360°", ver: "3", steps: [
@@ -3114,6 +3210,7 @@ const KB = [
   { k: "home staging meubler piece vide virtuel decorer amenager ia", q: "Peut-on faire du home staging ?", a: "Pas dans l'application : le home staging par intelligence artificielle se fait avec un service extérieur payant. Onglet Photos, touchez « Ouvrir le service de home staging ». Enregistrez d'abord votre photo, puis indiquez « Aménagement virtuel » dans l'annonce.", tab: "photos" },
   { k: "porte fenetre baie vitree ouverture mur ouvrir piece cuisine ouverte salon plan 3d", q: "Comment mettre des portes et des fenêtres sur le plan ?", a: "Onglet Plan, touchez « ＋ Porte », « ＋ Fenêtre », « ＋ Baie vitrée » ou « ＋ Ouverture », puis touchez le mur sur le plan. Faites glisser l'élément pour le déplacer le long du mur et réglez sa largeur dans la liste. Une ouverture perce le mur entre deux pièces, par exemple pour ouvrir la cuisine sur le séjour. Tout apparaît aussi en 3D.", tab: "plan", guide: "plan" },
   { k: "accueil page d'accueil menu demarrage ouvrir application debut tableau bord", q: "À quoi sert la page d'accueil ?", a: "L'accueil s'affiche à chaque ouverture : vous y retrouvez le dossier du bien en cours, « Mes biens » pour reprendre un bien, et des raccourcis vers chaque outil (fiche, photos, 360°, vidéo, plan, avis de valeur, affiche, fiche vitrine)." },
+  { k: "qualite resolution 4k 8k haute definition mpx pixels nettete grande taille", q: "En quelle qualité sont les photos ?", a: "Avec « Qualité maximale » (activée par défaut, onglet Photos), les photos et les fusions HDR sont enregistrées en pleine résolution, jusqu'à 12 mégapixels (4032 × 3024), le maximum que l'iPhone donne à une application web. Le 8K n'est pas possible depuis un navigateur. Sur un iPhone ancien, décochez « Qualité maximale » pour aller plus vite.", tab: "photos" },
   { k: "gratuit gratuite payant prix cout coute combien abonnement payer tarif", q: "L'application est-elle payante ?", a: "Non. L'application est entièrement gratuite, sans abonnement ni achat. Les musiques, les voix du narrateur et la prise de vue 360° sont incluses." },
   { k: "hors ligne sans internet reseau connexion offline", q: "Fonctionne-t-elle sans internet ?", a: "Oui. Après une première ouverture avec internet, tout fonctionne hors connexion. Seules les suggestions d'adresse demandent du réseau." },
   { k: "mise a jour nouvelle version actualiser update", q: "Comment avoir la dernière version ?", a: "Ouvrez l'application avec une connexion internet : elle se met à jour toute seule. Si l'icône a changé, supprimez l'ancienne de l'écran d'accueil et réinstallez-la depuis Safari." },
@@ -3343,7 +3440,7 @@ $("#fKit").onclick = async () => {
   const st = $("#fKitStatus"); st.className = "status"; st.textContent = "Préparation du kit…"; await frame();
   const n = kitName(), files = [];
   try {
-    for (let i = 0; i < P.shoot.length; i++) files.push(new File([await toBlob(P.shoot[i].canvas, "image/jpeg", .9)], `${n} - photo ${i + 1}.jpg`, { type: "image/jpeg" }));
+    for (let i = 0; i < P.shoot.length; i++) files.push(new File([P.shoot[i].blob || await toBlob(P.shoot[i].canvas, "image/jpeg", .9)], `${n} - photo ${i + 1}.jpg`, { type: "image/jpeg" }));
     files.push(new File([$("#fAd").value], `${n} - annonce.txt`, { type: "text/plain" }));
     files.push(new File([await vitrineBlob()], `${n} - fiche vitrine.pdf`, { type: "application/pdf" }));
     if (PL.rooms.length && !PL.isSample) files.push(new File([await planBlob()], `${n} - plan.png`, { type: "image/png" }));
