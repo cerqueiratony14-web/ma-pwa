@@ -1,5 +1,5 @@
 // Mode hors ligne : l'application et ses bibliothèques restent disponibles sans réseau.
-const CACHE = "studio-habitat-v29";
+const CACHE = "studio-habitat-v31";
 const CORE = ["./", "index.html", "manifest.webmanifest", "icon-192.png", "icon-512.png", "apple-touch-icon.png"];
 const LIBS = ["https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"];
 self.addEventListener("install", e => {
@@ -14,7 +14,7 @@ self.addEventListener("fetch", e => {
   const url = new URL(e.request.url);
   // page : réseau d'abord (pour recevoir les mises à jour), cache si hors ligne
   if (e.request.mode === "navigate") {
-    e.respondWith(fetch(e.request).then(r => { const c = r.clone(); caches.open(CACHE).then(k => k.put("index.html", c)); return r; }).catch(() => caches.match("index.html")));
+    e.respondWith(fetch(e.request.url, { cache: "no-cache", credentials: "same-origin" }).then(r => { const c = r.clone(); caches.open(CACHE).then(k => k.put("index.html", c)); return r; }).catch(() => caches.match("index.html")));
     return;
   }
   // voix du narrateur et musiques (gros fichiers) : téléchargées une fois, gardées à part
