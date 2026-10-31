@@ -112,7 +112,7 @@ header.top{position:relative}
 .profbtn .av img{width:100%;height:100%;object-fit:cover}.profbtn .av svg{width:24px;height:24px;fill:none;stroke:#fff;stroke-width:2}
 .profbtn .pl{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:84px}
 @media (min-width:761px){.profbtn{top:50%;transform:translateY(-50%)}}
-.bd-box.prof,.bd-box.poster{padding:0 16px 16px;gap:12px;display:flex;flex-direction:column;overflow:auto;max-height:92vh}
+.bd-box.prof,.bd-box.poster{padding:0 16px 16px;gap:12px;display:flex;flex-direction:column;overflow:auto;max-height:92vh}.bd-box.prof>*,.bd-box.poster>*{flex:none}
 .profrow{display:flex;align-items:center;gap:14px}.profav{width:84px;height:84px;border-radius:50%;background:#070C9B;color:#fff;display:flex;align-items:center;justify-content:center;font-size:30px;font-weight:800;overflow:hidden;flex:none;box-shadow:0 0 0 3px #F0B00A}
 .profav img{width:100%;height:100%;object-fit:cover}.profbtns{display:flex;flex-direction:column;gap:6px;flex:1}
 .pstwrap{background:#E9EBF6;border-radius:14px;padding:10px;display:flex;justify-content:center}.pstwrap canvas{max-width:100%;max-height:46vh;width:auto;height:auto;border-radius:6px;box-shadow:0 6px 20px rgba(2,6,44,.25)}
@@ -123,6 +123,18 @@ header.top{position:relative}
 .strip .th{-webkit-touch-callout:none;user-select:none;-webkit-user-select:none;transition:transform .12s}.strip .th.dragging{transition:none;z-index:3;box-shadow:0 10px 24px rgba(2,6,44,.35);border-color:var(--accent)}
 .strip.sorting{overflow-x:hidden}
 .linkbtn{background:none;border:0;padding:0;min-height:0;color:var(--accent);font:inherit;font-weight:700;text-decoration:underline;text-transform:none;letter-spacing:0;cursor:pointer}
+.biens{display:flex;gap:10px;overflow-x:auto;padding:4px 2px 6px}.bien{position:relative;flex:none;width:150px}
+.bien .bopen{display:flex;flex-direction:column;align-items:flex-start;gap:3px;width:100%;padding:0 0 8px;border-radius:14px;overflow:hidden;min-height:0;text-align:left;background:var(--surface)}
+.bien .bopen img,.bien .noimg{width:100%;height:84px;object-fit:cover;display:flex;align-items:center;justify-content:center;background:#070C9B;color:#fff;font-size:28px;font-weight:800}
+.bien b{font-size:13.5px;padding:0 9px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%}.bien small{font-size:11.5px;color:var(--muted);padding:0 9px}
+.bien.cur .bopen{border:2px solid var(--accent)}.bien .bdel{position:absolute;top:4px;right:4px;min-height:0;height:26px;min-width:26px;padding:0 7px;border-radius:99px;font-size:12px;background:rgba(255,255,255,.92)}.bien .bdel.armed{background:#D7221F;color:#fff;border-color:#D7221F}
+details.docs{margin-top:6px;border:1px solid var(--line);border-radius:14px;padding:10px 12px;background:var(--surface)}details.docs summary{display:flex;align-items:center;gap:10px;cursor:pointer;list-style:none}details.docs summary::-webkit-details-marker{display:none}
+.docbar{flex:1;height:6px;border-radius:99px;background:#E3E5F2;overflow:hidden}.docbar i{display:block;height:100%;background:#00A06D;width:0}
+.doclist{display:flex;flex-direction:column;gap:4px;margin-top:10px}.docrow{display:flex;gap:10px;align-items:flex-start;font-size:14px;padding:6px 2px}.docrow input{width:20px;height:20px;accent-color:#00A06D;flex:none;margin-top:1px}.docrow small{color:var(--muted)}
+.calcbox{border:1px solid var(--line);border-radius:14px;padding:10px 12px;display:flex;flex-direction:column;gap:8px}
+.staging{border:1px dashed var(--line);border-radius:14px;padding:12px;display:flex;flex-direction:column;gap:8px;font-size:13.5px;color:var(--muted)}.staging b{color:var(--ink);font-size:14.5px}
+.avlist{display:flex;flex-direction:column;gap:6px;max-height:38vh;overflow:auto}.avrow{display:flex;gap:10px;align-items:flex-start;font-size:14px;padding:8px 10px;border-radius:12px;background:var(--sunk)}.avrow input{width:20px;height:20px;flex:none;margin-top:2px}.avrow small{color:var(--muted)}
+.avstats{font-size:14.5px;line-height:1.5;background:#E8F6EF;border-radius:12px;padding:10px 12px}.avstats:empty{display:none}details.avadd summary{cursor:pointer;font-weight:600;color:var(--accent);font-size:14px}details.avadd[open]{display:flex;flex-direction:column;gap:8px}
 .cliplist{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}.cliplist span{display:inline-flex;align-items:center;gap:6px;background:#EEF0FB;color:#02062C;border-radius:999px;padding:5px 6px 5px 12px;font-size:13px;font-weight:600}
 .cliplist button{border:0;background:#02062C;color:#fff;border-radius:999px;width:24px;height:24px;padding:0;font-size:14px;line-height:24px;min-height:0}
 label.file input{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%}
@@ -316,6 +328,7 @@ hr{border:0;border-top:1px solid var(--line);margin:2px 0}
       <button id="dosNew"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>Nouveau</button>
     </div>
     <p class="status" id="dosStatus"></p>
+    <div id="biensWrap" hidden><div class="lbl">Mes biens <span class="badge" id="biensCount"></span></div><div class="biens" id="biens"></div><p class="note">Touchez un bien pour le reprendre là où vous l'aviez laissé. La liste reste sur ce téléphone ; pour un autre téléphone, utilisez « Sauvegarder ».</p></div>
   </section>
 
   <nav class="tabs" aria-label="Outils">
@@ -379,6 +392,7 @@ hr{border:0;border-top:1px solid var(--line);margin:2px 0}
           <div class="field"><label for="fMandat">N° de mandat</label><input type="text" id="fMandat"></div>
           <div class="field"><label for="fOwner">Propriétaire (privé)</label><input type="text" id="fOwner" placeholder="Nom, téléphone"></div>
         </div>
+        <details class="docs" id="fDocsBox"><summary><span class="lbl">Documents du mandat</span><span class="badge" id="fDocsCount"></span><span class="docbar"><i id="fDocsBar"></i></span></summary><div id="fDocs" class="doclist"></div><p class="note">Cochez les documents au fur et à mesure : la liste est gardée avec le dossier du bien. Les documents de copropriété s'affichent pour un appartement.</p></details>
       </div>
       <div class="panel">
         <span class="lbl">Utiliser la fiche</span>
@@ -386,14 +400,26 @@ hr{border:0;border-top:1px solid var(--line);margin:2px 0}
         <div class="applied" id="fApplied" hidden></div>
         <p class="note">Recopie la fiche dans les autres onglets : titre, détails, prix, classe énergie et description de la vidéo, nom du plan et nom du dossier. Rien ne s'affiche ici : le résultat se voit dans les onglets Vidéo et Plan.</p>
         <hr>
+        <span class="lbl">Estimer le bien</span>
+        <button id="fAvis">Créer un avis de valeur</button>
+        <p class="note">Recherche les ventes récentes autour du bien (données publiques de l'État), calcule une fourchette de prix et prépare un avis de valeur en PDF à remettre au vendeur.</p>
+        <hr>
         <span class="lbl">Diffuser le bien</span>
         <button class="primary" id="fVitrine">Créer la fiche vitrine (PDF)</button>
         <button id="fPoster">Créer une affiche (À vendre, Vendu…)</button>
         <button id="fKit">Partager le kit annonce</button>
+        <label class="toggle" for="fCalcShow"><span>Afficher les calculs pour l'acquéreur sur la fiche vitrine</span><input type="checkbox" id="fCalcShow"></label>
+        <div class="calcbox" id="fCalcBox" hidden>
+          <div class="row2"><div class="field"><label for="fCalcKind">Logement</label><select id="fCalcKind" class="txt"><option value="ancien">Ancien (frais ≈ 8 %)</option><option value="neuf">Neuf (frais ≈ 2,5 %)</option></select></div><div class="field"><label for="fCalcApport">Apport (€)</label><input type="number" id="fCalcApport" inputmode="numeric" min="0" placeholder="0"></div></div>
+          <div class="row2"><div class="field"><label for="fCalcTaux">Taux du crédit (%)</label><input type="text" id="fCalcTaux" inputmode="decimal" placeholder="3,5"></div><div class="field"><label for="fCalcDuree">Durée (ans)</label><select id="fCalcDuree" class="txt"><option>15</option><option selected>20</option><option>25</option></select></div></div>
+          <p class="note" id="fCalcOut"></p>
+        </div>
         <p class="note">Le kit regroupe les photos du reportage, le texte de l'annonce, la fiche vitrine, le plan et la dernière vidéo créée.</p>
         <p class="status" id="fKitStatus"></p>
         <hr>
         <span class="lbl">Texte de l'annonce</span>
+        <div class="field"><label for="fLang">Langue de l'annonce</label><select id="fLang" class="txt"><option value="fr">Français</option><option value="en">English (anglais)</option><option value="de">Deutsch (allemand)</option><option value="es">Español (espagnol)</option><option value="nl">Nederlands (néerlandais)</option><option value="it">Italiano (italien)</option></select></div>
+        <p class="note" id="fLangSt"></p>
         <textarea id="fAd" rows="12" readonly class="adtext"></textarea>
         <button id="fCopy">Copier le texte de l'annonce</button>
         <p class="status" id="fStatus"></p>
@@ -444,6 +470,7 @@ hr{border:0;border-top:1px solid var(--line);margin:2px 0}
           <button class="ghost" id="blurUndo" hidden>Annuler le dernier flou</button>
         </div>
         <p class="note" id="blurNote" hidden>Touchez la photo à l'endroit à flouter : photo de famille, visage, plaque, adresse.</p>
+        <div class="staging"><b>Home staging virtuel</b><span>Meubler une pièce vide par intelligence artificielle se fait avec un service extérieur payant (Genroom : sans abonnement, de 0,27 à 0,55 € la photo selon le pack, 6 photos offertes à l'inscription). Enregistrez votre photo, puis envoyez-la sur leur site. Dans l'annonce, indiquez « Aménagement virtuel ».</span><a class="btn" href="https://genroom.io/fr/virtual-staging-real-estate" target="_blank" rel="noopener">Ouvrir le service de home staging</a></div>
         <hr>
         <div class="row">
           <button class="primary" id="addToShoot">Ajouter au reportage</button>
@@ -2008,7 +2035,7 @@ $("#planTitle").addEventListener("input", save);
 
 /* ============ Fiche du bien ============ */
 const FIELDS = ["fType", "fTrans", "fAddr", "fCP", "fCity", "fSurf", "fLand", "fRooms", "fBeds", "fBaths", "fFloor", "fYear", "fHeat", "fExpo", "fPrice", "fFees", "fTax", "fCopro", "fDesc", "fMandat", "fOwner"];
-const F = { dpe: "", ges: "", lat: null, lon: null };
+const F = { dpe: "", ges: "", lat: null, lon: null, insee: null, docs: [], calc: { show: false, kind: "ancien", apport: "", taux: "3,5", duree: 20 }, lang: "fr", tr: {}, avis: null };
 const GES = { A: "#F6EDFD", B: "#E4C7F5", C: "#D5AAF0", D: "#CB95ED", E: "#BA72E9", F: "#A74DE4", G: "#8A1AD9" };
 function letterButtons(box, colors, key) {
   Object.keys(colors).forEach(k => { const b = document.createElement("button"); b.type = "button"; b.textContent = k; b.style.background = colors[k]; b.style.borderColor = colors[k];
@@ -2016,16 +2043,265 @@ function letterButtons(box, colors, key) {
     b.onclick = () => { F[key] = F[key] === k ? "" : k; [...box.children].forEach(o => o.setAttribute("aria-pressed", o.textContent === F[key])); ficheChanged(); }; box.appendChild(b); });
 }
 letterButtons($("#fDpe"), DPE, "dpe"); letterButtons($("#fGes"), GES, "ges");
-function ficheData() { const d = { dpe: F.dpe, ges: F.ges, lat: F.lat, lon: F.lon, ticks: [...document.querySelectorAll("#fTicks input:checked")].map(i => i.value) }; FIELDS.forEach(id => d[id] = $("#" + id).value); return d; }
+function ficheData() { const d = { dpe: F.dpe, ges: F.ges, lat: F.lat, lon: F.lon, insee: F.insee, docs: F.docs, calc: F.calc, lang: F.lang, tr: F.tr, avis: F.avis, ticks: [...document.querySelectorAll("#fTicks input:checked")].map(i => i.value) }; FIELDS.forEach(id => d[id] = $("#" + id).value); return d; }
 function ficheLoad(d) {
   d = d || {}; FIELDS.forEach(id => { const el = $("#" + id); if (el.tagName === "SELECT") el.value = d[id] || el.options[0].value; else el.value = d[id] || ""; });
-  F.dpe = d.dpe || ""; F.ges = d.ges || ""; F.lat = d.lat || null; F.lon = d.lon || null;
+  F.dpe = d.dpe || ""; F.ges = d.ges || ""; F.lat = d.lat || null; F.lon = d.lon || null; F.insee = d.insee || null; F.docs = d.docs || []; F.lang = d.lang || "fr"; F.tr = d.tr || {}; F.avis = d.avis || null;
+  F.calc = Object.assign({ show: false, kind: "ancien", apport: "", taux: "3,5", duree: 20 }, d.calc || {});
+  if ($("#fLang")) { $("#fLang").value = F.lang; $("#fCalcShow").checked = !!F.calc.show; $("#fCalcBox").hidden = !F.calc.show; $("#fCalcKind").value = F.calc.kind; $("#fCalcApport").value = F.calc.apport; $("#fCalcTaux").value = F.calc.taux; $("#fCalcDuree").value = String(F.calc.duree); renderDocs(); renderCalc(); }
   [...$("#fDpe").children].forEach(o => o.setAttribute("aria-pressed", o.textContent === F.dpe)); [...$("#fGes").children].forEach(o => o.setAttribute("aria-pressed", o.textContent === F.ges));
   document.querySelectorAll("#fTicks input").forEach(i => i.checked = (d.ticks || []).includes(i.value)); adText();
 }
 const nb = v => { const n = parseFloat(String(v).replace(",", ".")); return isFinite(n) && n > 0 ? n : 0; };
 const sp = t => String(t).replace(/[\u202f\u00a0]/g, " ");
 const euro = v => sp(Math.round(v).toLocaleString("fr-FR")) + " €";
+/* ============ Documents du mandat (liste à cocher par bien) ============ */
+const DOCS = [
+  ["mandat", "Mandat signé"], ["id", "Pièces d'identité des vendeurs"], ["titre", "Titre de propriété"], ["tf", "Dernier avis de taxe foncière"],
+  ["dpe", "DPE (diagnostic de performance énergétique)"], ["amiante", "Diagnostic amiante", "permis de construire avant juillet 1997"], ["plomb", "Diagnostic plomb", "construction avant 1949"],
+  ["elec", "Diagnostics électricité et gaz", "installations de plus de 15 ans"], ["termites", "État termites", "si zone concernée"], ["erp", "État des risques (ERP)"],
+  ["assai", "Contrôle de l'assainissement", "si non raccordé au tout-à-l'égout"], ["plans", "Plans, permis, factures de travaux et garanties"],
+  ["carrez", "Mesurage loi Carrez", "copropriété", 1], ["rcp", "Règlement de copropriété et 3 derniers PV d'AG", "copropriété", 1], ["synth", "Fiche synthétique et pré-état daté", "copropriété", 1], ["charges", "Montant des charges et fonds de travaux", "copropriété", 1]];
+const isCopro = () => $("#fType").value === "Appartement" || nb($("#fCopro").value) > 0;
+function renderDocs() {
+  const box = $("#fDocs"); if (!box) return; const list = DOCS.filter(dc => !dc[3] || isCopro()), done = list.filter(dc => F.docs.includes(dc[0])).length;
+  $("#fDocsCount").textContent = `${done} / ${list.length}`; $("#fDocsBar").style.width = (list.length ? 100 * done / list.length : 0) + "%";
+  box.innerHTML = list.map(dc => `<label class="docrow"><input type="checkbox" value="${dc[0]}" ${F.docs.includes(dc[0]) ? "checked" : ""}><span>${dc[1]}${dc[2] ? ` <small>(${dc[2]})</small>` : ""}</span></label>`).join("");
+}
+
+/* ============ Calculs pour l'acquéreur (fiche vitrine, au choix de l'agent) ============ */
+function buyerCalc() {
+  const d = ficheData(), price = nb(d.fPrice); if (!price || d.fTrans === "Location") return null;
+  const neuf = F.calc.kind === "neuf", rate = neuf ? .025 : .08, notary = Math.round(price * rate / 100) * 100;
+  const apport = Math.max(0, +F.calc.apport || 0), taux = Math.max(0, +String(F.calc.taux).replace(",", ".") || 0) / 100, ans = Math.max(1, +F.calc.duree || 20);
+  const capital = Math.max(0, price + notary - apport), n = ans * 12, r = taux / 12;
+  const mens = capital ? (r ? capital * r / (1 - Math.pow(1 + r, -n)) : capital / n) : 0;
+  return { notary, rate, mens: Math.round(mens), capital, apport, taux, ans, neuf };
+}
+function renderCalc() {
+  const c = buyerCalc(), o = $("#fCalcOut"); if (!o) return;
+  o.textContent = c ? `Frais de notaire estimés : ${euro(c.notary)} (≈ ${String(c.rate * 100).replace(".", ",")} %, ${c.neuf ? "neuf" : "ancien"}) · Mensualité indicative : ${euro(c.mens)}/mois sur ${c.ans} ans à ${String((c.taux * 100).toFixed(2)).replace(".", ",")} %, apport ${euro(c.apport)}, hors assurance.` : "Renseignez le prix de vente pour calculer.";
+}
+
+/* ============ Annonce en langue étrangère ============ */
+const LANGS = { fr: "Français", en: "English", de: "Deutsch", es: "Español", nl: "Nederlands", it: "Italiano" };
+const I18N = {
+  en: { sale: "FOR SALE", rent: "TO LET", viager: "LIFE ANNUITY SALE", rooms: "ROOMS", surf: "Living area", land: "Land", r: "rooms", incl: "including", bed: ["bedroom", "bedrooms"], bath: ["bathroom", "bathrooms"], floor: "Floor", year: "Year built", heat: "Heating", expo: "Facing", eq: "Features", price: "Price", tax: "Property tax", copro: "Service charges", dpe: "Energy rating (DPE)", ges: "Greenhouse gas (GES)", nc: "not provided", mandat: "Mandate no.", contact: "Contact", year_s: "per year", type: { Maison: "House", Appartement: "Apartment", Terrain: "Plot of land", Immeuble: "Building", Autre: "Property" }, fees: { "honoraires inclus": "agency fees included", "honoraires charge vendeur": "agency fees paid by the seller", "hors honoraires": "excluding agency fees", "charges comprises": "charges included", "hors charges": "excluding charges" }, heatv: { "Gaz": "gas", "Électrique": "electric", "Pompe à chaleur": "heat pump", "Fioul": "oil", "Bois / granulés": "wood / pellets", "Collectif": "communal", "Autre": "other" }, expov: { Nord: "north", Sud: "south", Est: "east", Ouest: "west", "Sud-Est": "south-east", "Sud-Ouest": "south-west", "Nord-Est": "north-east", "Nord-Ouest": "north-west" }, ticks: { "Jardin": "garden", "Terrasse": "terrace", "Balcon": "balcony", "Garage": "garage", "Parking": "parking", "Cave": "cellar", "Piscine": "swimming pool", "Ascenseur": "lift", "Cuisine équipée": "fitted kitchen", "Double vitrage": "double glazing", "Plain-pied": "single-storey", "Vue dégagée": "open view" }, sum: (t, s, r, b, eq, city) => `${t}${city ? " in " + city : ""}${s ? " of " + s + " m²" : ""}${r ? " with " + r + " rooms" : ""}${b ? " including " + b + " bedroom" + (b > 1 ? "s" : "") : ""}${eq ? ", with " + eq : ""}.`, note: "Description automatically translated from French." },
+  de: { sale: "ZU VERKAUFEN", rent: "ZU VERMIETEN", viager: "VERKAUF AUF LEIBRENTE", rooms: "ZIMMER", surf: "Wohnfläche", land: "Grundstück", r: "Zimmer", incl: "davon", bed: ["Schlafzimmer", "Schlafzimmer"], bath: ["Badezimmer", "Badezimmer"], floor: "Etage", year: "Baujahr", heat: "Heizung", expo: "Ausrichtung", eq: "Ausstattung", price: "Preis", tax: "Grundsteuer", copro: "Nebenkosten (Eigentümergemeinschaft)", dpe: "Energieklasse (DPE)", ges: "Treibhausgas (GES)", nc: "nicht angegeben", mandat: "Mandat Nr.", contact: "Kontakt", year_s: "pro Jahr", type: { Maison: "Haus", Appartement: "Wohnung", Terrain: "Grundstück", Immeuble: "Gebäude", Autre: "Immobilie" }, fees: { "honoraires inclus": "inkl. Maklerprovision", "honoraires charge vendeur": "Provision zahlt der Verkäufer", "hors honoraires": "zzgl. Maklerprovision", "charges comprises": "inkl. Nebenkosten", "hors charges": "zzgl. Nebenkosten" }, heatv: { "Gaz": "Gas", "Électrique": "elektrisch", "Pompe à chaleur": "Wärmepumpe", "Fioul": "Öl", "Bois / granulés": "Holz / Pellets", "Collectif": "Zentralheizung", "Autre": "sonstige" }, expov: { Nord: "Nord", Sud: "Süd", Est: "Ost", Ouest: "West", "Sud-Est": "Südost", "Sud-Ouest": "Südwest", "Nord-Est": "Nordost", "Nord-Ouest": "Nordwest" }, ticks: { "Jardin": "Garten", "Terrasse": "Terrasse", "Balcon": "Balkon", "Garage": "Garage", "Parking": "Stellplatz", "Cave": "Keller", "Piscine": "Pool", "Ascenseur": "Aufzug", "Cuisine équipée": "Einbauküche", "Double vitrage": "Doppelverglasung", "Plain-pied": "ebenerdig", "Vue dégagée": "freier Blick" }, sum: (t, s, r, b, eq, city) => `${t}${city ? " in " + city : ""}${s ? " mit " + s + " m² Wohnfläche" : ""}${r ? ", " + r + " Zimmer" : ""}${b ? " (davon " + b + " Schlafzimmer)" : ""}${eq ? ", mit " + eq : ""}.`, note: "Beschreibung automatisch aus dem Französischen übersetzt." },
+  es: { sale: "EN VENTA", rent: "EN ALQUILER", viager: "VENTA EN VITALICIO", rooms: "HABITACIONES", surf: "Superficie habitable", land: "Terreno", r: "estancias", incl: "con", bed: ["dormitorio", "dormitorios"], bath: ["baño", "baños"], floor: "Planta", year: "Año de construcción", heat: "Calefacción", expo: "Orientación", eq: "Equipamiento", price: "Precio", tax: "Impuesto sobre bienes inmuebles", copro: "Gastos de comunidad", dpe: "Clase energética (DPE)", ges: "Emisiones (GES)", nc: "no indicado", mandat: "Mandato n.º", contact: "Contacto", year_s: "al año", type: { Maison: "Casa", Appartement: "Piso", Terrain: "Terreno", Immeuble: "Edificio", Autre: "Inmueble" }, fees: { "honoraires inclus": "honorarios de agencia incluidos", "honoraires charge vendeur": "honorarios a cargo del vendedor", "hors honoraires": "sin honorarios de agencia", "charges comprises": "gastos incluidos", "hors charges": "gastos no incluidos" }, heatv: { "Gaz": "gas", "Électrique": "eléctrica", "Pompe à chaleur": "bomba de calor", "Fioul": "gasóleo", "Bois / granulés": "leña / pellets", "Collectif": "central", "Autre": "otra" }, expov: { Nord: "norte", Sud: "sur", Est: "este", Ouest: "oeste", "Sud-Est": "sureste", "Sud-Ouest": "suroeste", "Nord-Est": "noreste", "Nord-Ouest": "noroeste" }, ticks: { "Jardin": "jardín", "Terrasse": "terraza", "Balcon": "balcón", "Garage": "garaje", "Parking": "aparcamiento", "Cave": "bodega", "Piscine": "piscina", "Ascenseur": "ascensor", "Cuisine équipée": "cocina equipada", "Double vitrage": "doble acristalamiento", "Plain-pied": "en una sola planta", "Vue dégagée": "vistas despejadas" }, sum: (t, s, r, b, eq, city) => `${t}${city ? " en " + city : ""}${s ? " de " + s + " m²" : ""}${r ? " con " + r + " estancias" : ""}${b ? ", " + b + " dormitorio" + (b > 1 ? "s" : "") : ""}${eq ? ", con " + eq : ""}.`, note: "Descripción traducida automáticamente del francés." },
+  nl: { sale: "TE KOOP", rent: "TE HUUR", viager: "VERKOOP OP LIJFRENTE", rooms: "KAMERS", surf: "Woonoppervlak", land: "Perceel", r: "kamers", incl: "waarvan", bed: ["slaapkamer", "slaapkamers"], bath: ["badkamer", "badkamers"], floor: "Verdieping", year: "Bouwjaar", heat: "Verwarming", expo: "Ligging", eq: "Voorzieningen", price: "Prijs", tax: "Onroerendgoedbelasting", copro: "Servicekosten (VvE)", dpe: "Energielabel (DPE)", ges: "Broeikasgassen (GES)", nc: "niet opgegeven", mandat: "Mandaat nr.", contact: "Contact", year_s: "per jaar", type: { Maison: "Woning", Appartement: "Appartement", Terrain: "Bouwgrond", Immeuble: "Gebouw", Autre: "Object" }, fees: { "honoraires inclus": "inclusief makelaarskosten", "honoraires charge vendeur": "makelaarskosten voor de verkoper", "hors honoraires": "exclusief makelaarskosten", "charges comprises": "inclusief servicekosten", "hors charges": "exclusief servicekosten" }, heatv: { "Gaz": "gas", "Électrique": "elektrisch", "Pompe à chaleur": "warmtepomp", "Fioul": "olie", "Bois / granulés": "hout / pellets", "Collectif": "collectief", "Autre": "overig" }, expov: { Nord: "noord", Sud: "zuid", Est: "oost", Ouest: "west", "Sud-Est": "zuidoost", "Sud-Ouest": "zuidwest", "Nord-Est": "noordoost", "Nord-Ouest": "noordwest" }, ticks: { "Jardin": "tuin", "Terrasse": "terras", "Balcon": "balkon", "Garage": "garage", "Parking": "parkeerplaats", "Cave": "kelder", "Piscine": "zwembad", "Ascenseur": "lift", "Cuisine équipée": "ingerichte keuken", "Double vitrage": "dubbele beglazing", "Plain-pied": "gelijkvloers", "Vue dégagée": "vrij uitzicht" }, sum: (t, s, r, b, eq, city) => `${t}${city ? " in " + city : ""}${s ? " van " + s + " m²" : ""}${r ? " met " + r + " kamers" : ""}${b ? ", waarvan " + b + " slaapkamer" + (b > 1 ? "s" : "") : ""}${eq ? ", met " + eq : ""}.`, note: "Beschrijving automatisch vertaald uit het Frans." },
+  it: { sale: "IN VENDITA", rent: "IN AFFITTO", viager: "VENDITA IN NUDA PROPRIETÀ", rooms: "LOCALI", surf: "Superficie abitabile", land: "Terreno", r: "locali", incl: "di cui", bed: ["camera da letto", "camere da letto"], bath: ["bagno", "bagni"], floor: "Piano", year: "Anno di costruzione", heat: "Riscaldamento", expo: "Esposizione", eq: "Dotazioni", price: "Prezzo", tax: "Imposta fondiaria", copro: "Spese condominiali", dpe: "Classe energetica (DPE)", ges: "Emissioni (GES)", nc: "non indicata", mandat: "Mandato n.", contact: "Contatto", year_s: "all'anno", type: { Maison: "Casa", Appartement: "Appartamento", Terrain: "Terreno", Immeuble: "Edificio", Autre: "Immobile" }, fees: { "honoraires inclus": "provvigione d'agenzia inclusa", "honoraires charge vendeur": "provvigione a carico del venditore", "hors honoraires": "provvigione esclusa", "charges comprises": "spese incluse", "hors charges": "spese escluse" }, heatv: { "Gaz": "a gas", "Électrique": "elettrico", "Pompe à chaleur": "pompa di calore", "Fioul": "a gasolio", "Bois / granulés": "legna / pellet", "Collectif": "centralizzato", "Autre": "altro" }, expov: { Nord: "nord", Sud: "sud", Est: "est", Ouest: "ovest", "Sud-Est": "sud-est", "Sud-Ouest": "sud-ovest", "Nord-Est": "nord-est", "Nord-Ouest": "nord-ovest" }, ticks: { "Jardin": "giardino", "Terrasse": "terrazza", "Balcon": "balcone", "Garage": "garage", "Parking": "posto auto", "Cave": "cantina", "Piscine": "piscina", "Ascenseur": "ascensore", "Cuisine équipée": "cucina attrezzata", "Double vitrage": "doppi vetri", "Plain-pied": "su un unico livello", "Vue dégagée": "vista aperta" }, sum: (t, s, r, b, eq, city) => `${t}${city ? " a " + city : ""}${s ? " di " + s + " m²" : ""}${r ? " con " + r + " locali" : ""}${b ? ", di cui " + b + " camer" + (b > 1 ? "e" : "a") + " da letto" : ""}${eq ? ", con " + eq : ""}.`, note: "Descrizione tradotta automaticamente dal francese." }
+};
+const LOC = { en: "en-GB", de: "de-DE", es: "es-ES", nl: "nl-NL", it: "it-IT" };
+F.tr = F.tr || {};
+function adTextLang(lang) {
+  const T_ = I18N[lang], d = ficheData(), L = [], num = v => sp(Math.round(v).toLocaleString(LOC[lang])), dec = v => String(v).replace(".", lang === "en" ? "." : ",");
+  const tp = T_.type[d.fType] || d.fType, r = nb(d.fRooms), b = nb(d.fBeds);
+  L.push(`${d.fTrans === "Location" ? T_.rent : d.fTrans === "Viager" ? T_.viager : T_.sale} – ${tp.toUpperCase()}${r ? " " + r + " " + T_.rooms : ""}${d.fCity ? " – " + d.fCity.toUpperCase() : ""}${d.fCP ? " (" + d.fCP + ")" : ""}`); L.push("");
+  const eq = d.ticks.map(t => T_.ticks[t] || t);
+  const tr = F.tr[lang]; if (d.fDesc.trim() && tr && tr.src === d.fDesc.trim() && tr.text) { L.push(tr.text); L.push(""); }
+  else { L.push(T_.sum(tp, nb(d.fSurf) ? dec(nb(d.fSurf)) : "", r, b, eq.slice(0, 3).join(", "), d.fCity)); L.push(""); }
+  const c = [];
+  if (nb(d.fSurf)) c.push(`${T_.surf}: ${dec(nb(d.fSurf))} m²`); if (nb(d.fLand)) c.push(`${T_.land}: ${num(nb(d.fLand))} m²`);
+  if (r) c.push(`${r} ${T_.r}${b ? `, ${T_.incl} ${b} ${T_.bed[b > 1 ? 1 : 0]}` : ""}`); if (nb(d.fBaths)) c.push(`${nb(d.fBaths)} ${T_.bath[nb(d.fBaths) > 1 ? 1 : 0]}`);
+  if (d.fFloor.trim()) c.push(`${T_.floor}: ${d.fFloor.trim()}`); if (nb(d.fYear)) c.push(`${T_.year}: ${nb(d.fYear)}`);
+  if (d.fHeat && T_.heatv[d.fHeat]) c.push(`${T_.heat}: ${T_.heatv[d.fHeat]}`); if (d.fExpo && T_.expov[d.fExpo]) c.push(`${T_.expo}: ${T_.expov[d.fExpo]}`);
+  if (eq.length) c.push(`${T_.eq}: ${eq.join(", ")}`);
+  c.forEach(x => L.push("• " + x)); if (c.length) L.push("");
+  if (nb(d.fPrice)) L.push(`${T_.price}: ${num(nb(d.fPrice))} € ${T_.fees[d.fFees] || ""}`.trim());
+  if (nb(d.fTax)) L.push(`${T_.tax}: ${num(nb(d.fTax))} € ${T_.year_s}`); if (nb(d.fCopro)) L.push(`${T_.copro}: ${num(nb(d.fCopro))} € ${T_.year_s}`);
+  if (d.dpe || d.ges) L.push(`${T_.dpe}: ${d.dpe || T_.nc} · ${T_.ges}: ${d.ges || T_.nc}`);
+  if (d.fMandat.trim()) L.push(`${T_.mandat} ${d.fMandat.trim()}`);
+  if (AG.name) { L.push(""); L.push(`${T_.contact}: ${[AG.name, AG.tel, AG.mail].filter(Boolean).join(" · ")}`); }
+  L.push(""); L.push("Les Professionnels de l'Immobilier – Réseau national");
+  if (tr && tr.src === d.fDesc.trim() && tr.text) { L.push(""); L.push("(" + T_.note + ")"); }
+  return L.join("\n").replace(/\n{3,}/g, "\n\n");
+}
+// Traduction de la description libre (service gratuit MyMemory, quand le téléphone a du réseau)
+let trTimer = 0;
+async function translateDesc(lang) {
+  const src = ($("#fDesc").value || "").trim(), st = $("#fLangSt"); if (lang === "fr" || !src) { st.textContent = ""; return; }
+  if (F.tr[lang] && F.tr[lang].src === src) return;
+  if (!navigator.onLine) { st.textContent = "Hors connexion : la description est résumée à partir de la fiche. Elle sera traduite dès que vous aurez du réseau."; return; }
+  st.textContent = "Traduction de la description…";
+  try {
+    const parts = []; let cur = ""; src.split(/(?<=[.!?])\s+/).forEach(s => { if ((cur + " " + s).length > 450 && cur) { parts.push(cur); cur = s; } else cur = cur ? cur + " " + s : s; }); if (cur) parts.push(cur);
+    const out = [];
+    for (const p of parts) { const r = await fetch(`https://api.mymemory.translated.net/get?langpair=fr|${lang}&q=${encodeURIComponent(p)}`); const j = await r.json();
+      const t = j && j.responseData && j.responseData.translatedText; if (!t || j.responseStatus != 200 || /MYMEMORY WARNING/i.test(t)) throw new Error("tr"); out.push(t); }
+    F.tr[lang] = { src, text: out.join(" ") }; st.textContent = "Description traduite automatiquement : relisez-la avant de publier."; adText(); ficheChanged();
+  } catch (_) { st.textContent = "La traduction de la description n'est pas disponible pour le moment : elle est résumée à partir de la fiche."; }
+}
+
+/* ============ Avis de valeur (ventes du secteur, données publiques DVF) ============ */
+F.avis = F.avis || null;
+function parseCSV(txt) {
+  const rows = []; let row = [], f = "", q = false;
+  for (let i = 0; i < txt.length; i++) { const c = txt[i];
+    if (q) { if (c === '"') { if (txt[i + 1] === '"') { f += '"'; i++; } else q = false; } else f += c; }
+    else if (c === '"') q = true; else if (c === ",") { row.push(f); f = ""; } else if (c === "\n") { row.push(f); rows.push(row); row = []; f = ""; } else if (c !== "\r") f += c; }
+  if (f || row.length) { row.push(f); rows.push(row); } return rows;
+}
+const kmBetween = (a, b, c, d) => { const R = 6371, r = Math.PI / 180, x = (d - b) * r * Math.cos((a + c) / 2 * r), y = (c - a) * r; return Math.sqrt(x * x + y * y) * R; };
+async function locateBien() {
+  const d = ficheData(); if (F.insee && F.lat) return { insee: F.insee, lat: F.lat, lon: F.lon };
+  const q = [d.fAddr, d.fCP, d.fCity].filter(Boolean).join(" "); if (!q.trim()) throw new Error("adresse");
+  const r = await fetch("https://data.geopf.fr/geocodage/search?limit=1&q=" + encodeURIComponent(q)); const j = await r.json(), ft = j.features && j.features[0];
+  if (!ft) throw new Error("adresse"); F.insee = ft.properties.citycode; F.lon = ft.geometry.coordinates[0]; F.lat = ft.geometry.coordinates[1]; return { insee: F.insee, lat: F.lat, lon: F.lon };
+}
+async function dvfSales(insee, onProg) {
+  const dep = insee.startsWith("97") ? insee.slice(0, 3) : insee.slice(0, 2), y0 = new Date().getFullYear(), out = [], years = [];
+  for (let y = y0; y >= y0 - 6; y--) {
+    onProg && onProg(y);
+    let txt = null; try { const r = await fetch(`https://files.data.gouv.fr/geo-dvf/latest/csv/${y}/communes/${dep}/${insee}.csv`); if (r.ok) txt = await r.text(); } catch (_) {}
+    if (!txt) continue; years.push(y);
+    const rows = parseCSV(txt), h = rows.shift(), ix = n => h.indexOf(n), muts = new Map();
+    for (const r of rows) { if (r.length < h.length - 2) continue; const id = r[ix("id_mutation")]; if (!muts.has(id)) muts.set(id, []); muts.get(id).push(r); }
+    for (const [id, rs] of muts) {
+      const r0 = rs[0]; if (r0[ix("nature_mutation")] !== "Vente") continue;
+      const hab = rs.filter(r => r[ix("type_local")] === "Maison" || r[ix("type_local")] === "Appartement"); if (hab.length !== 1) continue;
+      const hb = hab[0], surf = +hb[ix("surface_reelle_bati")], val = +r0[ix("valeur_fonciere")]; if (!(surf > 8) || !(val > 1000)) continue;
+      const land = rs.reduce((s, r) => s + (+r[ix("surface_terrain")] || 0), 0) / Math.max(1, new Set(rs.map(r => r[ix("id_parcelle")])).size === 1 ? rs.length : 1);
+      out.push({ id, date: r0[ix("date_mutation")], type: hb[ix("type_local")], surf, rooms: +hb[ix("nombre_pieces_principales")] || 0, val, m2: val / surf, land: Math.round(land) || 0,
+        addr: [hb[ix("adresse_numero")], hb[ix("adresse_suffixe")], hb[ix("adresse_nom_voie")]].filter(Boolean).join(" ").toLowerCase().replace(/(^|\s)\S/g, s => s.toUpperCase()),
+        lat: +hb[ix("latitude")] || null, lon: +hb[ix("longitude")] || null });
+    }
+    if (years.length >= 5) break;
+  }
+  return { sales: out, years };
+}
+function avisStats(a) {
+  const sel = a.comps.filter(c => a.sel.includes(c.id)).map(c => c.m2).sort((x, y) => x - y); if (!sel.length) return null;
+  const q = p => { const k = (sel.length - 1) * p, i = Math.floor(k); return sel[i] + (sel[Math.min(i + 1, sel.length - 1)] - sel[i]) * (k - i); };
+  return { n: sel.length, med: q(.5), p25: q(.25), p75: q(.75) };
+}
+const r1000 = v => Math.round(v / 1000) * 1000;
+function openAvis() {
+  const d = ficheData(), surf = nb(d.fSurf);
+  F.avis = F.avis || { comps: [], sel: [], low: "", high: "", reco: "", note: "", years: [] }; const A = F.avis;
+  const ov = document.createElement("div"); ov.className = "bd-ov"; ov.setAttribute("role", "dialog"); ov.setAttribute("aria-modal", "true"); ov.setAttribute("aria-label", "Avis de valeur");
+  ov.innerHTML = `<div class="bd-box prof avis"><div class="bd-head"><b>Avis de valeur</b><button class="ghost bd-x" aria-label="Fermer">✕</button></div>
+    <p class="note"><b>${ficheTitle(d)}</b>${[d.fAddr, d.fCP, d.fCity].filter(Boolean).length ? " · " + [d.fAddr, d.fCP, d.fCity].filter(Boolean).join(" ") : ""}${surf ? " · " + String(surf).replace(".", ",") + " m²" : ""}</p>
+    ${surf ? "" : '<p class="status err">Indiquez la surface habitable dans la fiche du bien pour calculer l\'estimation.</p>'}
+    <button class="primary" id="avGo" type="button">Rechercher les ventes du secteur</button>
+    <p class="status" id="avSt"></p>
+    <div id="avList" class="avlist"></div>
+    <details class="avadd"><summary>Ajouter une vente de référence (vos propres comparables)</summary>
+      <div class="row2"><div class="field"><label for="avD">Date</label><input type="text" id="avD" placeholder="03/2025"></div><div class="field"><label for="avA">Adresse ou rue</label><input type="text" id="avA"></div></div>
+      <div class="row2"><div class="field"><label for="avS">Surface (m²)</label><input type="number" id="avS" inputmode="decimal"></div><div class="field"><label for="avP">Prix de vente (€)</label><input type="number" id="avP" inputmode="numeric"></div></div>
+      <button type="button" id="avAdd">Ajouter cette vente</button></details>
+    <div class="avstats" id="avStats"></div>
+    <div class="row2"><div class="field"><label for="avLow">Fourchette basse (€)</label><input type="number" id="avLow" inputmode="numeric"></div><div class="field"><label for="avHigh">Fourchette haute (€)</label><input type="number" id="avHigh" inputmode="numeric"></div></div>
+    <div class="field"><label for="avReco">Prix de présentation conseillé (€)</label><input type="number" id="avReco" inputmode="numeric"></div>
+    <div class="field"><label for="avNote">Vos observations (points forts, points à améliorer)</label><textarea id="avNote" rows="3" placeholder="Ex. : Maison récente, très bon état, jardin exposé sud. Absence de garage."></textarea></div>
+    <button class="primary" id="avPdf" type="button">Créer l'avis de valeur (PDF)</button>
+    <p class="note">Source : ventes publiées par l'État (DVF, Demandes de valeurs foncières, DGFiP). Avis indicatif, qui ne remplace pas une expertise.</p></div>`;
+  document.body.appendChild(ov);
+  const st = $("#avSt");
+  ["low", "high", "reco", "note"].forEach(k => { const el = $("#av" + { low: "Low", high: "High", reco: "Reco", note: "Note" }[k]); el.value = A[k] || ""; el.oninput = () => { A[k] = el.value; ficheChanged(); }; });
+  const fill = (force) => { const s = avisStats(A); if (!s || !surf) { $("#avStats").innerHTML = ""; return; }
+    $("#avStats").innerHTML = `<b>${s.n} vente${s.n > 1 ? "s" : ""} retenue${s.n > 1 ? "s" : ""}</b> · prix médian ${euro(s.med)}/m² (de ${euro(s.p25)} à ${euro(s.p75)}/m²)<br>Soit pour ${String(surf).replace(".", ",")} m² : <b>${euro(r1000(s.p25 * surf))} à ${euro(r1000(s.p75 * surf))}</b>`;
+    if (force || !A.low) { A.low = r1000(s.p25 * surf); A.high = r1000(s.p75 * surf); A.reco = r1000(s.med * surf); $("#avLow").value = A.low; $("#avHigh").value = A.high; $("#avReco").value = A.reco; } ficheChanged(); };
+  const draw = () => { const L = $("#avList");
+    if (!A.comps.length) { L.innerHTML = ""; return; }
+    L.innerHTML = `<p class="note">Décochez les ventes qui ne ressemblent pas au bien.</p>` + A.comps.map(c => `<label class="avrow"><input type="checkbox" value="${c.id}" ${A.sel.includes(c.id) ? "checked" : ""}><span><b>${euro(c.val)}</b> · ${String(Math.round(c.surf))} m²${c.rooms ? " · " + c.rooms + " p." : ""} · <b>${euro(c.m2)}/m²</b><br><small>${c.date.split("-").reverse().slice(1).join("/") || c.date} · ${c.addr || "adresse non publiée"}${c.km != null ? " · " + (c.km < 1 ? Math.round(c.km * 1000) + " m" : c.km.toFixed(1).replace(".", ",") + " km") : ""}${c.manual ? " · ajoutée par vous" : ""}</small></span></label>`).join("");
+    L.querySelectorAll("input").forEach(i => i.onchange = () => { A.sel = [...L.querySelectorAll("input:checked")].map(x => x.value); fill(true); }); };
+  draw(); fill(false);
+  $("#avGo").onclick = async () => {
+    st.className = "status"; st.textContent = "Localisation du bien…";
+    try {
+      const loc = await locateBien();
+      const { sales, years } = await dvfSales(loc.insee, y => st.textContent = `Recherche des ventes ${y}…`);
+      if (!sales.length) throw new Error(years.length ? "vide" : "acces");
+      const ty = d.fType === "Appartement" || d.fType === "Maison" ? d.fType : null;
+      let pool = sales.filter(s => (!ty || s.type === ty) && s.m2 > 300 && s.m2 < 25000);
+      if (surf) { const p2 = pool.filter(s => s.surf >= surf * .6 && s.surf <= surf * 1.6); if (p2.length >= 4) pool = p2; }
+      pool.forEach(s => s.km = loc.lat && s.lat ? kmBetween(loc.lat, loc.lon, s.lat, s.lon) : null);
+      const now = Date.now(); pool.sort((a, b) => ((a.km ?? 3) + (now - Date.parse(a.date)) / 3.15e10 * .6) - ((b.km ?? 3) + (now - Date.parse(b.date)) / 3.15e10 * .6));
+      const manual = A.comps.filter(c => c.manual); A.comps = manual.concat(pool.slice(0, 15)); A.sel = manual.map(c => c.id).concat(pool.slice(0, 10).map(c => c.id)); A.years = years;
+      st.textContent = `${pool.length} vente${pool.length > 1 ? "s" : ""} comparable${pool.length > 1 ? "s" : ""} trouvée${pool.length > 1 ? "s" : ""} (${Math.min(...years)}–${Math.max(...years)}), les plus proches et récentes sont affichées.`;
+      draw(); fill(true);
+    } catch (e) {
+      st.className = "status err";
+      st.textContent = e.message === "adresse" ? "Adresse introuvable : complétez l'adresse, le code postal et la ville dans la fiche." : e.message === "vide" ? "Aucune vente comparable publiée pour cette commune. Ajoutez vos propres références ci-dessous." : "Les ventes publiques ne sont pas accessibles pour le moment (réseau ?). Vous pouvez ajouter vos propres références ci-dessous.";
+    }
+  };
+  $("#avAdd").onclick = () => { const s = nb($("#avS").value), p = nb($("#avP").value); if (!s || !p) { st.className = "status err"; st.textContent = "Indiquez la surface et le prix de la vente."; return; }
+    const id = "m" + Date.now().toString(36); A.comps.unshift({ id, manual: true, date: $("#avD").value.trim() || "—", addr: $("#avA").value.trim(), surf: s, rooms: 0, val: p, m2: p / s, km: null, type: d.fType }); A.sel.push(id);
+    ["avD", "avA", "avS", "avP"].forEach(k => $("#" + k).value = ""); st.className = "status"; st.textContent = "Vente ajoutée."; draw(); fill(true); };
+  $("#avPdf").onclick = async () => { st.className = "status"; st.textContent = "Création de l'avis de valeur…"; await frame();
+    try { const c = await avisCanvas(), jb = await toBlob(c, "image/jpeg", .9); const r = await offerFile(`Avis de valeur - ${kitName()}.pdf`, pdfFromJpeg(new Uint8Array(await jb.arrayBuffer()), c.width, c.height), "pdf");
+      st.textContent = r === "declined" ? "Enregistrement annulé." : "Avis de valeur prêt."; } catch (_) { st.className = "status err"; st.textContent = "L'avis de valeur n'a pas pu être créé. Réessayez."; } };
+  const close = () => ov.remove(); ov.querySelector(".bd-x").onclick = close; ov.addEventListener("click", e => { if (e.target === ov) close(); });
+}
+async function avisCanvas() {
+  const d = ficheData(), A = F.avis || { comps: [], sel: [] }, W = 1240, H = 1754, c = document.createElement("canvas"); c.width = W; c.height = H; const x = c.getContext("2d");
+  const NAVY = "#02062C", BLUE = "#070C9B", GOLD = "#F0B00A", GREY = "#4A4E6B", M = 64, disp = '"Bricolage Grotesque", system-ui, sans-serif', body = '"Public Sans", system-ui, sans-serif';
+  x.fillStyle = "#fff"; x.fillRect(0, 0, W, H);
+  const lg = $("#logoImg"); if (lg && lg.naturalWidth) { const lw = 430, lh = lw * lg.naturalHeight / lg.naturalWidth; x.drawImage(lg, M, 48, lw, lh); }
+  x.textAlign = "right"; x.fillStyle = GREY; x.font = `600 22px ${body}`; x.fillText("Établi le " + new Date().toLocaleDateString("fr-FR"), W - M, 90); x.textAlign = "left";
+  x.fillStyle = BLUE; x.fillRect(0, 140, W, 110); x.fillStyle = GOLD; x.fillRect(0, 250, W, 7);
+  x.fillStyle = "#fff"; x.font = `800 28px ${body}`; x.fillText("AVIS DE VALEUR", M, 186); x.font = `700 40px ${disp}`; x.fillText(ficheTitle(d), M, 232, W - 2 * M);
+  let y = 290; const ph = P.shoot[0] && P.shoot[0].canvas;
+  if (ph) coverDraw(x, ph, M, y, 500, 330, 16); else { x.fillStyle = "#EDEEF7"; x.fillRect(M, y, 500, 330); }
+  const fx = M + 530; x.fillStyle = NAVY; x.font = `700 28px ${disp}`; x.fillText("Le bien", fx, y + 32);
+  const lines = [[d.fAddr, [d.fCP, d.fCity].filter(Boolean).join(" ")].filter(Boolean).join(", "), ficheDetails(d), nb(d.fYear) ? "Construction : " + nb(d.fYear) : "", d.dpe ? `DPE : ${d.dpe}${d.ges ? " · GES : " + d.ges : ""}` : "", d.ticks.length ? d.ticks.join(", ") : ""].filter(Boolean);
+  x.font = `500 23px ${body}`; x.fillStyle = GREY; let ly = y + 74; lines.forEach(l => wrapLines(x, l, W - M - fx, 2).forEach(t => { x.fillText(t, fx, ly); ly += 34; }));
+  y += 360;
+  // estimation
+  x.fillStyle = "#F3F4FA"; x.beginPath(); x.roundRect ? x.roundRect(M, y, W - 2 * M, 200, 18) : x.rect(M, y, W - 2 * M, 200); x.fill(); x.fillStyle = GOLD; x.fillRect(M, y + 24, 8, 152);
+  x.fillStyle = GREY; x.font = `600 22px ${body}`; x.fillText("VALEUR ESTIMÉE", M + 36, y + 48);
+  x.fillStyle = BLUE; x.font = `800 54px ${disp}`; x.fillText(nb(A.low) && nb(A.high) ? `${euro(nb(A.low))} – ${euro(nb(A.high))}` : "À préciser", M + 36, y + 112, W - 2 * M - 60);
+  x.fillStyle = NAVY; x.font = `600 27px ${body}`; const sf = nb(d.fSurf);
+  x.fillText(nb(A.reco) ? `Prix de présentation conseillé : ${euro(nb(A.reco))}${sf ? "  ·  soit " + euro(nb(A.reco) / sf) + "/m²" : ""}` : "", M + 36, y + 162, W - 2 * M - 60);
+  y += 236;
+  // comparables
+  const s = avisStats(A), sel = A.comps.filter(cc => A.sel.includes(cc.id)).slice(0, (A.note || "").trim() ? 7 : 12);
+  x.fillStyle = NAVY; x.font = `700 28px ${disp}`; x.fillText("Ventes comparables retenues", M, y + 8);
+  if (s) { x.fillStyle = GREY; x.font = `500 21px ${body}`; x.fillText(`${s.n} vente${s.n > 1 ? "s" : ""} · prix médian ${euro(s.med)}/m² · ${euro(s.p25)} à ${euro(s.p75)}/m²`, M, y + 42); }
+  y += 66; const cols = [["Date", 105], ["Adresse", 335], ["Type", 140], ["Surface", 115], ["Prix", 160], ["€/m²", 120], ["Distance", 0]];
+  x.fillStyle = BLUE; x.fillRect(M, y, W - 2 * M, 44); x.fillStyle = "#fff"; x.font = `700 19px ${body}`; let cx = M + 14; cols.forEach(([h, w]) => { x.fillText(h, cx, y + 29); cx += w; }); y += 44;
+  x.font = `500 19px ${body}`;
+  sel.forEach((r, i) => { x.fillStyle = i % 2 ? "#FFFFFF" : "#F3F4FA"; x.fillRect(M, y, W - 2 * M, 40); x.fillStyle = NAVY; cx = M + 14;
+    const vals = [r.date.includes("-") ? r.date.split("-").reverse().slice(1).join("/") : r.date, r.addr || "—", r.type || "", Math.round(r.surf) + " m²", euro(r.val), euro(r.m2), r.km != null ? (r.km < 1 ? Math.round(r.km * 1000) + " m" : r.km.toFixed(1).replace(".", ",") + " km") : (r.manual ? "réf. agent" : "—")];
+    vals.forEach((v, k) => { x.fillText(String(v), cx, y + 27, (cols[k][1] || W - M - cx) - 12); cx += cols[k][1]; }); y += 40; });
+  if (!sel.length) { x.fillStyle = GREY; x.fillText("Aucune vente comparable retenue.", M + 14, y + 30); y += 44; }
+  y += 30;
+  const footY = H - 210, nl = Math.min(5, Math.floor((footY - 100 - (y + 48)) / 31));
+  if ((A.note || "").trim() && nl > 0) { x.fillStyle = NAVY; x.font = `700 26px ${disp}`; x.fillText("Observations", M, y + 10); x.font = `500 22px ${body}`; x.fillStyle = GREY; wrapLines(x, A.note, W - 2 * M, nl).forEach((l, i) => x.fillText(l, M, y + 48 + i * 31)); }
+  x.fillStyle = GREY; x.font = `500 17px ${body}`;
+  wrapLines(x, `Source des ventes : Demandes de valeurs foncières (DVF), DGFiP, données publiques${A.years && A.years.length ? " " + Math.min(...A.years) + "–" + Math.max(...A.years) : ""}, et références de l'agent. Avis de valeur indicatif établi par un agent commercial du réseau à partir des ventes comparables et des caractéristiques déclarées du bien. Il ne constitue pas une expertise immobilière.`, W - 2 * M, 3).forEach((l, i) => x.fillText(l, M, footY - 66 + i * 24));
+  x.fillStyle = NAVY; x.fillRect(0, footY, W, H - footY); x.fillStyle = GOLD; x.fillRect(0, footY, W, 6);
+  let fx2 = M; if (AG.name) { drawAgentPhoto(x, M + 52, footY + 96, 52); fx2 = M + 130; } x.textAlign = "left";
+  x.fillStyle = "#fff"; x.font = `700 32px ${disp}`; x.fillText(AG.name || "Votre conseiller", fx2, footY + 82, W * .55);
+  x.fillStyle = GOLD; x.font = `600 25px ${body}`; x.fillText([AG.tel, AG.mail].filter(Boolean).join(" · "), fx2, footY + 124, W * .6);
+  x.textAlign = "right"; x.fillStyle = "#C9CCE6"; x.font = `500 20px ${body}`; x.fillText("Les Professionnels de l'Immobilier – Réseau national", W - M, footY + 82); x.textAlign = "left";
+  return c;
+}
+
+/* ============ Mes biens (sur l'accueil) ============ */
+const BIENS = {
+  open() { if (this.p) return this.p; this.p = new Promise(res => { try { const r = indexedDB.open("studio-habitat-biens", 1); r.onupgradeneeded = () => r.result.createObjectStore("biens", { keyPath: "key" }); r.onsuccess = () => res(r.result); r.onerror = () => res(null); } catch (_) { res(null); } }); return this.p; },
+  async tx(mode, fn) { const db = await this.open(); if (!db) return null; return new Promise(res => { try { const t = db.transaction("biens", mode), out = fn(t.objectStore("biens")); t.oncomplete = () => res(out && out.result !== undefined ? out.result : true); t.onerror = () => res(null); } catch (_) { res(null); } }); },
+  put(v) { return this.tx("readwrite", st => st.put(v)); }, del(k) { return this.tx("readwrite", st => st.delete(k)); }, all() { return this.tx("readonly", st => st.getAll()); }
+};
+const bienKey = n => safeName(n).toLowerCase();
+function hasContent() { const d = ficheData(); return P.shoot.length || (!PL.isSample && PL.rooms.length) || (!T.isSample && T.scenes.length) || d.fAddr || d.fCity || nb(d.fPrice); }
+async function storeBien() {
+  if (!hasContent()) return; const d = buildDossier(), first = P.shoot[0];
+  const thumb = first ? drawToCanvas(first.canvas, 220).toDataURL("image/jpeg", .7) : "";
+  await BIENS.put({ key: bienKey(d.name), name: d.name, saved: d.saved, thumb, price: d.fiche && nb(d.fiche.fPrice) ? euro(nb(d.fiche.fPrice)) : "", dossier: d }); renderBiens();
+}
+async function renderBiens() {
+  const box = $("#biens"); if (!box) return; const all = ((await BIENS.all()) || []).sort((a, b) => (b.saved || "").localeCompare(a.saved || ""));
+  $("#biensWrap").hidden = !all.length; $("#biensCount").textContent = all.length;
+  const cur = bienKey(dosName()); box.innerHTML = "";
+  all.forEach(b => { const el = document.createElement("div"); el.className = "bien" + (b.key === cur ? " cur" : "");
+    el.innerHTML = `<button type="button" class="bopen">${b.thumb ? `<img src="${b.thumb}" alt="">` : `<span class="noimg">${b.name.slice(0, 1).toUpperCase()}</span>`}<b>${b.name.replace(/</g, "&lt;")}</b><small>${new Date(b.saved).toLocaleDateString("fr-FR")}${b.price ? " · " + b.price : ""}</small></button><button type="button" class="bdel" aria-label="Retirer ${b.name.replace(/"/g, "")} de la liste">✕</button>`;
+    el.querySelector(".bopen").onclick = async () => { if (b.key === cur) { dosMsg("Ce bien est déjà ouvert."); return; } dosMsg("Ouverture…"); await storeBien(); await applyDossier((await BIENS.tx("readonly", st => st.get(b.key))).dossier); renderBiens(); };
+    let armed = 0; el.querySelector(".bdel").onclick = async e => { const bt = e.currentTarget; if (Date.now() - armed > 3000) { armed = Date.now(); bt.textContent = "Retirer ?"; bt.classList.add("armed"); setTimeout(() => { bt.textContent = "✕"; bt.classList.remove("armed"); }, 3000); return; } await BIENS.del(b.key); renderBiens(); dosMsg(`« ${b.name} » retiré de la liste (vos fichiers sauvegardés ne sont pas touchés).`); };
+    box.appendChild(el); });
+}
 function ficheTitle(d) {
   const r = nb(d.fRooms), t = d.fType === "Appartement" && r ? `Appartement T${r}` : d.fType === "Maison" && r ? `Maison ${r} pièces` : d.fType;
   return d.fCity ? `${t} – ${d.fCity}` : t;
@@ -2035,6 +2311,7 @@ function ficheDetails(d) {
   if (nb(d.fSurf)) p.push(`${String(nb(d.fSurf)).replace(".", ",")} m²`); if (nb(d.fLand)) p.push(`terrain ${sp(Math.round(nb(d.fLand)).toLocaleString("fr-FR"))} m²`); return p.join(" · ");
 }
 function adText() {
+  if (F.lang && F.lang !== "fr" && I18N[F.lang]) { $("#fAd").value = adTextLang(F.lang); return; }
   const d = ficheData(), L = [];
   const head = `${d.fType === "Appartement" ? "APPARTEMENT" : d.fType.toUpperCase()}${nb(d.fRooms) ? " " + nb(d.fRooms) + " PIÈCES" : ""}${d.fCity ? " – " + d.fCity.toUpperCase() : ""}${d.fCP ? " (" + d.fCP + ")" : ""}`;
   L.push(`${d.fTrans === "Location" ? "À LOUER" : d.fTrans === "Viager" ? "EN VIAGER" : "À VENDRE"} – ${head}`); L.push("");
@@ -2055,7 +2332,7 @@ function adText() {
   $("#fAd").value = L.join("\n").replace(/\n{3,}/g, "\n\n");
 }
 let ficheT = 0;
-function ficheChanged() { adText(); clearTimeout(ficheT); ficheT = setTimeout(() => { try { localStorage.setItem("studio-habitat-fiche", JSON.stringify(ficheData())); } catch (_) {} }, 400); }
+function ficheChanged() { adText(); renderCalc(); if (document.activeElement && ["fType", "fCopro"].includes(document.activeElement.id)) renderDocs(); clearTimeout(ficheT); ficheT = setTimeout(() => { try { localStorage.setItem("studio-habitat-fiche", JSON.stringify(ficheData())); } catch (_) {} }, 400); }
 FIELDS.forEach(id => $("#" + id).addEventListener("input", ficheChanged)); FIELDS.forEach(id => $("#" + id).addEventListener("change", ficheChanged));
 $("#fTicks").addEventListener("change", ficheChanged);
 try { ficheLoad(JSON.parse(localStorage.getItem("studio-habitat-fiche") || "null")); } catch (_) { adText(); }
@@ -2085,7 +2362,7 @@ $("#fCopy").onclick = async () => {
   const inp = $("#fAddr"), list = $("#fAddrList"); let tmr = 0, ctrl = null, items = [], cur = -1;
   const close = () => { list.hidden = true; inp.setAttribute("aria-expanded", "false"); cur = -1; };
   const pick = f => { const pr = f.properties; inp.value = pr.name || pr.label; $("#fCP").value = pr.postcode || ""; $("#fCity").value = pr.city || "";
-    const c = f.geometry && f.geometry.coordinates; if (c) { F.lon = c[0]; F.lat = c[1]; } close(); ficheChanged(); };
+    const c = f.geometry && f.geometry.coordinates; if (c) { F.lon = c[0]; F.lat = c[1]; } F.insee = pr.citycode || null; close(); ficheChanged(); };
   inp.addEventListener("input", () => {
     clearTimeout(tmr); const q = inp.value.trim(); if (q.length < 4 || !navigator.onLine) { close(); return; }
     tmr = setTimeout(async () => {
@@ -2112,14 +2389,17 @@ function safeName(n) { return n.replace(/[\\/:*?"<>|]+/g, " ").replace(/\s+/g, "
 function dosMsg(t, err) { const e = $("#dosStatus"); e.className = "status" + (err ? " err" : ""); e.textContent = t; }
 $("#dosName").addEventListener("input", () => { try { localStorage.setItem("studio-habitat-dossier", $("#dosName").value); } catch (_) {} });
 try { $("#dosName").value = localStorage.getItem("studio-habitat-dossier") || ""; } catch (_) {}
+function buildDossier() {
+  const photos = P.shoot.map(p => ({ name: p.name, data: p.canvas.toDataURL("image/jpeg", .85) }));
+  const tour = (!T.isSample && T.scenes.length) ? { start: T.start, scenes: T.scenes.map(sc => ({ id: sc.id, name: sc.name, src: sc.src, thumb: sc.thumb, ratio: sc.ratio, vfov: sc.vfov, hotspots: sc.hotspots })) } : null;
+  return { app: "studio-habitat", version: DOS_VERSION, saved: new Date().toISOString(), name: dosName(), photos,
+    plan: PL.isSample ? null : { title: $("#planTitle").value, rooms: PL.rooms },
+    video: { t: $("#vTitle").value, s: $("#vSub").value, p: $("#vPrice").value, a: $("#vAgent").value, dpe: V.dpe, d: $("#vDesc").value }, tour, fiche: ficheData() };
+}
 $("#dosSave").onclick = async () => {
   dosMsg("Préparation du dossier…"); await frame();
   try {
-    const photos = P.shoot.map(p => ({ name: p.name, data: p.canvas.toDataURL("image/jpeg", .85) }));
-    const tour = (!T.isSample && T.scenes.length) ? { start: T.start, scenes: T.scenes.map(sc => ({ id: sc.id, name: sc.name, src: sc.src, thumb: sc.thumb, ratio: sc.ratio, vfov: sc.vfov, hotspots: sc.hotspots })) } : null;
-    const d = { app: "studio-habitat", version: DOS_VERSION, saved: new Date().toISOString(), name: dosName(), photos,
-      plan: PL.isSample ? null : { title: $("#planTitle").value, rooms: PL.rooms },
-      video: { t: $("#vTitle").value, s: $("#vSub").value, p: $("#vPrice").value, a: $("#vAgent").value, dpe: V.dpe, d: $("#vDesc").value }, tour, fiche: ficheData() };
+    const d = buildDossier(), photos = d.photos, tour = d.tour; storeBien().catch(() => {});
     const blob = new Blob([JSON.stringify(d)], { type: "application/json" });
     const r = await offerFile(`Dossier - ${safeName(d.name)}.json`, blob, "dossier");
     const mo = (blob.size / 1048576).toFixed(1).replace(".", ",");
@@ -2132,6 +2412,10 @@ $("#dosOpen").onchange = async e => {
   dosMsg("Ouverture du dossier…");
   let d; try { d = JSON.parse(await f.text()); } catch (_) { d = null; }
   if (!d || d.app !== "studio-habitat") { dosMsg("Ce fichier n'est pas un dossier Studio Habitat.", true); return; }
+  if (hasContent()) await storeBien().catch(() => {});
+  await applyDossier(d); storeBien().catch(() => {});
+};
+async function applyDossier(d) {
   try {
     // reportage
     for (const p of P.shoot) if (p.id) await DB.del(p.id);
@@ -2155,8 +2439,11 @@ $("#dosOpen").onchange = async e => {
     $("#dosName").value = d.name || ""; try { localStorage.setItem("studio-habitat-dossier", $("#dosName").value); } catch (_) {}
     save(); dosMsg(`Dossier « ${d.name || "sans nom"} » ouvert : ${P.shoot.length} photo(s)${d.plan ? ", plan" : ""}${d.tour ? ", visite 360°" : ""}.`);
     if (!$("#v-video").hidden) vStill();
+    if (!d.tour && T.viewer && !T.isSample) { T.scenes.length = 0; T.isSample = true; initSampleTour(); $("#tourEx").hidden = false; T.viewer.go(T.start); renderScenes(); }
+    if (!d.plan) { PL.rooms = []; PL.isSample = false; $("#planTitle").value = ""; renderRooms(); renderPlan(); }
+    saveShootOrder(); renderBiens();
   } catch (_) { dosMsg("Le dossier n'a pas pu être ouvert entièrement.", true); }
-};
+}
 function applyPendingTour() {
   const t = T.pending; if (!t) return; T.pending = null;
   T.scenes.length = 0; t.scenes.forEach(sc => T.scenes.push(sc));
@@ -2166,7 +2453,7 @@ function applyPendingTour() {
 let newArmed = 0;
 $("#dosNew").onclick = async () => {
   if (Date.now() - newArmed > 4000) { newArmed = Date.now(); $("#dosNew").lastChild.textContent = "Confirmer"; dosMsg("Touchez « Confirmer » pour vider le dossier en cours. Pensez à le sauvegarder avant."); setTimeout(() => { if (Date.now() - newArmed >= 4000) $("#dosNew").lastChild.textContent = "Nouveau"; }, 4100); return; }
-  newArmed = 0; $("#dosNew").lastChild.textContent = "Nouveau";
+  newArmed = 0; $("#dosNew").lastChild.textContent = "Nouveau"; await storeBien().catch(() => {});
   for (const p of P.shoot) if (p.id) await DB.del(p.id);
   P.shoot = []; renderShoot();
   PL.rooms = []; PL.isSample = false; $("#planTitle").value = ""; $("#planEx").hidden = true; renderRooms(); renderPlan();
@@ -2329,6 +2616,14 @@ function shootDrag(s) {
 
 $("#profBtn").onclick = () => openProfile(); $("#vProf").onclick = () => openProfile(); $("#fPoster").onclick = () => openPoster();
 shootDrag($("#shoot"));
+$("#fAvis").onclick = () => openAvis();
+$("#fDocs").addEventListener("change", e => { const v = e.target.value; if (e.target.checked) { if (!F.docs.includes(v)) F.docs.push(v); } else F.docs = F.docs.filter(k => k !== v); renderDocs(); ficheChanged(); });
+$("#fType").addEventListener("change", renderDocs); $("#fCopro").addEventListener("change", renderDocs);
+$("#fCalcShow").onchange = e => { F.calc.show = e.target.checked; $("#fCalcBox").hidden = !F.calc.show; renderCalc(); ficheChanged(); };
+[["fCalcKind", "kind"], ["fCalcApport", "apport"], ["fCalcTaux", "taux"], ["fCalcDuree", "duree"]].forEach(([id, k]) => $("#" + id).addEventListener("input", e => { F.calc[k] = e.target.value; renderCalc(); ficheChanged(); }));
+$("#fLang").onchange = e => { F.lang = e.target.value; adText(); ficheChanged(); translateDesc(F.lang); };
+$("#fDesc").addEventListener("input", () => { if (F.lang !== "fr") { clearTimeout(trTimer); trTimer = setTimeout(() => translateDesc(F.lang), 1500); } });
+renderDocs(); renderCalc(); $("#fLang").value = F.lang; $("#fCalcShow").checked = !!F.calc.show; $("#fCalcBox").hidden = !F.calc.show; $("#fCalcKind").value = F.calc.kind; $("#fCalcApport").value = F.calc.apport; $("#fCalcTaux").value = F.calc.taux; $("#fCalcDuree").value = String(F.calc.duree); renderBiens();
 /* ============ Guide en images « Comment faire ? » ============ */
 const BD_INK = "#02062C", BD_BLUE = "#070C9B", BD_GOLD = "#F0B00A";
 const BD_SCREENS = {
@@ -2355,6 +2650,11 @@ const BD_SCREENS = {
   folder: `<path d="M-30 -16 h22 l6 7 h32 v34 h-60z" fill="${BD_GOLD}" stroke="${BD_INK}" stroke-width="2" stroke-linejoin="round"/><rect x="-30" y="32" width="60" height="10" rx="3" fill="#EDEEF7"/><rect x="-26" y="34" width="34" height="6" rx="3" fill="#8D92B5"/>`,
   cloud: `<path d="M-20 14 a12 12 0 0 1 2 -24 a16 16 0 0 1 30 -2 a12 12 0 0 1 8 26z" fill="#E3EEFB" stroke="${BD_BLUE}" stroke-width="3"/><path d="M0 -2 v14 M-6 6 l6 6 l6 -6" stroke="${BD_BLUE}" stroke-width="3" fill="none" stroke-linecap="round"/><text x="0" y="36" text-anchor="middle" font-size="11" font-weight="700" fill="${BD_INK}">iCloud Drive</text>`,
   phones: `<rect x="-30" y="-24" width="24" height="44" rx="5" fill="${BD_BLUE}"/><rect x="6" y="-24" width="24" height="44" rx="5" fill="${BD_BLUE}"/><path d="M-4 -2 h10 M2 -6 l4 4 l-4 4" stroke="${BD_GOLD}" stroke-width="3" fill="none" stroke-linecap="round"/><rect x="-24" y="-16" width="12" height="9" fill="${BD_GOLD}"/><rect x="12" y="-16" width="12" height="9" fill="${BD_GOLD}"/>`,
+  valuation: `<rect x="-30" y="-26" width="60" height="52" rx="6" fill="#EDEEF7"/>${[[-20, 10], [-8, -2], [4, 6], [16, -12]].map(([x, h]) => `<rect x="${x - 4}" y="${h}" width="8" height="${20 - h}" rx="2" fill="#B9C3E6"/>`).join("")}<path d="M-24 8 L-8 -6 L4 2 L22 -18" stroke="${BD_BLUE}" stroke-width="3" fill="none" stroke-linecap="round"/><circle cx="22" cy="30" r="12" fill="${BD_GOLD}"/><text x="22" y="35" text-anchor="middle" font-size="14" font-weight="800" fill="${BD_INK}">€</text>`,
+  docs: `<rect x="-26" y="-30" width="52" height="64" rx="5" fill="#fff" stroke="${BD_BLUE}" stroke-width="2.5"/>${[-18, -4, 10, 24].map((y, i) => `<rect x="-18" y="${y - 5}" width="9" height="9" rx="2" fill="${i < 2 ? "#00A06D" : "#E3E5F2"}"/><rect x="-4" y="${y - 3}" width="${22 - i * 2}" height="5" rx="2.5" fill="#8D92B5"/>`).join("")}`,
+  calc: `<rect x="-22" y="-30" width="44" height="62" rx="7" fill="${BD_BLUE}"/><rect x="-16" y="-24" width="32" height="12" rx="2" fill="#E8F6EF"/><text x="12" y="-14" text-anchor="end" font-size="9" font-weight="800" fill="${BD_INK}">1 323 €</text>${[0, 1, 2].map(r => [0, 1, 2].map(c => `<rect x="${-16 + c * 11}" y="${-6 + r * 11}" width="9" height="9" rx="2" fill="${r === 2 && c === 2 ? BD_GOLD : "#fff"}"/>`).join("")).join("")}`,
+  lang: `<circle cx="0" cy="0" r="24" fill="#EDEEF7" stroke="${BD_BLUE}" stroke-width="3"/><ellipse cx="0" cy="0" rx="10" ry="24" fill="none" stroke="${BD_BLUE}" stroke-width="2.5"/><path d="M-24 0 h48 M-20 -12 h40 M-20 12 h40" stroke="${BD_BLUE}" stroke-width="2.5"/><rect x="2" y="18" width="30" height="18" rx="5" fill="${BD_GOLD}"/><text x="17" y="31" text-anchor="middle" font-size="10" font-weight="800" fill="${BD_INK}">EN</text>`,
+  biens: `${[-20, 0, 20].map((x, i) => `<rect x="${x - 9}" y="-22" width="18" height="34" rx="4" fill="${i === 1 ? BD_GOLD : "#B9C3E6"}"/><rect x="${x - 6}" y="-18" width="12" height="12" rx="2" fill="#fff"/>`).join("")}<rect x="-30" y="22" width="60" height="10" rx="5" fill="#EDEEF7"/>`,
   profile: `<rect x="-30" y="-24" width="60" height="44" rx="8" fill="#EDEEF7" stroke="${BD_BLUE}" stroke-width="2.5"/><circle cx="-12" cy="-6" r="9" fill="${BD_BLUE}"/><path d="M-24 12 c0 -8 5 -11 12 -11 s12 3 12 11z" fill="${BD_BLUE}"/><rect x="4" y="-12" width="20" height="5" rx="2.5" fill="${BD_BLUE}"/><rect x="4" y="-2" width="16" height="5" rx="2.5" fill="#8D92B5"/><rect x="4" y="8" width="18" height="5" rx="2.5" fill="#8D92B5"/><circle cx="26" cy="-30" r="9" fill="${BD_GOLD}" stroke="#fff" stroke-width="2"/>`,
   poster: `<rect x="-28" y="-30" width="56" height="64" rx="4" fill="#8FB0D8"/><rect x="-28" y="12" width="56" height="22" fill="${BD_INK}"/><rect x="-6" y="18" width="26" height="5" rx="2" fill="${BD_GOLD}"/><rect x="-22" y="18" width="12" height="5" rx="2" fill="#fff"/><g transform="translate(14 -16) rotate(45)"><rect x="-30" y="-6" width="60" height="12" fill="${BD_GOLD}"/><text x="0" y="4" text-anchor="middle" font-size="8" font-weight="800" fill="${BD_INK}">VENDU</text></g>`,
   order: `${[-26, -2, 22].map((x, i) => `<rect x="${x - 10}" y="-14" width="20" height="26" rx="4" fill="${i === 1 ? BD_GOLD : "#B9C3E6"}"/><text x="${x}" y="4" text-anchor="middle" font-size="11" font-weight="800" fill="${BD_INK}">${i + 1}</text>`).join("")}<path d="M-14 26 h28 M8 20 l6 6 l-6 6" stroke="${BD_BLUE}" stroke-width="3.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/>`,
@@ -2383,21 +2683,26 @@ function bdPanel(screen, title, tap, n, total) {
   </svg>`;
 }
 const BD = {
-  bien: { title: "Remplir la fiche du bien", ver: "3", steps: [
+  bien: { title: "Remplir la fiche du bien", ver: "4", steps: [
     ["profile", "Votre profil (une seule fois)", [26, -30], "Touchez « Mon profil » en haut à droite : nom, téléphone, e-mail et photo. Ils sont repris sur les vidéos, la fiche vitrine, les affiches et l'annonce."],
     ["house", "Ouvrir la fiche du bien", [0, 20], "Ouvrez l'onglet « Bien » en bas de l'écran."],
     ["pin", "Saisir l'adresse", [0, -8], "Tapez le numéro et la rue, puis touchez la bonne suggestion : le code postal et la ville se remplissent seuls."],
     ["form", "Compléter les caractéristiques", [-12, 38], "Renseignez surfaces, pièces, prix, DPE et équipements."],
     ["text", "Générer l'annonce", [18, 38], "Touchez « Remplir la vidéo, le plan et le dossier » : un encadré vert confirme ce qui a été recopié (vidéo, description, plan, dossier). Puis « Copier le texte de l'annonce »."],
     ["poster", "Créer une affiche", [0, -22], "« Créer une affiche » : choisissez le bandeau (À vendre, Vendu, Sous compromis, Baisse de prix…), la photo et le format (carré, story, A4 PDF), puis « Enregistrer l'affiche »."],
-    ["share", "Diffuser le bien", [0, 36], "« Créer la fiche vitrine (PDF) » pour la vitrine, « Partager le kit annonce » pour tout envoyer d'un coup par mail ou WhatsApp."]] },
-  photos: { title: "Réaliser les photos", ver: "3", steps: [
+    ["share", "Diffuser le bien", [0, 36], "« Créer la fiche vitrine (PDF) » pour la vitrine, « Partager le kit annonce » pour tout envoyer d'un coup par mail ou WhatsApp."],
+    ["docs", "Documents du mandat", [-14, -18], "En bas de la fiche, « Documents du mandat » : cochez les pièces reçues (titre, diagnostics, copropriété…). La liste est gardée avec le dossier."],
+    ["valuation", "Avis de valeur", [22, 30], "« Créer un avis de valeur » puis « Rechercher les ventes du secteur » : décochez les ventes qui ne ressemblent pas au bien, ajustez la fourchette, ajoutez vos observations, puis créez le PDF pour le vendeur."],
+    ["calc", "Calculs pour l'acquéreur", [12, 22], "Cochez « Afficher les calculs pour l'acquéreur » : frais de notaire estimés et mensualité indicative apparaissent sur la fiche vitrine. Réglez l'apport, le taux et la durée. Décochez pour les masquer."],
+    ["lang", "Annonce en langue étrangère", [17, 27], "« Langue de l'annonce » : anglais, allemand, espagnol, néerlandais ou italien. Le texte est traduit automatiquement ; relisez-le avant de publier."]] },
+  photos: { title: "Réaliser les photos", ver: "4", steps: [
     ["camera", "Prendre la photo", [0, 4], "Touchez « Prendre ou choisir une photo ». Tenez le téléphone droit, à hauteur de poitrine."],
     ["compare", "Retouche automatique", [0, 0], "Lumière et couleurs sont corrigées automatiquement. Faites glisser le curseur pour comparer avant et après."],
     ["sun", "Fusion HDR", [0, 24], "Pièce avec une fenêtre très lumineuse : prenez la même vue trois fois (sombre, normale, claire) sans bouger le téléphone, puis sélectionnez les trois photos."],
     ["sky", "Ciel bleu et floutage", [-21, 39], "Façade : cochez « Ciel bleu ». Photo de famille, visage ou plaque : « Flouter une zone », puis touchez l'endroit concerné."],
     ["check", "Enregistrer", [0, 29], "« Ajouter au reportage » pour la vidéo, ou « Enregistrer la photo » puis « Enregistrer l'image »."],
-    ["order", "Choisir l'ordre des photos", [-14, 30], "Dans le reportage, les flèches ◀ ▶ déplacent une photo ; vous pouvez aussi appuyer longuement sur une photo puis la faire glisser. L'ordre est celui de la vidéo, de la fiche vitrine et du kit."]] },
+    ["order", "Choisir l'ordre des photos", [-14, 30], "Dans le reportage, les flèches ◀ ▶ déplacent une photo ; vous pouvez aussi appuyer longuement sur une photo puis la faire glisser. L'ordre est celui de la vidéo, de la fiche vitrine et du kit."],
+    ["share", "Home staging virtuel", [0, 36], "Pour meubler une pièce vide par intelligence artificielle : « Ouvrir le service de home staging » (service extérieur payant). Enregistrez d'abord la photo, puis indiquez « Aménagement virtuel » dans l'annonce."]] },
   visite: { title: "Créer une visite 360°", ver: "3", steps: [
     ["pano", "Prise de vue 360°", [24, -6], "Au centre de la pièce, touchez « Prise de vue 360° », autorisez la caméra et les mouvements, puis « Commencer »."],
     ["camera", "Tourner sur place", [0, 4], "Tournez lentement vers la droite, téléphone droit : quand le point jaune entre dans le cercle, la photo se prend seule (12 photos)."],
@@ -2429,7 +2734,8 @@ const BD = {
     ["ruler", "Saisir les cotes", [0, 0], "Saisissez largeur et longueur en mètres. Sur le dessin, faites glisser une pièce pour la placer et tirez le coin orange pour l'agrandir."],
     ["annex", "Distinguer les annexes", [-20, 38], "Balcon, garage, cave : décochez « habitable ». Ils passent en annexes et la surface habitable reste exacte."],
     ["cube", "Vue 3D", [0, 0], "Touchez « 3D », faites pivoter avec le doigt, puis « Enregistrer l'image 3D »."]] },
-  dossier: { title: "Sauvegarder les dossiers", steps: [
+  dossier: { title: "Sauvegarder les dossiers", ver: "4", steps: [
+    ["biens", "Mes biens", [0, -4], "Sous les boutons du dossier, « Mes biens » liste vos derniers biens : touchez-en un pour le reprendre là où vous l'aviez laissé. « Nouveau » garde le bien précédent dans la liste."],
     ["folder", "Nommer le dossier", [-4, 37], "Donnez un nom au dossier du bien, par exemple « Maison Touques »."],
     ["cloud", "Sauvegarder le dossier", [0, 5], "« Sauvegarder », puis « Enregistrer dans Fichiers » et choisissez iCloud Drive. Sur Android : Google Drive ou « Fichiers »."],
     ["phones", "Ouvrir sur un autre appareil", [18, -2], "Touchez « Ouvrir » et sélectionnez le fichier du dossier : toutes les données sont restaurées."],
@@ -2560,6 +2866,12 @@ const KB = [
   { k: "ordre photos deplacer changer ordre classer trier reportage glisser premiere photo", q: "Comment changer l'ordre des photos ?", a: "Onglet Photos, dans le reportage : touchez ◀ ou ▶ sous une photo pour la déplacer, ou appuyez longuement dessus puis faites-la glisser. Le numéro en haut de chaque photo montre sa place. C'est cet ordre qui est utilisé dans la vidéo, la fiche vitrine et le kit.", tab: "photos", guide: "photos" },
   { k: "affiche vendu a vendre sous compromis baisse prix bandeau panneau exclusivite poster instagram story", q: "Comment faire une affiche « Vendu » ou « À vendre » ?", a: "Onglet Bien, touchez « Créer une affiche (À vendre, Vendu…) ». Choisissez le bandeau (À vendre, Vendu, Sous compromis, Nouveauté, Baisse de prix, Exclusivité…), la photo et le format : carré pour les réseaux, story, ou A4 en PDF pour la vitrine. Puis « Enregistrer l'affiche ».", tab: "bien", guide: "bien" },
   { k: "presentation tutoriel bienvenue decouvrir revoir debut demarrage", q: "Comment revoir la présentation de l'application ?", a: "Touchez « Mon profil » en haut à droite, puis « Revoir la présentation de l'application »." },
+  { k: "avis valeur estimation estimer prix vendeur ventes secteur dvf comparables mandat valeur", q: "Comment faire un avis de valeur ?", a: "Onglet Bien, remplissez l'adresse et la surface, puis touchez « Créer un avis de valeur » et « Rechercher les ventes du secteur ». L'application retrouve les ventes publiées par l'État autour du bien. Décochez celles qui ne ressemblent pas, ajoutez vos propres références si besoin, ajustez la fourchette et le prix conseillé, puis « Créer l'avis de valeur (PDF) ».", tab: "bien", guide: "bien" },
+  { k: "documents mandat diagnostics pieces liste checklist titre propriete copropriete", q: "Comment suivre les documents du mandat ?", a: "Onglet Bien, en bas de la fiche : « Documents du mandat ». Cochez chaque document reçu ; le compteur montre où vous en êtes. Les documents de copropriété s'ajoutent pour un appartement. La liste est gardée avec le dossier du bien.", tab: "bien", guide: "bien" },
+  { k: "frais notaire mensualite credit pret calcul acquereur financement simulation", q: "Comment afficher les frais de notaire et la mensualité ?", a: "Onglet Bien, cochez « Afficher les calculs pour l'acquéreur sur la fiche vitrine », puis réglez l'apport, le taux et la durée. Les frais de notaire estimés et la mensualité indicative s'affichent sur la fiche vitrine. Décochez pour les masquer.", tab: "bien", guide: "bien" },
+  { k: "anglais traduire traduction langue english allemand espagnol neerlandais italien etranger", q: "Comment avoir l'annonce en anglais ?", a: "Onglet Bien, au-dessus du texte de l'annonce, choisissez la « Langue de l'annonce » : anglais, allemand, espagnol, néerlandais ou italien. La description est traduite automatiquement quand le téléphone a du réseau ; relisez-la avant de publier.", tab: "bien", guide: "bien" },
+  { k: "mes biens liste dossiers reprendre retrouver bien precedent accueil", q: "Comment retrouver un bien sur lequel je travaillais ?", a: "Sur l'accueil, sous le dossier du bien, « Mes biens » affiche vos derniers biens : touchez-en un pour le reprendre. La liste reste sur ce téléphone ; pour un autre téléphone, utilisez « Sauvegarder ».", guide: "dossier" },
+  { k: "home staging meubler piece vide virtuel decorer amenager ia", q: "Peut-on faire du home staging ?", a: "Pas dans l'application : le home staging par intelligence artificielle se fait avec un service extérieur payant. Onglet Photos, touchez « Ouvrir le service de home staging ». Enregistrez d'abord votre photo, puis indiquez « Aménagement virtuel » dans l'annonce.", tab: "photos" },
   { k: "gratuit gratuite payant prix cout coute combien abonnement payer tarif", q: "L'application est-elle payante ?", a: "Non. L'application est entièrement gratuite, sans abonnement ni achat. Les musiques, les voix du narrateur et la prise de vue 360° sont incluses." },
   { k: "hors ligne sans internet reseau connexion offline", q: "Fonctionne-t-elle sans internet ?", a: "Oui. Après une première ouverture avec internet, tout fonctionne hors connexion. Seules les suggestions d'adresse demandent du réseau." },
   { k: "mise a jour nouvelle version actualiser update", q: "Comment avoir la dernière version ?", a: "Ouvrez l'application avec une connexion internet : elle se met à jour toute seule. Si l'icône a changé, supprimez l'ancienne de l'écran d'accueil et réinstallez-la depuis Safari." },
@@ -2757,6 +3069,12 @@ async function vitrineCanvas() {
     k.forEach((L, i) => { const on = L === val, bw = on ? 50 : 34, bx = X + i * 42 + (on ? -8 : 0); x.fillStyle = colors[L]; x.globalAlpha = val ? (on ? 1 : .3) : .5; x.beginPath(); x.roundRect ? x.roundRect(bx, Y + 28 - (on ? 7 : 0), bw, on ? 52 : 38, 8) : x.rect(bx, Y + 28, bw, 38); x.fill(); x.globalAlpha = 1;
       x.fillStyle = (lab === "GES" ? "ABCD".includes(L) : !("ABC".includes(L) || L === "G")) ? "#1b1b1b" : "#fff"; x.font = `800 ${on ? 28 : 19}px ${disp}`; x.textAlign = "center"; x.fillText(L, bx + bw / 2, Y + 28 + (on ? 28 : 26)); x.textAlign = "left"; }); };
   if (d.dpe || d.ges) { letter("DPE", d.dpe, DPE, colR, ry); ry += 92; letter("GES", d.ges, GES, colR, ry); ry += 100; }
+  const bc = F.calc.show ? buyerCalc() : null;
+  if (bc) { x.fillStyle = "#FFF6DA"; x.beginPath(); x.roundRect ? x.roundRect(colR, ry, 340, 196, 14) : x.rect(colR, ry, 340, 196); x.fill(); x.fillStyle = GOLD; x.fillRect(colR, ry + 16, 6, 164);
+    x.fillStyle = GREY; x.font = `700 17px ${body}`; x.fillText("POUR L'ACQUÉREUR", colR + 22, ry + 34);
+    x.fillStyle = NAVY; x.font = `500 19px ${body}`; x.fillText("Frais de notaire estimés", colR + 22, ry + 66); x.font = `800 26px ${disp}`; x.fillText(euro(bc.notary), colR + 22, ry + 96);
+    x.font = `500 19px ${body}`; x.fillText("Mensualité indicative", colR + 22, ry + 128); x.fillStyle = BLUE; x.font = `800 26px ${disp}`; x.fillText(euro(bc.mens) + " / mois", colR + 22, ry + 158);
+    x.fillStyle = GREY; x.font = `500 14px ${body}`; x.fillText(`${bc.ans} ans à ${String((bc.taux * 100).toFixed(2)).replace(".", ",")} %, apport ${euro(bc.apport)}, hors assurance`, colR + 22, ry + 184, 310); ry += 212; }
   const hasPlan = PL.rooms.length && !PL.isSample;
   if (hasPlan && ry < footY - 160) { const pc = document.createElement("canvas"), pwid = 340, phh = Math.min(footY - 24 - ry, 280); pc.width = pwid * 2; pc.height = phh * 2; const px = pc.getContext("2d");
     drawPlan(px, pc.width, pc.height, planFit(pc.width, pc.height, 24), { print: true, u: 1.2 }); x.drawImage(pc, colR, ry, pwid, phh); x.strokeStyle = "#E3E5F2"; x.lineWidth = 2; x.strokeRect(colR, ry, pwid, phh); }
