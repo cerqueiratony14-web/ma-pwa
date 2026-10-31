@@ -398,6 +398,90 @@ input[type=range]::-moz-range-track{height:6px;border-radius:99px;background:#C9
 .field .tick,.tick{text-transform:none;letter-spacing:0;font-size:14px}.tick span{font-weight:600;padding:8px 14px}
 .tick input:checked+span{box-shadow:0 4px 12px -4px color-mix(in srgb,var(--accent) 60%,transparent)}
 @media (prefers-reduced-motion: reduce){section[data-view]:not([hidden]){animation:none}.tabpill{transition:none}html{scroll-behavior:auto}}
+/* pas à pas */
+.path{border:1px solid color-mix(in srgb,var(--accent) 30%,var(--line));background:color-mix(in srgb,var(--accent) 5%,var(--surface));border-radius:18px;padding:12px;margin:0 0 14px;display:flex;flex-direction:column;gap:10px;box-shadow:var(--shadow)}
+.path.off{border:0;background:none;box-shadow:none;padding:0}
+.path-on{min-height:36px;padding:6px 14px;border-radius:99px;font-size:13.5px;align-self:flex-start}
+.path-top{display:flex;align-items:center;gap:10px}.path-top b{font-family:var(--display);font-size:16px}.path-top .note{flex:1;margin:0}
+.path-dots{display:flex;gap:6px;overflow-x:auto;scrollbar-width:none;scroll-behavior:smooth;margin:0 -2px;padding:2px}.path-dots::-webkit-scrollbar{display:none}
+.path-dots button{flex:none;min-height:34px;padding:4px 12px 4px 5px;border-radius:99px;font-size:13px;gap:6px;white-space:nowrap}
+.path-dots button span{width:24px;height:24px;border-radius:50%;display:grid;place-items:center;background:var(--sunk);font-size:12px;font-weight:700}
+.path-dots button[aria-selected="true"]{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+.path-dots button[aria-selected="true"] span{background:var(--accent-ink);color:var(--accent)}
+.path-dots button.done span{background:var(--ok);color:#fff}
+.path-card{background:var(--surface);border-radius:14px;padding:12px 14px;display:flex;flex-direction:column;gap:8px;font-size:14.5px;line-height:1.5}
+.path-card h4{margin:0;font-family:var(--display);font-size:17px}.path-card p,.path-card ul{margin:0}.path-card ul{padding-left:20px}
+.path-card .os{background:var(--sunk);border-radius:10px;padding:8px 10px;font-size:13.5px}
+.path-card .tip{color:var(--muted);font-size:13.5px}.path-card .okline{color:var(--ok);font-weight:700}
+.path-card .row button{min-height:40px;padding:8px 14px;font-size:14px}
+.path-target{outline:2.5px solid color-mix(in srgb,var(--signal) 85%,transparent);outline-offset:3px;border-radius:14px}
+.path-flash{animation:pflash .65s ease-in-out 4}
+@keyframes pflash{50%{outline-color:var(--signal);outline-width:5px;outline-offset:6px;box-shadow:0 0 0 10px color-mix(in srgb,var(--signal) 25%,transparent)}}
+/* i d'explication */
+.tipbtn{flex:none;align-self:center;width:28px;height:28px;min-height:28px;padding:0;border-radius:50%;font-family:Georgia,serif;font-style:italic;font-weight:700;font-size:15px;background:#FFF3D1;border-color:#F0B00A;color:#02062C;margin-left:6px;vertical-align:middle}
+label .tipbtn,.lbl .tipbtn{width:24px;height:24px;min-height:24px;font-size:13px}
+.tiprow{display:flex;align-items:center;gap:8px}.tiprow>:first-child{flex:1;min-width:0}
+.tipsheet{position:fixed;left:0;right:0;bottom:0;z-index:80;padding:0 12px calc(84px + env(safe-area-inset-bottom,0px));pointer-events:none;transform:translateY(20px);opacity:0;transition:.2s}
+.tipsheet.on{transform:none;opacity:1}
+.tipcard{pointer-events:auto;max-width:560px;margin:0 auto;background:var(--surface);border:1px solid var(--line);border-radius:18px;padding:12px 14px;box-shadow:0 12px 40px rgba(2,6,44,.25);font-size:14.5px;line-height:1.5}
+.tipcard p{margin:6px 0 0}.tipcard b{font-family:var(--display);font-size:16px}.tipcard .tipclose{min-height:32px;padding:4px 10px}
+@media (min-width:761px){.tipsheet{padding-bottom:24px}}
+/* fenêtre d'enregistrement */
+.savesteps{margin:0;padding-left:0;list-style:none;display:flex;flex-direction:column;gap:8px;counter-reset:s}
+.savesteps li{display:flex;gap:10px;align-items:flex-start;font-size:14.5px;line-height:1.45;counter-increment:s}
+.savesteps li::before{content:counter(s);flex:none;width:26px;height:26px;border-radius:50%;background:var(--accent);color:var(--accent-ink);display:grid;place-items:center;font-weight:700;font-size:13px}
+.savedone{background:color-mix(in srgb,var(--ok) 12%,var(--surface));color:var(--ok);font-weight:700;border-radius:12px;padding:10px 12px}
+/* BD : bulles et petits mouvements */
+.bd-bubble{position:relative;display:block!important;background:#fff;color:#02062C;border:2.5px solid #02062C;border-radius:20px;padding:12px 14px 13px;font-size:15.5px;line-height:1.45;margin-bottom:14px;box-shadow:3px 4px 0 rgba(2,6,44,.12)}
+.bd-bubble b{display:block;font-family:var(--display);font-size:18px;color:#070C9B;margin-bottom:3px}
+.bd-bubble .bd-num{float:right;font-size:12px;font-weight:700;color:#8A8FB0;margin-left:8px}
+.bd-bubble::after,.bd-bubble::before{content:"";position:absolute;left:21%;border-style:solid}
+.bd-bubble::before{bottom:-18px;border-width:18px 14px 0 0;border-color:#02062C transparent transparent}
+.bd-bubble::after{bottom:-13px;left:calc(21% + 3px);border-width:13px 10px 0 0;border-color:#fff transparent transparent}
+.bd-art svg{border-radius:18px;box-shadow:inset 0 0 0 2.5px #02062C!important;border:2.5px solid #02062C}
+.bd-char{animation:bdbob 3.2s ease-in-out infinite;transform-box:fill-box;transform-origin:50% 100%}
+@keyframes bdbob{50%{transform:translateY(-2px) rotate(-.6deg)}}
+.bd-eyes{animation:bdblink 4.2s infinite;transform-box:fill-box;transform-origin:center}
+@keyframes bdblink{0%,94%,100%{transform:scaleY(1)}97%{transform:scaleY(.1)}}
+.bd-m-open{opacity:0}.talk .bd-m-open{animation:bdtalk .32s steps(2) infinite}.talk .bd-m-shut{animation:bdtalk .32s steps(2) infinite reverse}
+@keyframes bdtalk{0%{opacity:1}100%{opacity:0}}
+.bd-ring{animation:bdring 1.4s ease-out infinite;transform-box:fill-box;transform-origin:center}
+@keyframes bdring{0%{transform:scale(.6);opacity:1}100%{transform:scale(1.6);opacity:0}}
+.bd-wave{animation:bdwave 1.2s ease-in-out infinite;transform-box:fill-box;transform-origin:20% 100%}
+@keyframes bdwave{50%{transform:rotate(14deg)}}
+@media (prefers-reduced-motion:reduce){.bd-char,.bd-eyes,.bd-ring,.bd-wave{animation:none}}
+.bd-who{display:inline-block;font-size:12px;font-weight:800;letter-spacing:.04em;text-transform:uppercase;color:#fff;background:#070C9B;border-radius:99px;padding:2px 9px;margin-bottom:5px}
+.bd-bubble.who-claire .bd-who{background:#02062C}.bd-bubble.who-claire .bd-who::before{content:"";display:inline-block;width:7px;height:7px;border-radius:50%;background:#F0B00A;margin-right:5px;vertical-align:1px}
+.bd-bubble::before{left:var(--tx,21%)!important}.bd-bubble::after{left:calc(var(--tx,21%) + 3px)!important}
+.bd-photo{position:relative;border-radius:18px;overflow:hidden;border:2.5px solid #02062C;aspect-ratio:3/2;background:#E9EBF6}
+.bd-photo img{width:100%;height:100%;object-fit:cover;display:block}
+.bd-reply{position:absolute;max-width:46%;background:#fff;color:#02062C;border:2px solid #02062C;border-radius:14px;padding:6px 9px;font-size:13px;line-height:1.3;font-weight:600;box-shadow:2px 3px 0 rgba(2,6,44,.15);opacity:0;transform:translateY(6px) scale(.96);transition:.35s}
+.bd-reply b{display:block;font-size:10.5px;text-transform:uppercase;letter-spacing:.05em;color:#070C9B}
+.bd-cell:not(.speaking) .bd-reply,.bd-cell.reply .bd-reply{opacity:1;transform:none}
+.bd-cell.speaking:not(.reply) .bd-reply{opacity:0}
+.bd-cell.speaking .bd-bubble{box-shadow:0 0 0 4px rgba(240,176,10,.45),3px 4px 0 rgba(2,6,44,.12)}
+.bd-play{min-height:40px;padding:6px 14px;border-radius:99px;font-size:14px}
+.bd-play[aria-pressed="true"]{background:#FFF3D1;border-color:#F0B00A}
+.bd-foot{gap:10px}
+/* cases illustrées : bulles dans l'image, cartouche dessous */
+.bd-cell.img .bd-photo{margin-bottom:10px}
+.sb-tails{position:absolute;inset:0;width:100%;height:100%;z-index:1;pointer-events:none;overflow:visible}
+.sb{position:absolute;z-index:2;color:#02062C;padding:4px 6px;text-wrap:balance;font-size:12.5px;line-height:1.22;font-weight:700;text-align:center;font-family:"Comic Neue","Bricolage Grotesque",system-ui,sans-serif}
+.sb-who{display:block;font-size:9px;letter-spacing:.07em;text-transform:uppercase;color:#070C9B;margin-bottom:1px}
+.sbg{transform-box:fill-box;transform-origin:center}.bd-cell.img.speaking .sbg.main,.bd-cell.img.speaking .sb.main,.bd-cell.img.reply .sbg.rep,.bd-cell.img.reply .sb.rep{animation:sbpop .45s ease-out}
+.bd-cell.img.speaking:not(.reply) .sbg.rep,.bd-cell.img.speaking:not(.reply) .sb.rep{opacity:.35}
+@keyframes sbpop{0%{transform:scale(.85)}60%{transform:scale(1.05)}100%{transform:none}}
+.bd-cart{display:block!important;background:#FFF8E1;border:2px solid #02062C;border-radius:4px;padding:10px 12px;font-size:14.5px;line-height:1.45;color:#02062C;box-shadow:3px 3px 0 #F0B00A}
+.bd-cart b{display:block;font-family:var(--display);font-size:16.5px;color:#070C9B;margin-bottom:2px}
+.bd-cart .bd-num{float:right;font-size:12px;font-weight:700;color:#8A8FB0;margin-left:8px}
+.bd-cell.img.speaking .bd-cart{box-shadow:3px 3px 0 #F0B00A,0 0 0 4px rgba(240,176,10,.35)}
+.batchbtn{font-size:14px;min-height:40px}
+.bd-box.batch .bmode{display:flex}.bd-box.batch .bmode button{flex:1;font-size:13.5px;padding:8px 10px}
+.bgroups{display:flex;flex-direction:column;gap:8px;max-height:38vh;overflow:auto}
+.bgroup{display:flex;align-items:center;gap:10px;background:var(--sunk);border-radius:12px;padding:6px 8px}
+.bnum{flex:none;font-size:12.5px;font-weight:700;width:58px}.bthumbs{display:flex;gap:4px;overflow:hidden}.bthumbs img{width:54px;height:40px;object-fit:cover;border-radius:6px}
+.bwarn{font-size:11.5px;color:var(--warn)}
+.bbar{height:6px;border-radius:3px;background:var(--sunk);overflow:hidden}.bbar i{display:block;height:100%;width:0;background:var(--accent);transition:width .3s}
 </style>
 
 <div class="wrap">
@@ -564,6 +648,7 @@ input[type=range]::-moz-range-track{height:6px;border-radius:99px;background:#C9
         <label class="btn file primary" id="pickLbl">Prendre ou choisir une photo
           <input type="file" id="pick" accept="image/*,image/heic,image/heif">
         </label>
+        <button type="button" id="batchGo" class="ghost batchbtn">Toute la séance d'un coup (plusieurs photos)</button>
         <p class="note" id="modeNote">Une seule photo par pièce suffit. Tenez le téléphone droit, à hauteur de poitrine.</p>
         <div class="fusebox" id="fuseBox" hidden><div class="fusethumbs" id="fuseThumbs"></div><div class="fstep" id="fuseMsg"></div><div class="row" id="fuseBtns"><button class="primary" type="button" id="fuseGo">Fusionner</button><button type="button" class="ghost" id="fuseReset">Recommencer</button></div></div>
         <div class="status" id="pStatus"></div>
@@ -743,16 +828,25 @@ async function offerFile(filename, blob, kind) {
   const type = blob.type || (kind === "image" ? "image/jpeg" : kind === "video" ? "video/mp4" : kind === "pdf" ? "application/pdf" : "application/octet-stream");
   let file = null; try { file = new File([blob], filename, { type }); } catch (_) {}
   const canShare = !!(file && navigator.canShare && navigator.canShare({ files: [file] }));
-  const tip = kind === "dossier" ? "Touchez « Enregistrer », puis « Enregistrer dans Fichiers » et choisissez iCloud Drive."
-    : kind === "image" ? "Touchez « Enregistrer », puis « Enregistrer l'image » ou « Enregistrer dans Fichiers »."
-    : kind === "video" ? "Touchez « Enregistrer », puis « Enregistrer la vidéo » ou « Enregistrer dans Fichiers »."
-    : "Touchez « Enregistrer », puis « Enregistrer dans Fichiers ».";
+  // marche à suivre pas à pas, selon le téléphone
+  const what = kind === "image" ? "l'image" : kind === "video" ? "la vidéo" : "le fichier", where = kind === "image" || kind === "video" ? "l'app <b>Photos</b>" : "l'app <b>Fichiers</b>";
+  const isAnd = /Android/i.test(navigator.userAgent), isIOS = typeof OS !== "undefined" && OS === "ios", useShare = canShare && !isAnd;
+  const steps = useShare
+    ? [`Touchez le bouton bleu <b>« Enregistrer »</b> ci-dessous.`,
+       kind === "image" ? `Dans le menu qui s'ouvre, choisissez <b>« Enregistrer l'image »</b>.` : kind === "video" ? `Dans le menu qui s'ouvre, choisissez <b>« Enregistrer la vidéo »</b> (faites défiler le menu vers le bas si besoin).` : kind === "dossier" ? `Dans le menu, choisissez <b>« Enregistrer dans Fichiers »</b>, puis iCloud Drive.` : `Dans le menu, choisissez <b>« Enregistrer dans Fichiers »</b>, ou directement Mail ou WhatsApp pour l'envoyer.`,
+       kind === "image" || kind === "video" ? `C'est fait : ${what} est dans ${where}.` : `C'est fait : ${what} est dans ${where}.`]
+    : isIOS && kind === "image" ? [`Posez le doigt longtemps sur l'image ci-dessus.`, `Choisissez <b>« Enregistrer dans Photos »</b> (ou « Ajouter à Photos »).`, `C'est fait : l'image est dans l'app <b>Photos</b>.`]
+    : [`Touchez le bouton bleu <b>« Télécharger »</b> ci-dessous.`, kind === "image" || kind === "video" ? `${what[0].toUpperCase() + what.slice(1)} arrive dans la <b>Galerie</b> (ou Google Photos), dossier « Téléchargements ».` : `Le fichier arrive dans <b>Fichiers</b>, dossier « Téléchargements ».`,
+       kind === "image" ? `Sur ordinateur : il est dans le dossier « Téléchargements ». Autre solution : appui long sur l'image, puis « Enregistrer l'image ».` : `Sur ordinateur : il est dans le dossier « Téléchargements ».`];
   ov.innerHTML = `<div class="box"><h3>Votre fichier est prêt</h3>${media}
-    <p class="note">${canShare ? tip : (kind === "image" ? "Appui long sur l'image, puis « Enregistrer »." : "Touchez le bouton ci-dessous pour le télécharger.")}</p>
-    <div class="row">${canShare ? `<button class="primary" id="ovShare">Enregistrer</button>` : `<a class="btn primary" href="${url}" download="${filename}">Télécharger</a>`}<button id="ovClose">Fermer</button></div>
+    <ol class="savesteps">${steps.map(t => `<li><span>${t}</span></li>`).join("")}</ol>
+    <div class="savedone" hidden></div>
+    <div class="row">${useShare ? `<button class="primary" id="ovShare">Enregistrer</button>` : `<a class="btn primary" id="ovDl" href="${url}" download="${filename}">Télécharger</a>${canShare ? `<button id="ovShare">Partager</button>` : ""}`}<button id="ovClose">Fermer</button></div>
     <p class="note mono" style="word-break:break-all">${filename.replace(/</g, "")}</p></div>`;
   document.body.appendChild(ov);
-  if (canShare) ov.querySelector("#ovShare").onclick = async () => { try { await navigator.share({ files: [file], title: filename }); } catch (_) {} };
+  const done = t => { const d = ov.querySelector(".savedone"); d.hidden = false; d.textContent = t; };
+  if (canShare) ov.querySelector("#ovShare").onclick = async () => { try { await navigator.share({ files: [file], title: filename }); done(kind === "image" || kind === "video" ? `✓ C'est fait ! Retrouvez ${what} dans l'app Photos.` : "✓ C'est fait !"); } catch (_) {} };
+  const dlA = ov.querySelector("#ovDl"); if (dlA) dlA.addEventListener("click", () => setTimeout(() => done(`✓ Téléchargement lancé : ${what} est dans « Téléchargements ».`), 300));
   ov.querySelector("#ovClose").onclick = () => { ov.remove(); setTimeout(() => URL.revokeObjectURL(url), 60000); };
   return "fallback";
 }
@@ -3014,6 +3108,7 @@ const BD_SCREENS = {
   voice: `<circle cx="-12" cy="-10" r="11" fill="${BD_BLUE}"/><path d="M-30 26 c0 -16 8 -24 18 -24 s18 8 18 24z" fill="${BD_BLUE}"/><path d="M12 -18 q8 8 0 16 M18 -24 q14 14 0 28 M24 -30 q20 20 0 40" stroke="${BD_GOLD}" stroke-width="3.5" fill="none" stroke-linecap="round"/><text x="0" y="44" text-anchor="middle" font-size="11" font-weight="700" fill="${BD_INK}">2 ♀ · 2 ♂</text>`,
   mic: `<rect x="-10" y="-30" width="20" height="36" rx="10" fill="${BD_BLUE}"/><path d="M-18 -2 a18 18 0 0 0 36 0 M0 16 v12 M-10 28 h20" stroke="${BD_BLUE}" stroke-width="4" fill="none" stroke-linecap="round"/><path d="M24 -20 q6 6 0 12 M30 -26 q12 12 0 24" stroke="${BD_GOLD}" stroke-width="3" fill="none" stroke-linecap="round"/>`,
   clip: `<rect x="-30" y="-24" width="60" height="44" rx="6" fill="${BD_INK}"/>${[-24, -12, 0, 12, 24].map(x => `<rect x="${x - 3}" y="-21" width="6" height="5" rx="1" fill="#fff"/><rect x="${x - 3}" y="12" width="6" height="5" rx="1" fill="#fff"/>`).join("")}<path d="M-6 -9 v18 l16 -9z" fill="${BD_GOLD}"/><circle cx="0" cy="34" r="8" fill="#D7221F"/>`,
+  help: `<rect x="-30" y="-30" width="60" height="26" rx="6" fill="#EEF0FA" stroke="${BD_BLUE}" stroke-width="2"/>${[0, 1, 2].map(i => `<circle cx="${-18 + i * 14}" cy="-17" r="5" fill="${i ? "#C9CCE0" : BD_BLUE}"/>`).join("")}<rect x="-30" y="2" width="44" height="12" rx="6" fill="${BD_BLUE}"/><circle cx="24" cy="8" r="9" fill="#FFF3D1" stroke="${BD_GOLD}" stroke-width="2"/><text x="24" y="12.5" text-anchor="middle" font-size="12" font-style="italic" font-weight="800" font-family="Georgia,serif" fill="${BD_INK}">i</text><rect x="-30" y="24" width="60" height="16" rx="8" fill="${BD_GOLD}"/><path d="M-6 28 v8 l7 -4z" fill="${BD_INK}"/>`,
   plus: `<rect x="-26" y="-26" width="52" height="52" rx="12" fill="#EDEEF7" stroke="${BD_BLUE}" stroke-width="3"/><path d="M0 -14 v28 M-14 0 h28" stroke="${BD_BLUE}" stroke-width="5" stroke-linecap="round"/>`
 };
 function bdWrap(t, max) { const w = t.split(" "), L = [""]; w.forEach(x => { if ((L[L.length - 1] + " " + x).trim().length > max) L.push(x); else L[L.length - 1] = (L[L.length - 1] + " " + x).trim(); }); return L; }
@@ -3025,7 +3120,6 @@ function bdPanel(screen, title, tap, n, total) {
     <text x="22" y="46" font-size="30" font-weight="800" fill="${BD_BLUE}" letter-spacing="-1">${String(n).padStart(2, "0")}</text>
     <text x="70" y="46" font-size="12" font-weight="600" fill="#8A8FB0">/ ${String(total).padStart(2, "0")}</text>
     <rect x="22" y="58" width="28" height="3" rx="1.5" fill="${BD_GOLD}"/>
-    ${lines.map((l, i) => `<text x="22" y="${88 + i * 21}" font-size="17" font-weight="700" fill="${BD_INK}">${l}</text>`).join("")}
     <g transform="translate(232 100)">
       <rect x="-50" y="-88" width="100" height="180" rx="20" fill="#FFFFFF" stroke="${BD_INK}" stroke-width="2.5"/>
       <rect x="-14" y="-80" width="28" height="7" rx="3.5" fill="${BD_INK}"/>
@@ -3047,22 +3141,26 @@ const BD = {
     ["valuation", "Avis de valeur", [22, 30], "« Créer un avis de valeur » puis « Rechercher les ventes du secteur » : décochez les ventes qui ne ressemblent pas au bien, ajustez la fourchette, ajoutez vos observations, puis créez le PDF pour le vendeur."],
     ["calc", "Calculs pour l'acquéreur", [12, 22], "Cochez « Afficher les calculs pour l'acquéreur » : frais de notaire estimés et mensualité indicative apparaissent sur la fiche vitrine. Réglez l'apport, le taux et la durée. Décochez pour les masquer."],
     ["lang", "Annonce en langue étrangère", [17, 27], "« Langue de l'annonce » : anglais, allemand, espagnol, néerlandais ou italien. Le texte est traduit automatiquement ; relisez-le avant de publier."]] },
-  photos: { title: "Réaliser les photos", ver: "5", steps: [
-    ["camera", "Prendre la photo", [0, 4], "Touchez « Prendre ou choisir une photo ». Tenez le téléphone droit, à hauteur de poitrine."],
-    ["compare", "Retouche automatique", [0, 0], "Lumière et couleurs sont corrigées automatiquement. Faites glisser le curseur pour comparer avant et après."],
-    ["sun", "Fusion HDR", [0, 24], "Pièce avec une fenêtre très lumineuse : touchez « Fusion HDR » et calez le téléphone (meuble, mur ou trépied). Un guide vous accompagne photo par photo : 1 normale, 2 plus sombre (baissez le petit soleil ☀ jusqu'à voir dehors), 3 plus claire (montez-le jusqu'à voir les coins sombres). La fusion se lance à la 3e, ou avec « Fusionner »."],
-    ["sky", "Ciel bleu et floutage", [-21, 39], "Façade : cochez « Ciel bleu ». Photo de famille, visage ou plaque : « Flouter une zone », puis touchez l'endroit concerné."],
-    ["check", "Enregistrer", [0, 29], "« Ajouter au reportage » pour la vidéo, ou « Enregistrer la photo » puis « Enregistrer l'image ». Avec « Qualité maximale », la photo est enregistrée en pleine résolution (jusqu'à 12 Mpx)."],
-    ["order", "Choisir l'ordre des photos", [-14, 30], "Dans le reportage, les flèches ◀ ▶ déplacent une photo ; vous pouvez aussi appuyer longuement sur une photo puis la faire glisser. L'ordre est celui de la vidéo, de la fiche vitrine et du kit."],
-    ["share", "Home staging virtuel", [0, 36], "Pour meubler une pièce vide par intelligence artificielle : « Ouvrir le service de home staging » (service extérieur payant). Enregistrez d'abord la photo, puis indiquez « Aménagement virtuel » dans l'annonce."]] },
-  visite: { title: "Créer une visite 360°", ver: "3", steps: [
-    ["pano", "Prise de vue 360°", [24, -6], "Au centre de la pièce, touchez « Prise de vue 360° », autorisez la caméra et les mouvements, puis « Commencer »."],
-    ["camera", "Tourner sur place", [0, 4], "Tournez lentement vers la droite, téléphone droit : quand le point jaune entre dans le cercle, la photo se prend seule (12 photos)."],
-    ["list", "Panorama assemblé", [22, 38], "L'application assemble le tour complet et ajoute la pièce. Renommez-la. Une photo de caméra 360 s'ajoute avec « Ajouter une photo 360 existante »."],
-    ["check", "Les bons réflexes", [22, -18], "Tournez sur place sans avancer, téléphone toujours droit et à la même hauteur. Évitez les personnes qui bougent. Si l'objectif 0,5× est disponible, il est choisi tout seul : sol et plafond sont mieux visibles."],
-    ["arrow", "Relier les pièces", [0, -2], "« Placer une flèche » : choisissez la pièce de destination, puis touchez la porte sur la photo."],
-    ["share", "Exporter la visite", [0, 36], "« Exporter la visite » puis « Enregistrer » : transmettez le fichier à l'acquéreur ou joignez-le à l'annonce."]] },
-  accueil: { title: "Bienvenue dans Studio Habitat", ver: "2", steps: [
+  photos: { title: "Réaliser les photos", ver: "7", steps: [
+    ["camera", "Prendre la photo", [0, 4], "Placez-vous dans un angle de la pièce, téléphone droit à hauteur de poitrine. Touchez « Prendre ou choisir une photo », puis « Prendre une photo ». Déclenchez, puis « Utiliser la photo »."],
+    ["compare", "La retouche est automatique", [0, 0], "Lumière, couleurs et lignes droites sont corrigées toutes seules : vous n'avez rien à régler. Faites glisser le trait blanc sur la photo pour comparer avant et après."],
+    ["sun", "Fenêtre trop lumineuse ?", [0, 24], "Touchez « Fusion HDR » et calez le téléphone. Prenez 3 fois la même vue sans bouger : normale, plus sombre, plus claire (le petit soleil ☀ vers le bas, puis vers le haut). Un guide vous accompagne et la fusion se fait toute seule."],
+    ["sky", "Ciel bleu et floutage", [-21, 39], "Façade sous un ciel gris : cochez « Ciel bleu ». Visage, photo de famille ou plaque : touchez « Flouter une zone », puis touchez l'endroit sur la photo."],
+    ["check", "Garder la photo", [0, 29], "Touchez « Ajouter au reportage » : la photo est gardée dans l'application, en bas de l'écran. C'est elle qui sert pour la vidéo, la fiche vitrine et le kit annonce. Puis passez à la pièce suivante."],
+    ["share", "Dans la galerie du téléphone", [0, 36], "Pour avoir aussi la photo dans votre galerie : « Enregistrer la photo », puis « Enregistrer » et « Enregistrer l'image » sur iPhone, ou « Télécharger » sur Android. Elle arrive dans l'app Photos."],
+    ["order", "L'ordre des photos", [-14, 30], "Dans « Reportage du bien », les flèches ◀ ▶ déplacent une photo et ✕ la supprime. L'ordre choisi est celui de la vidéo, de la fiche vitrine et du kit annonce."],
+    ["share", "Home staging virtuel", [0, 36], "Pour meubler une pièce vide par intelligence artificielle : « Ouvrir le service de home staging » (service extérieur payant). Enregistrez d'abord la photo, puis indiquez « Aménagement virtuel » dans l'annonce."],
+    ["list", "Toute la séance d'un coup", [22, 38], "Toute la maison est photographiée ? Touchez « Toute la séance d'un coup », choisissez 1 photo par pièce ou plusieurs expositions, sélectionnez toutes les photos : elles sont retouchées ou fusionnées et ajoutées au reportage."],
+    ["help", "Besoin d'aide sur place ?", [24, 8], "En haut de chaque onglet, le « Pas à pas » vous guide étape par étape et montre où toucher. Le petit « i » à côté d'un bouton explique à quoi il sert. Entraînez-vous une fois chez vous avant votre première visite !"]] },
+  visite: { title: "Créer une visite 360°", ver: "4", steps: [
+    ["pano", "Se placer", [24, -6], "Mettez-vous au centre de la pièce, sans personne autour, lumières allumées. Touchez « Prise de vue 360° » et autorisez la caméra et les mouvements si le téléphone le demande."],
+    ["camera", "Tourner sur place", [0, 4], "Touchez « Commencer », puis tournez lentement vers la droite, les pieds sur place, téléphone droit. Quand le point jaune entre dans le cercle, la photo se prend seule : 12 photos, environ une minute."],
+    ["list", "La pièce est prête", [22, 38], "Le panorama s'assemble seul et la pièce s'ajoute à la liste : touchez son nom pour la renommer. Recommencez pour chaque pièce. Une photo de caméra 360 s'ajoute avec « Ajouter une photo 360 existante »."],
+    ["check", "Les bons réflexes", [22, -18], "Tournez sur place sans avancer, téléphone toujours droit et à la même hauteur. Évitez les personnes qui bougent. L'objectif grand-angle 0,5× est choisi tout seul s'il existe : sol et plafond sont mieux visibles."],
+    ["arrow", "Relier les pièces", [0, -2], "Touchez « Placer une flèche », choisissez la pièce de destination, puis touchez la porte sur la photo. L'acquéreur passera d'une pièce à l'autre en touchant la flèche."],
+    ["share", "Exporter et envoyer", [0, 36], "Touchez « Exporter la visite », puis « Enregistrer » et « Enregistrer dans Fichiers » (iPhone) ou « Télécharger » (Android). Envoyez le fichier à l'acquéreur par mail ou WhatsApp."],
+    ["help", "Besoin d'aide sur place ?", [24, 8], "En haut de chaque onglet, le « Pas à pas » vous guide étape par étape et montre où toucher. Le petit « i » à côté d'un bouton explique à quoi il sert. Entraînez-vous une fois chez vous avant votre première visite !"]] },
+  accueil: { title: "Bienvenue dans Studio Habitat", ver: "3", steps: [
     ["house", "Bienvenue !", [0, 20], "Studio Habitat est l'application gratuite du réseau pour tout le marketing d'un bien, depuis votre téléphone. Vos photos restent sur votre téléphone."],
     ["form", "1. La fiche du bien", [-12, 38], "Onglet « Bien » : dictez la description, la fiche se remplit seule, le texte de l'annonce est rédigé pour vous, en français ou dans 5 langues étrangères."],
     ["valuation", "2. Estimer et préparer le mandat", [22, 30], "Avis de valeur en PDF à partir des ventes du secteur, et liste à cocher des documents du mandat."],
@@ -3070,7 +3168,7 @@ const BD = {
     ["video", "4. La vidéo", [0, 17], "Onglet « Vidéo » : montage automatique avec logo, texte qui défile, 15 musiques, narrateur (voix d'homme, de femme ou la vôtre) et clips filmés."],
     ["poster", "5. Plan, affiches et diffusion", [0, -22], "Plan 2D/3D, fiche vitrine PDF (avec calculs pour l'acquéreur si vous le souhaitez), affiches « À vendre / Vendu » et kit annonce par mail ou WhatsApp."],
     ["biens", "6. Mes biens et sauvegarde", [0, -4], "En haut, « Mes biens » garde vos derniers biens pour les reprendre en un geste. « Sauvegarder » crée un fichier à rouvrir sur un autre téléphone."],
-    ["voice", "Besoin d'aide ?", [26, 4], "Chaque écran a un bouton « Comment faire ? ». Le micro jaune en bas à droite répond à vos questions à voix haute."],
+    ["help", "Besoin d'aide ?", [24, 8], "Chaque écran a son « Pas à pas » qui montre où toucher, un petit « i » pour chaque bouton, et un bouton « Comment faire ? » : une petite BD que l'on peut écouter. Le micro jaune répond à vos questions."],
     ["profile", "Pour commencer : votre profil", [26, -30], "Renseignez une fois vos nom, téléphone, e-mail et photo : ils seront ajoutés automatiquement à vos vidéos, fiches, affiches et avis de valeur."]] },
   avis: { title: "Faire un avis de valeur", steps: [
     ["form", "Compléter la fiche", [-12, 38], "Avant tout, renseignez dans la fiche l'adresse (choisissez la suggestion), le type de bien, la surface et le nombre de pièces."],
@@ -3083,23 +3181,28 @@ const BD = {
     ["camera", "Choisir la photo", [0, 4], "Touchez une des photos du reportage. Pas de photo ? Ajoutez-en d'abord dans l'onglet Photos."],
     ["video", "Choisir le format", [0, 17], "Carré pour Facebook et Instagram, Story pour les stories, A4 en PDF pour la vitrine de l'agence."],
     ["share", "Enregistrer", [0, 36], "« Enregistrer l'affiche » : l'image (ou le PDF) arrive dans vos Photos ou vos Fichiers, prête à publier ou imprimer."]] },
-  video: { title: "Monter la vidéo", ver: "3", steps: [
-    ["camera", "Sélectionner les photos", [0, 4], "Dans l'onglet « Photos », ajoutez les meilleures photos au reportage. Elles forment le montage, dans l'ordre."],
-    ["clip", "Filmer des clips", [0, 30], "Onglet « Vidéo », touchez « Filmer ou ajouter un clip » : filmez quelques secondes (12 s maximum par clip). Les clips s'enchaînent après les photos."],
-    ["text", "Le texte qui défile", [18, 38], "Touchez le bouton de la fiche du bien : sa description est reprise dans « Description qui défile sur les photos ». Modifiez-la si besoin : une phrase par photo, elle s'affiche mot après mot."],
-    ["music", "Choisir la musique", [22, 30], "Dans « Musique de fond », choisissez une des 15 musiques et touchez « ▶ Écouter » pour l'essayer. « Sans musique » pour l'enlever."],
-    ["voice", "Choisir le narrateur", [26, 4], "Dans « Narrateur », choisissez Voix femme 1 ou 2, Voix homme 1 ou 2, puis « ▶ Écouter ». La voix lit le titre, le prix, la description et vos coordonnées. Première fois : la voix se télécharge une seule fois, en Wi-Fi de préférence."],
-    ["mic", "Ou votre propre voix", [0, 6], "Choisissez « Ma voix (micro) » et autorisez le micro. Pendant la création, lisez à voix haute le texte qui s'affiche : votre voix est enregistrée, la musique baisse toute seule."],
-    ["video", "Format et contact", [0, 17], "Choisissez Vertical (réseaux sociaux) ou Horizontal (annonce) et vérifiez « Contact » : la vidéo s'ouvre sur le logo du réseau et se termine par le logo et vos coordonnées."],
-    ["hourglass", "Créer la vidéo", [0, 0], "Touchez « Aperçu » pour vérifier, puis « Créer la vidéo ». Laissez l'écran allumé et l'application ouverte pendant la création."],
-    ["share", "Enregistrer et publier", [0, 36], "« Enregistrer » puis « Enregistrer la vidéo » : elle arrive dans vos Photos, prête pour Instagram, Facebook, WhatsApp ou l'annonce."]] },
-  plan: { title: "Dessiner le plan", ver: "2", steps: [
-    ["plan", "Ajouter les pièces", [18, 20], "Choisissez le type de pièce dans la liste, puis touchez « Ajouter »."],
-    ["ruler", "Saisir les cotes", [0, 0], "Saisissez largeur et longueur en mètres. Sur le dessin, faites glisser une pièce pour la placer et tirez le coin orange pour l'agrandir."],
-    ["annex", "Distinguer les annexes", [-20, 38], "Balcon, garage, cave : décochez « habitable ». Ils passent en annexes et la surface habitable reste exacte."],
-    ["cube", "Vue 3D", [0, 0], "Touchez « 3D », faites pivoter avec le doigt, puis « Enregistrer l'image 3D »."],
-    ["door", "Portes et fenêtres", [0, 4], "« ＋ Porte », « ＋ Fenêtre » ou « ＋ Baie vitrée », puis touchez le mur sur le plan. Faites glisser l'élément le long du mur ; sa largeur se règle dans la liste."],
-    ["opening", "Ouvrir une pièce", [0, 0], "« ＋ Ouverture » perce le mur entre deux pièces, par exemple pour ouvrir la cuisine sur le séjour. Mettez une grande largeur pour supprimer presque tout le mur."]] },
+  video: { title: "Monter la vidéo", ver: "4", steps: [
+    ["camera", "D'abord les photos", [0, 4], "La vidéo est faite avec les photos du reportage (onglet Photos, « Ajouter au reportage »), dans le même ordre. Tant que le reportage est vide, elle montre un exemple."],
+    ["clip", "Des clips filmés (facultatif)", [0, 30], "Touchez « Filmer ou ajouter un clip », puis « Prendre une vidéo ». Filmez 5 à 12 secondes en marchant lentement, téléphone bien stable. Les clips passent après les photos."],
+    ["text", "Les textes", [18, 38], "Titre, détails et prix viennent de l'onglet Bien, bouton « Remplir la vidéo, le plan et le dossier ». Description : 2 ou 3 phrases courtes, elles défilent sur les photos."],
+    ["profile", "Vos coordonnées", [26, -30], "« Contact » est repris de « Mon profil » : votre nom et votre téléphone s'affichent à la fin de la vidéo, avec le logo du réseau."],
+    ["music", "La musique", [22, 30], "Choisissez l'une des 15 musiques et touchez « ▶ Écouter » pour l'essayer. « Sans musique » pour l'enlever."],
+    ["voice", "Le narrateur", [26, 4], "Choisissez une voix de femme ou d'homme : elle lit la description. La première fois, la voix se télécharge (environ une minute, en wifi). « Ma voix (micro) » : vous lisez vous-même pendant la création."],
+    ["video", "Format et aperçu", [0, 17], "Vertical pour Instagram, Facebook et WhatsApp ; horizontal pour YouTube et les portails. Touchez « Aperçu » pour voir le résultat : rien n'est encore créé."],
+    ["hourglass", "Créer la vidéo", [0, 0], "Touchez « Créer la vidéo ». Elle se joue en entier pendant sa fabrication : ne quittez pas l'application et ne verrouillez pas l'écran jusqu'à la fin."],
+    ["share", "Enregistrer la vidéo", [0, 36], "La fenêtre « Votre fichier est prêt » s'ouvre : « Enregistrer », puis « Enregistrer la vidéo » sur iPhone, ou « Télécharger » sur Android. Elle arrive dans votre galerie, prête à publier."],
+    ["help", "Besoin d'aide sur place ?", [24, 8], "En haut de chaque onglet, le « Pas à pas » vous guide étape par étape et montre où toucher. Le petit « i » à côté d'un bouton explique à quoi il sert. Entraînez-vous une fois chez vous avant votre première visite !"]] },
+  plan: { title: "Dessiner le plan", ver: "3", steps: [
+    ["ruler", "Mesurer d'abord", [0, 0], "Faites le tour du logement et mesurez chaque pièce de mur à mur, idéalement au mètre laser. Notez largeur × longueur. Une pièce en L se dessine avec deux rectangles collés."],
+    ["plan", "Ajouter une pièce", [18, 20], "Choisissez le type de pièce dans la liste (Séjour, Chambre, Cuisine…), puis touchez « Ajouter ». Le plan d'exemple s'efface dès votre première pièce."],
+    ["form", "Saisir les mesures", [0, 0], "Chaque ligne de la liste est une pièce : nom · largeur · longueur · case habitable. Tapez les mètres, par exemple 3,45. Largeur = de gauche à droite sur le plan, longueur = de haut en bas."],
+    ["plan", "Coller les pièces", [0, 0], "Sur le dessin, posez le doigt sur une pièce et faites-la glisser contre sa voisine : les murs doivent se toucher. Le petit coin orange agrandit la pièce. Commencez par l'entrée ou le séjour."],
+    ["annex", "Balcon, garage, cave", [-20, 38], "Pour une annexe, décochez la case « habitable » de sa ligne : elle passe en annexes et la surface habitable reste exacte."],
+    ["door", "Portes et fenêtres", [0, 4], "Touchez « ＋ Porte », « ＋ Fenêtre » ou « ＋ Baie vitrée », puis touchez le mur sur le plan. Faites glisser l'élément le long du mur ; sa largeur se règle dans la liste en dessous."],
+    ["opening", "Ouvrir une pièce", [0, 0], "« ＋ Ouverture » perce le mur entre deux pièces, par exemple une cuisine ouverte sur le séjour. Mettez une grande largeur pour enlever presque tout le mur."],
+    ["cube", "La vue 3D", [0, 0], "Touchez « 3D » en haut du plan : tournez la maquette avec un doigt, zoomez en pinçant. « Hauteur murs » règle la hauteur sous plafond."],
+    ["share", "Enregistrer le plan", [0, 36], "Touchez « Enregistrer le plan (image) », puis « Enregistrer l'image » sur iPhone, ou « Télécharger » sur Android. En vue 3D, c'est l'image 3D qui est enregistrée."],
+    ["help", "Besoin d'aide sur place ?", [24, 8], "En haut de chaque onglet, le « Pas à pas » vous guide étape par étape et montre où toucher. Le petit « i » à côté d'un bouton explique à quoi il sert. Entraînez-vous une fois chez vous avant votre première visite !"]] },
   dossier: { title: "Sauvegarder les dossiers", ver: "4", steps: [
     ["biens", "Mes biens", [0, -4], "Sous les boutons du dossier, « Mes biens » liste vos derniers biens : touchez-en un pour le reprendre là où vous l'aviez laissé. « Nouveau » garde le bien précédent dans la liste."],
     ["folder", "Nommer le dossier", [-4, 37], "Donnez un nom au dossier du bien, par exemple « Maison Touques »."],
@@ -3107,23 +3210,382 @@ const BD = {
     ["phones", "Ouvrir sur un autre appareil", [18, -2], "Touchez « Ouvrir » et sélectionnez le fichier du dossier : toutes les données sont restaurées."],
     ["plus", "Nouveau dossier", [0, 0], "Touchez « Nouveau » deux fois pour démarrer un dossier vide. Pensez à sauvegarder le précédent."]] }
 };
+const BD_DLG = {"PH-1": {"w": "claire", "t": "Mets-toi dans un angle de la pièce, téléphone bien droit, à hauteur de poitrine. Touche « Prendre ou choisir une photo », puis « Prendre une photo ». Déclenche, puis « Utiliser la photo ».", "s": "Je me mets dans l'angle, téléphone bien droit… et clic !", "r": {"w": "cliente", "t": "On dirait déjà une photo d'annonce !"}}, "PH-2": {"w": "claire", "t": "Et voilà : lumière, couleurs et lignes droites sont corrigées toutes seules. Tu n'as rien à régler. Fais glisser le trait blanc sur la photo pour comparer avant et après.", "s": "Regarde : la retouche s'est faite toute seule !"}, "PH-3": {"w": "marc", "t": "Fenêtre trop lumineuse ? Touche « Fusion HDR » et cale le téléphone. Prends trois fois la même vue sans bouger : normale, plus sombre, plus claire, avec le petit soleil. Un guide t'accompagne, et la fusion se fait toute seule.", "s": "Fenêtre trop lumineuse ? Fusion HDR !"}, "PH-4": {"w": "claire", "t": "Façade sous un ciel gris ? Coche « Ciel bleu ». Un visage, une photo de famille ou une plaque ? Touche « Flouter une zone », puis touche l'endroit sur la photo.", "s": "Hop, un ciel bleu en un geste !"}, "PH-5": {"w": "claire", "t": "Photo réussie ? Touche « Ajouter au reportage ». Elle est gardée dans l'application, et c'est elle qui sert pour la vidéo, la fiche vitrine et le kit annonce. Ensuite, pièce suivante !", "s": "Celle-là, je la garde dans le reportage."}, "PH-6": {"w": "marc", "t": "Pour avoir aussi la photo dans ta galerie, touche « Enregistrer la photo », puis « Enregistrer » et « Enregistrer l'image » sur iPhone, ou « Télécharger » sur Android.", "s": "Et je l'ai aussi dans ma galerie.", "r": {"w": "client", "t": "Magnifique, on reconnaît à peine la maison !"}}, "PH-7": {"w": "claire", "t": "Dans « Reportage du bien », les flèches déplacent une photo et la croix la supprime. L'ordre que tu choisis, c'est celui de la vidéo et de la fiche vitrine.", "s": "Je choisis l'ordre des photos d'un doigt."}, "PH-8": {"w": "claire", "t": "Une pièce vide ? Le home staging virtuel la meuble par intelligence artificielle, avec un service extérieur payant. Enregistre d'abord la photo, et indique « Aménagement virtuel » dans l'annonce.", "s": "Une pièce vide ? On la meuble en virtuel !", "r": {"w": "cliente", "t": "Là, on se projette tout de suite !"}}, "AIDE": {"w": "claire", "t": "Un doute pendant la visite ? En haut de chaque onglet, le « Pas à pas » te guide et te montre où toucher. Et le petit « i » explique chaque bouton. Entraîne-toi une fois chez toi avant ta première visite !", "s": "Un doute ? Le « Pas à pas » me guide."}, "VI-1": {"w": "marc", "t": "Pour la visite 360, place-toi au centre de la pièce, sans personne autour, lumières allumées. Touche « Prise de vue 360 » et autorise la caméra et les mouvements.", "s": "Je me place au centre de la pièce."}, "VI-2": {"w": "marc", "t": "Touche « Commencer », puis tourne lentement vers la droite, les pieds sur place, téléphone droit. Quand le point jaune entre dans le cercle, la photo se prend toute seule. Douze photos, environ une minute.", "s": "Je tourne doucement… la photo se prend seule."}, "VI-3": {"w": "marc", "t": "Le panorama s'assemble tout seul et la pièce s'ajoute à la liste. Touche son nom pour la renommer, puis recommence dans chaque pièce.", "s": "Et voilà, la pièce en 360° !"}, "VI-4": {"w": "claire", "t": "Les bons réflexes : tourne sur place sans avancer, téléphone toujours droit. Demande gentiment aux visiteurs de rester hors du champ le temps de la prise.", "s": "Restez à l'entrée deux secondes, merci !"}, "VI-5": {"w": "claire", "t": "Pour relier les pièces, touche « Placer une flèche », choisis la pièce de destination, puis touche la porte sur la photo.", "s": "Une flèche sur la porte, et on passe à la cuisine."}, "VI-6": {"w": "marc", "t": "Touche « Exporter la visite », puis « Enregistrer ». Envoie le fichier à l'acquéreur par mail ou WhatsApp : il visite depuis son canapé.", "s": "J'envoie la visite à l'acquéreur.", "r": {"w": "client", "t": "On a vraiment l'impression d'y être !"}}, "VD-1": {"w": "claire", "t": "La vidéo se fait avec les photos du reportage, dans le même ordre. Donc d'abord, les photos : « Ajouter au reportage » pour chaque pièce.", "s": "La vidéo part des photos du reportage."}, "VD-2": {"w": "marc", "t": "Tu peux aussi filmer des petits clips : « Filmer ou ajouter un clip », puis « Prendre une vidéo ». Cinq à douze secondes, en marchant lentement, téléphone bien stable.", "s": "Un petit clip, en marchant lentement."}, "VD-3": {"w": "claire", "t": "Titre, détails et prix viennent de la fiche du bien. Pour la description, deux ou trois phrases courtes suffisent : elles défilent sur les photos.", "s": "Deux ou trois phrases, ça suffit."}, "VD-4": {"w": "marc", "t": "Tes coordonnées viennent de « Mon profil » : ton nom et ton téléphone s'affichent à la fin de la vidéo, avec le logo du réseau.", "s": "Mes coordonnées s'affichent à la fin."}, "VD-5": {"w": "claire", "t": "Choisis une des quinze musiques et touche « Écouter » pour l'essayer. « Sans musique » pour l'enlever.", "s": "Celle-là, elle est parfaite !"}, "VD-6": {"w": "marc", "t": "Le narrateur lit ta description, avec une voix d'homme ou de femme. La première fois, la voix se télécharge, en wifi de préférence. Tu peux aussi prendre ta propre voix au micro.", "s": "Une voix lit la description."}, "VD-7": {"w": "claire", "t": "Vertical pour Instagram, Facebook et WhatsApp ; horizontal pour YouTube et les portails. Touche « Aperçu » pour voir le résultat : rien n'est encore créé.", "s": "Vertical ou horizontal ?"}, "VD-8": {"w": "marc", "t": "Touche « Créer la vidéo ». Elle se joue en entier pendant sa fabrication : ne quitte pas l'application et ne verrouille pas l'écran.", "s": "Je laisse la vidéo se créer…"}, "VD-9": {"w": "claire", "t": "Quand « Votre fichier est prêt » s'affiche, touche « Enregistrer », puis « Enregistrer la vidéo » sur iPhone, ou « Télécharger » sur Android. Elle arrive dans ta galerie.", "s": "Je l'enregistre et je vous l'envoie !", "r": {"w": "cliente", "t": "C'est encore plus beau qu'en vrai !"}}, "PL-1": {"w": "marc", "t": "Pour le plan, commence par mesurer chaque pièce de mur à mur, idéalement au mètre laser. Note largeur et longueur. Une pièce en L, ce sont deux rectangles collés.", "s": "D'abord, je mesure chaque pièce."}, "PL-2": {"w": "claire", "t": "Choisis le type de pièce dans la liste, séjour, chambre, cuisine, puis touche « Ajouter ». Le plan d'exemple s'efface dès ta première pièce.", "s": "J'ajoute la première pièce."}, "PL-3": {"w": "marc", "t": "Chaque ligne de la liste, c'est une pièce : nom, largeur, longueur. Tape les mètres, par exemple trois virgule quarante-cinq. Largeur, de gauche à droite ; longueur, de haut en bas.", "s": "Je tape les mesures en mètres."}, "PL-4": {"w": "claire", "t": "Sur le dessin, pose le doigt sur une pièce et fais-la glisser contre sa voisine : les murs doivent se toucher. Le petit coin orange sert à l'agrandir.", "s": "Je colle les pièces entre elles."}, "PL-5": {"w": "marc", "t": "Balcon, garage ou cave ? Décoche la case « habitable » de la ligne : la pièce passe en annexe et la surface habitable reste juste.", "s": "Le balcon ? Je le passe en annexe."}, "PL-6": {"w": "claire", "t": "Touche « Porte », « Fenêtre » ou « Baie vitrée », puis touche le mur sur le plan. Fais glisser l'élément le long du mur ; sa largeur se règle dans la liste.", "s": "Une porte ici, une baie vitrée là."}, "PL-7": {"w": "marc", "t": "« Ouverture » perce le mur entre deux pièces, par exemple une cuisine ouverte sur le séjour. Mets une grande largeur pour enlever presque tout le mur.", "s": "On ouvre la cuisine sur le séjour !", "r": {"w": "client", "t": "Ah oui, là, ça change tout !"}}, "PL-8": {"w": "claire", "t": "Touche « 3D » en haut du plan : fais tourner la maquette avec un doigt, et zoome en pinçant.", "s": "Et la voilà en 3D !", "r": {"w": "cliente", "t": "On comprend tout de suite comment c'est agencé."}}, "PL-9": {"w": "marc", "t": "Touche « Enregistrer le plan », puis « Enregistrer l'image » sur iPhone, ou « Télécharger » sur Android. En vue 3D, c'est la 3D qui est enregistrée.", "s": "J'enregistre le plan pour vous."}, "BI-1": {"w": "claire", "t": "Une seule fois : touche « Mon profil » en haut à droite. Nom, téléphone, e-mail et photo : ils sont repris sur tes vidéos, fiches et affiches.", "s": "D'abord, mon profil : une seule fois."}, "BI-2": {"w": "marc", "t": "Pour chaque bien, ouvre l'onglet « Bien » en bas de l'écran : c'est la fiche de départ.", "s": "J'ouvre la fiche du bien."}, "BI-3": {"w": "claire", "t": "Tape le numéro et la rue, puis touche la bonne suggestion : le code postal et la ville se remplissent tout seuls.", "s": "L'adresse se remplit toute seule."}, "BI-4": {"w": "marc", "t": "Renseigne surfaces, pièces, prix, DPE et équipements. Le plus rapide : dicte la description, la fiche se remplit toute seule.", "s": "Je dicte, la fiche se remplit."}, "BI-5": {"w": "claire", "t": "Touche « Remplir la vidéo, le plan et le dossier » : un encadré vert te confirme tout ce qui a été recopié. Puis « Copier le texte de l'annonce ».", "s": "Annonce, vidéo, plan : tout est prêt !"}, "BI-6": {"w": "marc", "t": "« Créer une affiche » : choisis le bandeau, à vendre, vendu, baisse de prix, puis la photo et le format, et enregistre.", "s": "Une affiche « À vendre » en deux minutes."}, "BI-7": {"w": "claire", "t": "« Créer la fiche vitrine » pour la vitrine, et « Partager le kit annonce » pour tout envoyer d'un coup par mail ou WhatsApp.", "s": "J'envoie le kit annonce d'un coup."}, "BI-8": {"w": "marc", "t": "En bas de la fiche, « Documents du mandat » : coche les pièces reçues, titre, diagnostics, copropriété. La liste est gardée avec le dossier.", "s": "Je coche les documents reçus."}, "BI-9": {"w": "claire", "t": "« Créer un avis de valeur », puis « Rechercher les ventes du secteur ». Garde les ventes qui ressemblent au bien, ajuste la fourchette, et crée le PDF pour le vendeur.", "s": "Voici l'estimation de votre maison."}, "BI-10": {"w": "marc", "t": "Coche « Afficher les calculs pour l'acquéreur » : frais de notaire et mensualité indicative apparaissent sur la fiche vitrine.", "s": "Voici votre budget, frais compris.", "r": {"w": "client", "t": "Avec ça, on sait où on va."}}, "BI-11": {"w": "claire", "t": "« Langue de l'annonce » : anglais, allemand, espagnol, néerlandais ou italien. Le texte est traduit tout seul ; relis-le avant de publier.", "s": "Welcome ! L'annonce existe en anglais."}, "AV-1": {"w": "marc", "t": "Avant tout, complète la fiche : l'adresse en choisissant la suggestion, le type de bien, la surface et le nombre de pièces.", "s": "Je complète d'abord la fiche."}, "AV-2": {"w": "claire", "t": "Touche « Rechercher les ventes du secteur » : l'application retrouve les ventes publiées par l'État autour du bien, les plus proches en premier.", "s": "Voici les ventes du quartier."}, "AV-3": {"w": "marc", "t": "Décoche les ventes qui ne ressemblent pas au bien. Tu peux aussi ajouter tes propres références : la fourchette se recalcule.", "s": "Celle-là ne ressemble pas : je l'écarte."}, "AV-4": {"w": "claire", "t": "Vérifie la fourchette basse, la fourchette haute et le prix conseillé, et ajuste-les selon ta connaissance du marché.", "s": "J'ajuste la fourchette de prix."}, "AV-5": {"w": "marc", "t": "« Créer l'avis de valeur » : logo, photo, fourchette, ventes comparables et tes coordonnées, dans un beau PDF à remettre au vendeur.", "s": "Voici votre avis de valeur.", "r": {"w": "client", "t": "Merci, c'est très clair."}}, "AF-1": {"w": "claire", "t": "Choisis le bandeau : à vendre, vendu, sous compromis, nouveauté, baisse de prix, exclusivité, à louer ou loué.", "s": "Je choisis le bandeau."}, "AF-2": {"w": "marc", "t": "Touche une des photos du reportage. Pas encore de photo ? Ajoutes-en d'abord dans l'onglet Photos.", "s": "Je prends la plus belle photo."}, "AF-3": {"w": "claire", "t": "Carré pour Facebook et Instagram, story pour les stories, et A4 en PDF pour la vitrine de l'agence.", "s": "Carré, story ou vitrine ?"}, "AF-4": {"w": "marc", "t": "Touche « Enregistrer l'affiche » : elle arrive dans tes photos ou tes fichiers, prête à publier ou à imprimer.", "s": "Et hop, en vitrine !"}, "AC-1": {"w": "claire", "t": "Bienvenue dans Studio Habitat ! C'est l'application gratuite du réseau pour tout le marketing d'un bien, depuis ton téléphone.", "s": "Bienvenue dans Studio Habitat !"}, "AC-2": {"w": "marc", "t": "Onglet « Bien » : tu dictes la description, la fiche se remplit, et le texte de l'annonce est rédigé pour toi, en français ou dans cinq langues.", "s": "Je dicte, la fiche se remplit."}, "AC-3": {"w": "claire", "t": "Avis de valeur en PDF à partir des ventes du secteur, et liste à cocher des documents du mandat.", "s": "Estimation et documents, c'est prêt."}, "AC-4": {"w": "claire", "t": "Onglet « Photos » : retouche automatique, ciel bleu et ordre des photos. Onglet « Visite 360 » : tu tournes sur toi-même, le panorama se fait tout seul.", "s": "Photos et visite 360°, en un tour de main."}, "AC-5": {"w": "marc", "t": "Onglet « Vidéo » : montage automatique avec logo, texte qui défile, musique et narrateur.", "s": "Une vidéo prête à publier.", "r": {"w": "cliente", "t": "On a envie de la visiter tout de suite !"}}, "AC-6": {"w": "marc", "t": "Et aussi : plan 2D et 3D, fiche vitrine, affiches « À vendre » ou « Vendu », et kit annonce à envoyer en un geste.", "s": "Plan, affiches, diffusion : tout y est."}, "AC-7": {"w": "claire", "t": "« Mes biens » garde tes derniers biens pour les reprendre en un geste, et « Sauvegarder » crée un fichier à rouvrir sur un autre téléphone.", "s": "Tous mes biens, à portée de main."}, "AC-8": {"w": "marc", "t": "Pour commencer, renseigne ton profil : nom, téléphone, e-mail et photo. Ils seront ajoutés partout automatiquement.", "s": "Pour commencer : mon profil !"}, "DO-1": {"w": "claire", "t": "« Mes biens » liste tes derniers biens : touches-en un pour le reprendre là où tu l'avais laissé.", "s": "Je reprends le bon bien en un geste."}, "DO-2": {"w": "marc", "t": "Donne un nom au dossier du bien, par exemple « Maison Touques ».", "s": "Je donne un nom au dossier."}, "DO-3": {"w": "claire", "t": "« Sauvegarder », puis « Enregistrer dans Fichiers » et choisis iCloud Drive. Sur Android : Google Drive ou Fichiers.", "s": "Je sauvegarde le dossier."}, "DO-4": {"w": "marc", "t": "Sur un autre appareil, touche « Ouvrir » et choisis le fichier du dossier : tout est restauré.", "s": "Je le rouvre sur ma tablette."}, "DO-5": {"w": "claire", "t": "Pour un nouveau bien, touche « Nouveau ». Le bien précédent reste dans « Mes biens ».", "s": "Allez, un nouveau bien !"}, "PH-9": {"w": "marc", "t": "Toute la maison est déjà photographiée ? Touche « Toute la séance d'un coup ». Choisis une photo par pièce, ou plusieurs expositions pour le HDR, puis sélectionne toutes les photos. Elles sont retouchées, fusionnées et ajoutées au reportage, pièce par pièce.", "s": "Toute la visite traitée d'un coup !"}};
+const BD_ORDER = {"photos": ["PH-1", "PH-2", "PH-3", "PH-4", "PH-5", "PH-6", "PH-7", "PH-8", "PH-9", "AIDE"], "visite": ["VI-1", "VI-2", "VI-3", "VI-4", "VI-5", "VI-6", "AIDE"], "video": ["VD-1", "VD-2", "VD-3", "VD-4", "VD-5", "VD-6", "VD-7", "VD-8", "VD-9", "AIDE"], "plan": ["PL-1", "PL-2", "PL-3", "PL-4", "PL-5", "PL-6", "PL-7", "PL-8", "PL-9", "AIDE"], "bien": ["BI-1", "BI-2", "BI-3", "BI-4", "BI-5", "BI-6", "BI-7", "BI-8", "BI-9", "BI-10", "BI-11"], "avis": ["AV-1", "AV-2", "AV-3", "AV-4", "AV-5"], "affiche": ["AF-1", "AF-2", "AF-3", "AF-4"], "accueil": ["AC-1", "AC-2", "AC-3", "AC-4", "AC-5", "AC-6", "AC-7", "AIDE", "AC-8"], "dossier": ["DO-1", "DO-2", "DO-3", "DO-4", "DO-5"]};
+// images de la BD (créées à part) : code -> position de la bouche de celui qui parle (x en %) et de la réplique
+const BD_IMG = {
+  "PH-1": { m: [54.6, 49], b: [47, 4, 44], r: { m: [30, 53], b: [6, 8, 30] } },
+  "PH-2": { m: [67, 56], b: [5, 4, 50] },
+  "PH-3": { m: [42, 52], b: [8, 5, 50] },
+  "PH-4": { m: [34, 59], b: [5, 4, 46] },
+  "PH-5": { m: [37.5, 46], b: [46, 5, 46] },
+  "PH-6": { m: [41.5, 51], b: [3, 4, 40], r: { m: [77, 52], b: [58, 7, 35] } },
+  "PH-7": { m: [31, 57], b: [42, 5, 50] },
+  "PH-8": { m: [50, 56], b: [3, 6, 42], r: { m: [61, 58], b: [59, 7, 35] } },
+  "PH-9": { m: [35, 51], b: [3, 3, 50] },
+  "AIDE": { m: [34, 43], b: [44, 4, 46], k: "cloud" },
+  "VI-1": { m: [48, 46], b: [8, 6, 44] },
+  "VI-2": { m: [49, 43], b: [46, 3, 51] },
+  "VI-3": { m: [37, 52], b: [44, 3, 50] },
+  "VI-4": { m: [51, 45], b: [54, 4, 42] },
+  "VI-5": { m: [75, 55], b: [4, 5, 52] },
+  "VI-6": { m: [16, 43], b: [3, 3, 42], r: { m: [58, 55], b: [55, 6, 39] } },
+  "VD-1": { m: [30, 49], b: [36, 3, 52] },
+  "VD-2": { m: [37, 37], b: [46, 4, 46] },
+  "VD-3": { m: [42, 50], b: [48, 4, 46] },
+  "VD-4": { m: [47, 52], b: [3, 4, 40] },
+  "VD-5": { m: [48, 47], b: [54, 4, 42] },
+  "VD-6": { m: [40, 47], b: [50, 4, 44] },
+  "VD-7": { m: [46, 50], b: [52, 4, 44] },
+  "VD-8": { m: [38, 55], b: [46, 4, 46] },
+  "VD-9": { m: [37.5, 49], b: [3, 4, 40], r: { m: [56, 52], b: [55, 6, 39] } },
+  "PL-1": { m: [78, 42], b: [8, 6, 52] },
+  "PL-2": { m: [49, 49], b: [4, 4, 46] },
+  "PL-3": { m: [46, 34], b: [60, 5, 37] },
+  "PL-4": { m: [38, 52], b: [46, 4, 48] },
+  "PL-5": { m: [42.5, 50], b: [4, 4, 40] },
+  "PL-6": { m: [40, 51], b: [46, 4, 48] },
+  "PL-7": { m: [48, 50], b: [52, 4, 44], r: { m: [27, 49], b: [5, 7, 36] } },
+  "PL-8": { m: [27, 49], b: [2, 4, 42], r: { m: [64, 52], b: [56, 4, 42] } },
+  "PL-9": { m: [38, 47], b: [44, 3, 48] },
+  "BI-1": { m: [44, 55], b: [52, 4, 44] },
+  "BI-2": { m: [39, 49], b: [4, 4, 46] },
+  "BI-3": { m: [32, 51], b: [44, 3, 50] },
+  "BI-4": { m: [72, 42], b: [4, 4, 52] },
+  "BI-5": { m: [34, 50], b: [4, 4, 50] },
+  "BI-6": { m: [33, 49], b: [42, 4, 50] },
+  "BI-7": { m: [33, 51], b: [2, 3, 42] },
+  "BI-8": { m: [65, 54], b: [46, 3, 48] },
+  "BI-9": { m: [63, 51], b: [52, 3, 44] },
+  "BI-10": { m: [60, 49], b: [56, 3, 42], r: { m: [36, 49], b: [2, 5, 40] } },
+  "BI-11": { m: [47.5, 51], b: [50, 3, 46] },
+  "AV-1": { m: [41, 52], b: [3, 4, 46] },
+  "AV-2": { m: [41, 50], b: [48, 4, 46] },
+  "AV-3": { m: [50, 56], b: [4, 4, 46] },
+  "AV-4": { m: [44, 50], b: [50, 3, 46] },
+  "AV-5": { m: [65, 47], b: [52, 3, 44], r: { m: [34, 46], b: [2, 4, 40] } },
+  "AF-1": { m: [42, 52], b: [4, 3, 46] },
+  "AF-2": { m: [37, 51], b: [50, 4, 46] },
+  "AF-3": { m: [25, 49], b: [32, 3, 52] },
+  "AF-4": { m: [48, 51], b: [4, 2, 46] },
+  "AC-1": { m: [38, 51], b: [4, 3, 48] },
+  "AC-2": { m: [40, 49], b: [46, 3, 48] },
+  "AC-3": { m: [45, 51], b: [30, 3, 48] },
+  "AC-4": { m: [26, 49], b: [4, 3, 46] },
+  "AC-5": { m: [0, 0], b: [3, 3, 46], k: "box", r: { m: [51, 54], b: [55, 3, 42] } },
+  "AC-6": { m: [33, 54], b: [4, 2, 46] },
+  "AC-7": { m: [37.5, 52], b: [40, 3, 50] },
+  "AC-8": { m: [50, 50], b: [4, 3, 46] },
+  "DO-1": { m: [22, 55], b: [30, 3, 52] },
+  "DO-2": { m: [39, 49], b: [40, 2, 50] },
+  "DO-3": { m: [41, 49], b: [3, 3, 50] },
+  "DO-4": { m: [45, 54], b: [3, 3, 48] },
+  "DO-5": { m: [42.5, 49], b: [46, 3, 50] }
+};
+const BD_NAMES = { claire: "Claire", marc: "Marc", cliente: "La cliente", client: "Le client" };
+const bdCode = (key, k) => (BD_ORDER[key] || [])[k];
+function bdCell(key, st, k, total) {
+  const code = bdCode(key, k), dl = code && BD_DLG[code], im = code && BD_IMG[code];
+  const who = dl ? dl.w : "", text = dl ? dl.t : st[3];
+  if (im) { // vraie case de BD : bulles dans l'image, pointe vers la bouche, explication dans le cartouche
+    const nb = t => String(t).replace(/ ([:;!?»])/g, "\u00a0$1").replace(/« /g, "«\u00a0");
+    const bub = (cls, w, t0, b, kd, t = nb(t0)) => `<div class="sb ${cls}"${kd ? ` data-k="${kd}"` : ""} style="left:${b[0]}%;top:${b[1]}%;width:${b[2]}%"><span class="sb-who">${BD_NAMES[w]}</span>${t}</div>`;
+    return `<figure class="bd-cell img" data-code="${code}"><div class="bd-photo" data-m="${im.m}" ${dl.r && im.r ? `data-rm="${im.r.m}"` : ""}><img src="bd/img/${code.toLowerCase()}.webp" alt="" decoding="async">
+      <svg class="sb-tails" aria-hidden="true"></svg>${bub("main", who, dl.s, im.b, im.k)}${dl.r && im.r ? bub("rep", dl.r.w, dl.r.t, im.r.b, im.r.k) : ""}</div>
+      <figcaption class="bd-cart"><span class="bd-num">${k + 1} / ${total}</span><b>${st[1]}</b>${text}</figcaption></figure>`;
+  }
+  return `<figure class="bd-cell" data-code="${code || ""}"><figcaption class="bd-bubble${who ? " who-" + who : ""}"><span class="bd-num">${k + 1} / ${total}</span>${who ? `<span class="bd-who">${BD_NAMES[who]}</span>` : ""}<b>${st[1]}</b>${text}</figcaption><div class="bd-art">${bdPanel(st[0], st[1], st[2], k + 1, total)}</div></figure>`;
+}
+// bulles de BD dessinées en SVG : ovale, explosion (exclamation) ou nuage (pensée), pointe en virgule vers la bouche
+function bdBubblePath(cx0, cy0, rx, ry, tx, ty, kind) {
+  const ang = Math.atan2((ty - cy0) / ry, (tx - cx0) / rx), span = clamp(26 / rx, .22, .5), a1 = ang - span / 2, a2 = ang + span / 2;
+  const P = (a, k = 1) => [cx0 + Math.cos(a) * rx * k, cy0 + Math.sin(a) * ry * k], f = v => v.toFixed(1);
+  const [b1x, b1y] = P(a1), [b2x, b2y] = P(a2), len = Math.hypot(tx - cx0, ty - cy0), edge = Math.hypot(Math.cos(ang) * rx, Math.sin(ang) * ry);
+  const reach = edge + Math.max(18, (len - edge) * .5), k = clamp(reach / len, 0, 1), ex = cx0 + (tx - cx0) * k, ey = cy0 + (ty - cy0) * k; // la pointe s'arrête avant la tête
+  if (kind === "cloud") { // nuage : festons tout autour, et trois petites bulles vers la tête
+    let d = ""; const n = 11;
+    for (let i = 0; i < n; i++) { const t0 = i / n * Math.PI * 2, t1 = (i + 1) / n * Math.PI * 2, [x0, y0] = P(t0, .96), [x1, y1] = P(t1, .96), r = Math.hypot(x1 - x0, y1 - y0) * .62;
+      d += (i ? "" : `M${f(x0)} ${f(y0)} `) + `A${f(r)} ${f(r)} 0 0 1 ${f(x1)} ${f(y1)} `; }
+    const dots = [.25, .55, .85].map((u, i) => { const [px, py] = P(ang, 1.05); const x = px + (ex - px) * u, y = py + (ey - py) * u, r = 7 - i * 2; return `M${f(x - r)} ${f(y)} a${r} ${r} 0 1 0 ${r * 2} 0 a${r} ${r} 0 1 0 ${-r * 2} 0 `; }).join("");
+    return d + "Z " + dots;
+  }
+  // virgule : les deux bords se courbent du même côté, comme en BD
+  const mx = (b1x + b2x) / 2, my = (b1y + b2y) / 2, vx = ex - mx, vy = ey - my, vl = Math.hypot(vx, vy) || 1, nx = -vy / vl, ny = vx / vl, side = (ex - cx0) >= 0 ? 1 : -1, bend = Math.min(18, vl * .32) * side;
+  const c1 = [b1x + (ex - b1x) * .55 + nx * bend, b1y + (ey - b1y) * .55 + ny * bend], c2 = [b2x + (ex - b2x) * .45 + nx * bend * .7, b2y + (ey - b2y) * .45 + ny * bend * .7];
+  let d = `M${f(b2x)} ${f(b2y)} `;
+  if (kind === "burst") { const n = 16; for (let i = 1; i < n; i++) { const t = a2 + (Math.PI * 2 - span) * i / n, [x, y] = P(t, i % 2 ? 1.13 : .94); d += `L${f(x)} ${f(y)} `; } d += `L${f(b1x)} ${f(b1y)} `; }
+  else d += `A${f(rx)} ${f(ry)} 0 1 1 ${f(b1x)} ${f(b1y)} `;
+  return d + `Q${f(c1[0])} ${f(c1[1])} ${f(ex)} ${f(ey)} Q${f(c2[0])} ${f(c2[1])} ${f(b2x)} ${f(b2y)} Z`;
+}
+function bdTails(root) {
+  root.querySelectorAll(".bd-photo").forEach(ph => {
+    const W = ph.clientWidth, H = ph.clientHeight, svg = ph.querySelector(".sb-tails"); if (!W || !svg) return;
+    svg.setAttribute("viewBox", `0 0 ${W} ${H}`); let out = "";
+    [[".sb.main", ph.dataset.m], [".sb.rep", ph.dataset.rm]].forEach(([sel, m], n) => {
+      const el = ph.querySelector(sel); if (!el || !m) return; const [mx, my] = m.split(",").map(Number);
+      const kind = el.dataset.k || (n === 1 && /!/.test(el.textContent) ? "burst" : "oval"), cx = el.offsetLeft + el.offsetWidth / 2, cy = el.offsetTop + el.offsetHeight / 2;
+      const rx = el.offsetWidth / 2 + (kind === "burst" ? 10 : 7), ry = el.offsetHeight / 2 + (kind === "burst" ? 12 : 6);
+      const d = kind === "box" ? `M${cx - rx} ${cy - ry} h${rx * 2} v${ry * 2} h${-rx * 2} Z` : bdBubblePath(cx, cy, rx, ry, mx / 100 * W, my / 100 * H, kind);
+      out += `<g class="sbg ${n ? "rep" : "main"}"><path d="${d}" transform="translate(2.5 3)" fill="#02062C"/><path d="${d}" fill="#fff" stroke="#02062C" stroke-width="2.6" stroke-linejoin="round"/>
+        ${kind === "oval" ? `<path d="M${(cx - rx * .62).toFixed(1)} ${(cy + ry * .8).toFixed(1)} Q${cx.toFixed(1)} ${(cy + ry * 1.0).toFixed(1)} ${(cx + rx * .62).toFixed(1)} ${(cy + ry * .8).toFixed(1)}" fill="none" stroke="#DADDE8" stroke-width="3.5" stroke-linecap="round"/>` : ""}</g>`;
+    });
+    svg.innerHTML = out;
+  });
+}
+// narrateur + petite musique : les voix sont enregistrées à l'avance (bd/voix), rien à télécharger de lourd
+const BDA = { ctx: null, music: null, src: null, buf: {} };
+function bdSoundOn() { try { return localStorage.getItem("bd-sound") === "1"; } catch (_) { return false; } }
+async function bdClip(name) { if (BDA.buf[name]) return BDA.buf[name]; const r = await fetch(`bd/voix/${name}.m4a`); if (!r.ok) throw new Error("voix"); const ab = await r.arrayBuffer();
+  const b = await new Promise((res, rej) => { const q = BDA.ctx.decodeAudioData(ab, res, rej); if (q && q.then) q.then(res, rej); }); BDA.buf[name] = b; return b; }
+function bdPlayBuf(b, gain) { return new Promise(res => { const s = BDA.ctx.createBufferSource(), g = BDA.ctx.createGain(); g.gain.value = gain; s.buffer = b; s.connect(g); g.connect(BDA.ctx.destination); s.onended = res; s.start(); BDA.src = s; }); }
+async function bdMusic(on) {
+  if (!on) { if (BDA.music) { const m = BDA.music; BDA.music = null; try { m.g.gain.setTargetAtTime(0, BDA.ctx.currentTime, .4); setTimeout(() => { try { m.s.stop(); } catch (_) {} }, 1500); } catch (_) {} } return; }
+  if (BDA.music) return; try { const b = await musicLoad(BDA.ctx, 7); const s = BDA.ctx.createBufferSource(), g = BDA.ctx.createGain(); s.buffer = b; s.loop = true; g.gain.value = 0; g.gain.setTargetAtTime(.13, BDA.ctx.currentTime, .6); s.connect(g); g.connect(BDA.ctx.destination); s.start(); BDA.music = { s, g }; } catch (_) {}
+}
+function bdStop() { BDA.playing = false; try { if (BDA.src) BDA.src.stop(); } catch (_) {} bdMusic(false); }
 function openBD(key, onDone) {
   const b = BD[key]; if (!b) return; let i = 0;
   const ov = document.createElement("div"); ov.className = "bd-ov"; ov.setAttribute("role", "dialog"); ov.setAttribute("aria-modal", "true"); ov.setAttribute("aria-label", b.title);
   ov.innerHTML = `<div class="bd-box"><div class="bd-head"><b>${b.title}</b><button class="ghost bd-x" aria-label="Fermer">✕</button></div>
-    <div class="bd-track">${b.steps.map((st, k) => `<figure class="bd-cell"><div class="bd-art">${bdPanel(st[0], st[1], st[2], k + 1, b.steps.length)}</div><figcaption><span class="bd-n">${k + 1}</span>${st[3]}</figcaption></figure>`).join("")}</div>
-    <div class="bd-foot"><div class="bd-dots">${b.steps.map((_, k) => `<i data-k="${k}"></i>`).join("")}</div><button class="primary bd-next">Suivant</button></div></div>`;
+    <div class="bd-track">${b.steps.map((st, k) => bdCell(key, st, k, b.steps.length)).join("")}</div>
+    <div class="bd-foot"><button type="button" class="bd-play" aria-pressed="false">▶ Écouter</button><div class="bd-dots">${b.steps.map((_, k) => `<i data-k="${k}"></i>`).join("")}</div><button class="primary bd-next">Suivant</button></div></div>`;
   document.body.appendChild(ov);
-  const track = ov.querySelector(".bd-track"), dots = [...ov.querySelectorAll(".bd-dots i")], next = ov.querySelector(".bd-next");
-  const close = () => { ov.remove(); try { localStorage.setItem("bd-" + key + (b.ver || ""), "1"); } catch (_) {} if (onDone) { const f = onDone; onDone = null; setTimeout(f, 200); } };
+  const track = ov.querySelector(".bd-track"), cells = [...ov.querySelectorAll(".bd-cell")], dots = [...ov.querySelectorAll(".bd-dots i")], next = ov.querySelector(".bd-next"), play = ov.querySelector(".bd-play");
+  const close = () => { bdStop(); ov.remove(); try { localStorage.setItem("bd-" + key + (b.ver || ""), "1"); } catch (_) {} if (onDone) { const f = onDone; onDone = null; setTimeout(f, 200); } };
   const sync = () => { i = Math.round(track.scrollLeft / track.clientWidth); dots.forEach((d, k) => d.classList.toggle("on", k === i)); next.textContent = i >= b.steps.length - 1 ? "J'ai compris" : "Suivant"; };
+  const go = k => track.scrollTo({ left: k * track.clientWidth, behavior: matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth" });
   track.addEventListener("scroll", () => requestAnimationFrame(sync));
-  next.onclick = () => { if (i >= b.steps.length - 1) return close(); track.scrollTo({ left: (i + 1) * track.clientWidth, behavior: matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth" }); };
-  dots.forEach(d => d.onclick = () => track.scrollTo({ left: +d.dataset.k * track.clientWidth, behavior: "smooth" }));
+  next.onclick = () => { if (i >= b.steps.length - 1) return close(); go(i + 1); };
+  dots.forEach(d => d.onclick = () => go(+d.dataset.k));
+  // lecture : chaque case est lue par le personnage qui parle, puis la BD passe à la case suivante
+  const setPlay = on => { play.setAttribute("aria-pressed", on); play.textContent = on ? "❚❚ Pause" : "▶ Écouter"; };
+  async function readFrom(k) {
+    BDA.playing = true; setPlay(true); const run = BDA.run = {};
+    try { if (!BDA.ctx) BDA.ctx = new (window.AudioContext || window.webkitAudioContext)(); await BDA.ctx.resume(); } catch (_) { setPlay(false); return; }
+    bdMusic(true);
+    for (let n = k; n < b.steps.length; n++) {
+      if (BDA.run !== run || !document.body.contains(ov)) return;
+      if (n !== i) { go(n); await sleep(650); }
+      const code = bdCode(key, n), cell = cells[n]; cells.forEach(c => c.classList.toggle("speaking", c === cell));
+      try {
+        if (code) { await bdPlayBuf(await bdClip(code.toLowerCase()), 1); if (BDA.run !== run) return;
+          if (BD_DLG[code] && BD_DLG[code].r) { cell.classList.add("reply"); await sleep(250); await bdPlayBuf(await bdClip(code.toLowerCase() + "-r"), 1); } }
+      } catch (_) {}
+      if (BDA.run !== run) return; await sleep(700);
+    }
+    cells.forEach(c => c.classList.remove("speaking")); BDA.playing = false; setPlay(false); bdMusic(false);
+  }
+  play.onclick = () => { if (BDA.playing) { BDA.run = null; bdStop(); setPlay(false); cells.forEach(c => c.classList.remove("speaking")); try { localStorage.setItem("bd-sound", "0"); } catch (_) {} return; }
+    try { localStorage.setItem("bd-sound", "1"); } catch (_) {} readFrom(i); };
   ov.querySelector(".bd-x").onclick = close; ov.addEventListener("click", e => { if (e.target === ov) close(); });
   document.addEventListener("keydown", function esc(e) { if (e.key === "Escape") { close(); document.removeEventListener("keydown", esc); } });
-  sync(); next.focus();
+  sync(); next.focus(); requestAnimationFrame(() => bdTails(ov)); ov.querySelectorAll(".bd-photo img").forEach(im => im.addEventListener("load", () => bdTails(ov))); const rz = () => document.body.contains(ov) ? bdTails(ov) : removeEventListener("resize", rz); addEventListener("resize", rz);
+  if (bdSoundOn() && navigator.userActivation && navigator.userActivation.isActive) readFrom(0);
 }
+/* ============ Photos par lots : retouche ou fusion HDR de toute une séance d'un coup ============ */
+// Heure de prise de vue lue dans la photo (EXIF), pour regrouper les expositions d'une même pièce
+async function exifTime(file) {
+  try {
+    const v = new DataView(await file.slice(0, 196608).arrayBuffer()); if (v.getUint16(0) !== 0xFFD8) return null;
+    let o = 2; while (o < v.byteLength - 4) { const m = v.getUint16(o), len = v.getUint16(o + 2);
+      if (m === 0xFFE1 && v.getUint32(o + 4) === 0x45786966) { const t = o + 10, le = v.getUint16(t) === 0x4949, U16 = x => v.getUint16(x, le), U32 = x => v.getUint32(x, le);
+        const read = (ifd, want) => { const n = U16(t + ifd), out = {}; for (let i = 0; i < n; i++) { const e = t + ifd + 2 + i * 12, tag = U16(e); if (want.includes(tag)) out[tag] = { type: U16(e + 2), cnt: U32(e + 4), off: U32(e + 8), at: e + 8 }; } return out; };
+        const str = en => { let s = "", p = en.cnt > 4 ? t + en.off : en.at; for (let i = 0; i < en.cnt - 1; i++) s += String.fromCharCode(v.getUint8(p + i)); return s; };
+        const ifd0 = read(U32(t + 4), [0x8769, 0x0132]); let ds = ifd0[0x0132] ? str(ifd0[0x0132]) : "", sub = 0;
+        if (ifd0[0x8769]) { const ex = read(ifd0[0x8769].off, [0x9003, 0x9291]); if (ex[0x9003]) ds = str(ex[0x9003]); if (ex[0x9291]) sub = parseFloat("0." + str(ex[0x9291]).trim()) || 0; }
+        const mm = ds.match(/(\d{4}):(\d\d):(\d\d) (\d\d):(\d\d):(\d\d)/); return mm ? new Date(+mm[1], mm[2] - 1, +mm[3], +mm[4], +mm[5], +mm[6]).getTime() / 1000 + sub : null; }
+      if (m === 0xFFDA || (m & 0xFF00) !== 0xFF00) break; o += 2 + len; }
+  } catch (_) {} return null;
+}
+// regroupe les photos par pièce : écart de temps (rafale d'expositions) ou nombre fixe par pièce
+function batchGroups(items, per, mode) {
+  if (mode === "single") return items.map(x => [x]);
+  const sorted = items.slice().sort((a, b) => (a.t ?? 0) - (b.t ?? 0) || a.i - b.i), g = [];
+  if (per === "auto" && sorted.every(x => x.t != null)) {
+    for (const x of sorted) { const cur = g[g.length - 1]; if (cur && x.t - cur[cur.length - 1].t <= 20 && cur.length < 5) cur.push(x); else g.push([x]); }
+  } else { const n = per === "auto" ? 3 : +per; for (let k = 0; k < sorted.length; k += n) g.push(sorted.slice(k, k + n)); }
+  return g;
+}
+async function addCurrentToShoot(name) {
+  const c = await finalPhotoCanvas(), small = drawToCanvas(c, 1920);
+  const url = await toBlob(drawToCanvas(c, 240), "image/jpeg", .8).then(b => URL.createObjectURL(b));
+  const id = Date.now().toString(36) + Math.random().toString(36).slice(2, 5), full = await toBlob(c, "image/jpeg", .92);
+  P.shoot.push({ id, canvas: small, thumb: url, name, blob: full }); DB.put({ id, name, blob: full }); saveShootOrder(); renderShoot();
+}
+function openBatch() {
+  const ov = document.createElement("div"); ov.className = "bd-ov"; ov.setAttribute("role", "dialog"); ov.setAttribute("aria-modal", "true"); ov.setAttribute("aria-label", "Photos par lots");
+  ov.innerHTML = `<div class="bd-box prof batch"><div class="bd-head"><b>Toute la séance d'un coup</b><button class="ghost bd-x" aria-label="Fermer">✕</button></div>
+    <p class="note">Choisissez toutes les photos de la visite en une fois : l'application les retouche (ou les fusionne) et les ajoute au reportage, pièce par pièce. Prenez d'abord toutes vos photos avec l'appareil photo du téléphone.</p>
+    <div class="seg bmode" role="group" aria-label="Type de séance"><button type="button" data-m="single" aria-pressed="true">1 photo par pièce</button><button type="button" data-m="hdr" aria-pressed="false">Plusieurs expositions (HDR)</button></div>
+    <div class="field" id="bPerWrap" hidden><label for="bPer">Photos par pièce</label><select id="bPer"><option value="auto">Automatique (selon l'heure des photos)</option><option value="2">2 par pièce</option><option value="3">3 par pièce</option><option value="5">5 par pièce</option></select></div>
+    <label class="btn file primary">Choisir les photos de la séance<input type="file" id="bFiles" accept="image/*,image/heic,image/heif" multiple></label>
+    <div id="bGroups" class="bgroups"></div>
+    <p class="status" id="bStatus"></p><div class="bbar" hidden><i id="bBar"></i></div>
+    <div class="row"><button class="primary" id="bGo" type="button" disabled>Ajouter au reportage</button><button class="ghost" id="bStop" type="button" hidden>Arrêter</button></div></div>`;
+  document.body.appendChild(ov);
+  let mode = "single", items = [], groups = [], busy = false, stop = false;
+  const st = ov.querySelector("#bStatus"), go = ov.querySelector("#bGo"), per = ov.querySelector("#bPer");
+  const close = () => { if (busy) { stop = true; return; } ov.remove(); items.forEach(x => x.url && URL.revokeObjectURL(x.url)); };
+  ov.querySelector(".bd-x").onclick = close; ov.addEventListener("click", e => { if (e.target === ov && !busy) close(); });
+  const render = () => {
+    groups = batchGroups(items, per.value, mode); const box = ov.querySelector("#bGroups");
+    box.innerHTML = groups.map((g, k) => `<div class="bgroup"><span class="bnum">Pièce ${k + 1}</span><div class="bthumbs">${g.map(x => `<img src="${x.url}" alt="">`).join("")}</div>${mode === "hdr" && g.length < 2 ? `<span class="bwarn">1 seule photo : retouche simple</span>` : ""}</div>`).join("");
+    go.disabled = !groups.length; go.textContent = groups.length ? `Ajouter ${groups.length} pièce${groups.length > 1 ? "s" : ""} au reportage` : "Ajouter au reportage";
+    st.className = "status"; st.textContent = items.length ? `${items.length} photo${items.length > 1 ? "s" : ""} → ${groups.length} pièce${groups.length > 1 ? "s" : ""}. Vérifiez les regroupements ci-dessous.` : "";
+  };
+  ov.querySelectorAll(".bmode button").forEach(b => b.onclick = () => { if (busy) return; mode = b.dataset.m; ov.querySelectorAll(".bmode button").forEach(x => x.setAttribute("aria-pressed", x === b)); ov.querySelector("#bPerWrap").hidden = mode !== "hdr"; render(); });
+  per.onchange = render;
+  ov.querySelector("#bFiles").onchange = async e => {
+    const fs = [...e.target.files]; e.target.value = ""; if (!fs.length) return; st.className = "status"; st.textContent = "Lecture des photos…";
+    items.forEach(x => x.url && URL.revokeObjectURL(x.url)); items = [];
+    for (let i = 0; i < fs.length; i++) { const f = fs[i]; let url = ""; try { url = URL.createObjectURL(await toBlob(await fileToCanvas(f, 160), "image/jpeg", .7)); } catch (_) {} items.push({ f, i, t: await exifTime(f), url }); if (i % 4 === 3) await frame(); }
+    render();
+    if (mode === "single" && items.length > 2) { const t = items.filter(x => x.t != null).map(x => x.t).sort((a, b) => a - b); let near = 0; for (let k = 1; k < t.length; k++) if (t[k] - t[k - 1] <= 12) near++;
+      if (near >= items.length / 2) { st.innerHTML = `Ces photos semblent prises par séries (même pièce, à quelques secondes d'écart). <button type="button" class="linkbtn" id="bToHdr">Les fusionner en HDR</button>`; ov.querySelector("#bToHdr").onclick = () => ov.querySelector('.bmode [data-m="hdr"]').click(); } }
+  };
+  ov.querySelector("#bStop").onclick = () => { stop = true; };
+  go.onclick = async () => {
+    if (!groups.length || busy) return; busy = true; stop = false; go.disabled = true; ov.querySelector("#bStop").hidden = false; ov.querySelector(".bbar").hidden = false;
+    const bar = ov.querySelector("#bBar"), t0 = performance.now(); let done = 0, failed = 0;
+    for (let k = 0; k < groups.length && !stop; k++) {
+      st.className = "status"; st.textContent = `Pièce ${k + 1} sur ${groups.length} : ${groups[k].length > 1 ? "fusion" : "retouche"} en cours… (gardez l'application ouverte)`;
+      try {
+        const g = groups[k];
+        if (g.length > 1) await runFusion(g.map(x => x.f), false);
+        else { const full = await fileToFull(g[0].f), c = drawToCanvas(full, 2048); await setPhotoSource(canvasToFloat(c), null, false); P.full = hqOn() ? full : null; }
+        resetSliders(); await frame(); await addCurrentToShoot("Pièce " + (P.shoot.length + 1)); done++;
+      } catch (_) { failed++; }
+      bar.style.width = ((k + 1) / groups.length * 100) + "%"; await frame();
+    }
+    busy = false; ov.querySelector("#bStop").hidden = true; go.disabled = false;
+    st.className = failed ? "status err" : "status ok";
+    st.textContent = `${done} pièce${done > 1 ? "s" : ""} ajoutée${done > 1 ? "s" : ""} au reportage en ${Math.round((performance.now() - t0) / 1000)} s${failed ? ` · ${failed} photo${failed > 1 ? "s" : ""} non lue${failed > 1 ? "s" : ""}` : ""}${stop ? " · arrêté" : ""}. Vous pouvez fermer cette fenêtre.`;
+    if (done) { go.textContent = "Voir le reportage"; go.onclick = () => { ov.remove(); $("#shoot").scrollIntoView({ block: "center", behavior: "smooth" }); }; }
+  };
+}
+$("#batchGo").onclick = openBatch;
+
+/* ============ Pas à pas : un parcours guidé dans chaque onglet + « i » d'explication sur chaque fonction ============ */
+const OS = (() => { const u = navigator.userAgent || ""; return /iPhone|iPad|iPod/.test(u) || (/Macintosh/.test(u) && navigator.maxTouchPoints > 1) ? "ios" : /Android/i.test(u) ? "android" : "autre"; })();
+// texte selon le téléphone : on montre la manip de l'iPhone, d'Android, ou les deux sur ordinateur
+const osTip = (ios, and) => OS === "ios" ? `<p class="os"><b>Sur iPhone</b> : ${ios}</p>` : OS === "android" ? `<p class="os"><b>Sur Android</b> : ${and}</p>` : `<p class="os"><b>iPhone</b> : ${ios}<br><b>Android</b> : ${and}</p>`;
+const SAVE_IMG = osTip("touchez « Enregistrer », puis dans le menu qui s'ouvre, « Enregistrer l'image ». Elle arrive dans l'app <b>Photos</b>.", "touchez « Télécharger ». Elle arrive dans la <b>Galerie</b> (ou Google Photos), dossier « Téléchargements ».");
+const SAVE_VID = osTip("touchez « Enregistrer », puis « Enregistrer la vidéo ». Elle arrive dans l'app <b>Photos</b>.", "touchez « Télécharger ». Elle arrive dans la <b>Galerie</b>, dossier « Téléchargements ».");
+const PATHS = {
+  photos: [
+    { t: "Prendre la photo", go: "#pickLbl", d: () => `<p>Placez-vous dans un angle de la pièce, téléphone <b>droit</b>, à hauteur de poitrine. Touchez <b>« Prendre ou choisir une photo »</b>.</p>` +
+      osTip("choisissez « Prendre une photo », déclenchez, puis « Utiliser la photo ». Photo déjà prise : « Photothèque ».", "choisissez « Appareil photo », déclenchez, puis ✓. Photo déjà prise : « Fichiers » ou « Galerie ».") +
+      `<p class="tip">Fenêtre très lumineuse ? Touchez d'abord <b>« Fusion HDR »</b> : un guide vous accompagne photo par photo.</p><p class="tip">Vous avez déjà pris toute la maison ? <b>« Toute la séance d'un coup »</b> retouche et ajoute toutes les photos en une fois.</p>` },
+    { t: "Vérifier la retouche", go: "#cmp", d: () => `<p>La retouche est <b>automatique</b> : lumière, couleurs, photo redressée. Vous n'avez rien à régler.</p><p>Faites glisser le <b>trait blanc</b> au milieu de la photo pour comparer avant / après.</p><p class="tip">Si besoin seulement : « Luminosité » pour éclaircir, « Redresser » si la photo penche.</p>` },
+    { t: "Options", go: "#tSky", opt: true, d: () => `<p>Facultatif, selon la photo :</p><ul><li><b>Ciel bleu</b> : pour une façade sous un ciel gris.</li><li><b>Flouter une zone</b> : visage, photo de famille, plaque. Touchez ensuite l'endroit sur la photo.</li><li><b>Logo du réseau</b> : ajouté dans un coin de la photo.</li></ul>` },
+    { t: "Garder la photo", go: "#addToShoot", d: () => `<p>Touchez <b>« Ajouter au reportage »</b>. La photo est gardée dans l'application, en bas de l'écran (« Reportage du bien »).</p><p>C'est elle qui servira pour <b>la vidéo, la fiche vitrine et le kit annonce</b>. Puis pièce suivante : retour à l'étape 1.</p>` },
+    { t: "Galerie", go: "#savePhoto", opt: true, d: () => `${P.shoot.length && !P.isSample ? `<p class="okline">✓ ${P.shoot.length} photo${P.shoot.length > 1 ? "s" : ""} dans le reportage.</p>` : ""}<p>Pour avoir aussi la photo dans la galerie de votre téléphone (facultatif) : touchez <b>« Enregistrer la photo »</b>.</p>${SAVE_IMG}<p class="tip">Pas nécessaire pour la vidéo ni la fiche : le reportage suffit.</p>`,
+      next: "Photo suivante", nextTo: 0 }],
+  visite: [
+    { t: "Se placer", go: "#panoGo", d: () => `<p>Mettez-vous <b>au centre de la pièce</b>, sans personne autour. Allumez les lumières.</p><p>Touchez <b>« Prise de vue 360° »</b>, puis autorisez <b>la caméra</b> et <b>les mouvements</b> si le téléphone le demande.</p>` },
+    { t: "Tourner sur place", go: "#panoGo", d: () => `<p>Touchez « Commencer ». Tournez <b>lentement vers la droite</b>, les pieds sur place, téléphone droit à hauteur des yeux.</p><p>Visez le <b>point jaune</b> dans le cercle : la photo se prend toute seule. 12 photos, environ une minute.</p>` },
+    { t: "Nommer la pièce", go: "#scenes", d: () => `<p>Le panorama s'assemble seul et la pièce s'ajoute à la liste « Pièces ». Touchez son nom pour la renommer (Séjour, Cuisine…).</p><p>Recommencez les étapes 1 et 2 pour chaque pièce.</p>` },
+    { t: "Relier les pièces", go: "#editHot", opt: true, d: () => `<p>Touchez <b>« Placer une flèche »</b>, choisissez la pièce où mène la flèche, puis touchez <b>la porte</b> sur la photo. L'acquéreur passera d'une pièce à l'autre en touchant la flèche.</p>` },
+    { t: "Exporter", go: "#exportTour", d: () => `<p>Touchez <b>« Exporter la visite »</b> : la visite devient un fichier à envoyer à l'acquéreur ou à joindre à l'annonce.</p>` +
+      osTip("« Enregistrer », puis « Enregistrer dans Fichiers » ; ou choisissez directement Mail ou WhatsApp.", "« Télécharger », puis envoyez le fichier par mail ou WhatsApp.") }],
+  video: [
+    { t: "Les photos", go: () => P.shoot.length ? "#vClipLbl" : null, d: () => (P.shoot.length
+      ? `<p class="okline">✓ ${P.shoot.length} photo${P.shoot.length > 1 ? "s" : ""} du reportage, dans l'ordre du reportage.</p>`
+      : `<p>La vidéo est faite avec les photos du <b>reportage</b>. Pour l'instant il est vide : ce sont des photos d'exemple.</p><p><button type="button" class="linkbtn" data-goto="photos">Aller faire les photos →</button></p>`) +
+      `<p class="tip">Facultatif : <b>« Filmer ou ajouter un clip »</b> pour ajouter de courtes vidéos (5 à 12 s), en marchant lentement, téléphone stable.</p>` },
+    { t: "Les textes", go: "#vTitle", d: () => `<p>Titre, détails et prix se remplissent depuis l'onglet <b>Bien</b> (« Remplir la vidéo, le plan et le dossier »). Vous pouvez les modifier ici.</p><p><b>Description</b> : 2 ou 3 phrases courtes, elles défilent sur les photos. <b>Contact</b> : repris de « Mon profil ».</p>` },
+    { t: "Musique et voix", go: "#vMusic", d: () => `<p>Choisissez une <b>musique</b> et touchez « ▶ Écouter ».</p><p><b>Narrateur</b> : une voix lit la description. La première fois, la voix se télécharge (environ une minute, de préférence en wifi). « Ma voix (micro) » : vous lisez vous-même pendant la création.</p>` },
+    { t: "Aperçu", go: "#vPlay", d: () => `<p>Touchez <b>« Aperçu »</b> : la vidéo se joue dans le cadre, rien n'est encore créé. Corrigez un texte ou l'ordre des photos si besoin.</p>` },
+    { t: "Créer et enregistrer", go: "#vRec", d: () => { let s = 0; try { s = Math.round(vTimeline().total); } catch (_) {} return `<p>Touchez <b>« Créer la vidéo »</b>. Elle se joue en entier pendant sa fabrication${s ? ` (environ ${s} secondes)` : ""} : <b>ne quittez pas l'application</b> et ne verrouillez pas l'écran.</p><p>À la fin, la fenêtre « Votre fichier est prêt » s'ouvre :</p>${SAVE_VID}`; } }],
+  plan: [
+    { t: "Mesurer", go: "#planC", d: () => `<p>Faites le tour du logement et mesurez chaque pièce <b>de mur à mur</b> (un mètre laser est idéal). Notez largeur × longueur.</p><p class="tip">Pièce en L : comptez-la comme deux rectangles collés. Le plan d'exemple s'efface dès que vous ajoutez votre première pièce.</p>` },
+    { t: "Ajouter une pièce", go: "#roomType", d: () => `<p>Choisissez le type de pièce dans la liste (Séjour, Chambre, Cuisine…) puis touchez <b>« Ajouter »</b>.</p><p>La pièce se dessine à droite des autres et une ligne apparaît dans la liste.</p>` },
+    { t: "Saisir les mesures", go: "#rooms", d: () => `<p>Chaque ligne de la liste = une pièce : <b>nom · largeur · longueur · case habitable</b>. Mesures en mètres, par exemple <b>3,45</b>.</p><p><b>Largeur</b> = de gauche à droite sur le plan, <b>longueur</b> = de haut en bas.</p><p class="tip">Balcon, garage, cave : décochez la case. Ils passent en annexes et la surface habitable reste juste.</p>` },
+    { t: "Placer les pièces", go: "#planC", d: () => `<p>Sur le dessin, posez le doigt <b>sur une pièce</b> et faites-la glisser pour la coller à sa voisine : les murs doivent se toucher.</p><p>Le <b>petit coin orange</b>, en bas à droite de la pièce choisie, l'agrandit ou la rétrécit.</p><p class="tip">Commencez par l'entrée ou le séjour, puis collez les autres pièces autour.</p>` },
+    { t: "Portes et fenêtres", go: "#opBtns", d: () => `<p>Touchez <b>« ＋ Porte »</b>, <b>« ＋ Fenêtre »</b> ou <b>« ＋ Baie vitrée »</b>, puis touchez <b>le mur</b> sur le plan. Faites glisser l'élément le long du mur ; sa largeur se règle dans la liste en dessous.</p><p class="tip">« ＋ Ouverture » : mur ouvert entre deux pièces, par exemple une cuisine ouverte sur le séjour.</p>` },
+    { t: "3D et enregistrer", go: "#savePlan", d: () => `<p>Touchez <b>« 3D »</b> en haut du plan : tournez avec un doigt, zoomez en pinçant. La surface habitable est calculée en bas de la liste.</p><p>Touchez <b>« Enregistrer le plan »</b> :</p>${SAVE_IMG}` }]
+};
+const PATH = { step: {} };
+const pathOff = () => { try { return localStorage.getItem("path-off") === "1"; } catch (_) { return false; } };
+function pathTarget(v) { const s = PATHS[v][PATH.step[v] || 0], g = typeof s.go === "function" ? s.go() : s.go; return g ? $(g) : null; }
+function renderPath(v) {
+  const box = $("#path-" + v); if (!box) return; const steps = PATHS[v], i = PATH.step[v] || 0, s = steps[i], off = pathOff();
+  document.querySelectorAll(".path-target").forEach(e => e.classList.remove("path-target"));
+  box.classList.toggle("off", off);
+  if (off) { box.innerHTML = `<button type="button" class="path-on">Afficher le pas à pas</button>`; box.querySelector(".path-on").onclick = () => { try { localStorage.removeItem("path-off"); } catch (_) {} renderPath(v); }; return; }
+  box.innerHTML = `<div class="path-top"><b>Pas à pas</b><span class="note">Étape ${i + 1} sur ${steps.length}</span><button type="button" class="linkbtn path-x">Masquer</button></div>
+    <div class="path-dots" role="tablist">${steps.map((x, k) => `<button type="button" role="tab" aria-selected="${k === i}" class="${k < i ? "done" : ""}" data-k="${k}"><span>${k < i ? "✓" : k + 1}</span>${x.t}</button>`).join("")}</div>
+    <div class="path-card"><h4>${i + 1}. ${s.t}${s.opt ? ` <span class="badge">facultatif</span>` : ""}</h4>${s.d()}
+    <div class="row">${pathTarget(v) ? `<button type="button" class="primary path-show">Montrer où toucher</button>` : ""}${i < steps.length - 1 || s.next ? `<button type="button" class="path-next">${s.next || "Étape suivante"} →</button>` : ""}${i ? `<button type="button" class="ghost path-prev" aria-label="Étape précédente">←</button>` : ""}</div></div>`;
+  box.querySelectorAll(".path-dots button").forEach(b => b.onclick = () => pathGo(v, +b.dataset.k));
+  box.querySelector(".path-x").onclick = () => { try { localStorage.setItem("path-off", "1"); } catch (_) {} renderPath(v); };
+  const sh = box.querySelector(".path-show"); if (sh) sh.onclick = () => pathShow(v);
+  const nx = box.querySelector(".path-next"); if (nx) nx.onclick = () => { pathGo(v, s.nextTo != null ? s.nextTo : i + 1); if (s.nextTo != null) pathShow(v); };
+  const pv = box.querySelector(".path-prev"); if (pv) pv.onclick = () => pathGo(v, i - 1);
+  box.querySelectorAll("[data-goto]").forEach(b => b.onclick = () => { location.hash = b.dataset.goto; });
+  const t = pathTarget(v); if (t) t.classList.add("path-target");
+  const cur = box.querySelector('.path-dots [aria-selected="true"]'); if (cur) { const dots = box.querySelector(".path-dots"); dots.scrollLeft = cur.offsetLeft - dots.clientWidth / 2 + cur.clientWidth / 2; }
+}
+function pathGo(v, k) { PATH.step[v] = clamp(k, 0, PATHS[v].length - 1); renderPath(v); }
+function pathShow(v) { const t = pathTarget(v); if (!t) return; t.scrollIntoView({ block: "center", behavior: "smooth" }); t.classList.remove("path-flash"); void t.offsetWidth; t.classList.add("path-flash"); setTimeout(() => t.classList.remove("path-flash"), 2600); }
+// avance toute seule quand l'agent a fait l'action
+function pathAuto(v, from, to) { const i = PATH.step[v] || 0; if (from.includes(i)) pathGo(v, to); else if (!$("#v-" + v).hidden) renderPath(v); }
+(function pathInit() {
+  Object.keys(PATHS).forEach(v => { const sec = $("#v-" + v), lede = sec.querySelector(".lede"), box = document.createElement("div"); box.className = "path"; box.id = "path-" + v; (lede || sec.querySelector("h2")).after(box); PATH.step[v] = 0; renderPath(v); });
+  new MutationObserver(() => { if (!P.isSample && !P.fq?.length && /pleine qualité|fusionnées|Photo en pleine|^$/.test($("#pStatus").textContent)) pathAuto("photos", [0], 1); }).observe($("#pStatus"), { childList: true, characterData: true, subtree: true });
+  $("#addToShoot").addEventListener("click", () => { PATH.added = true; });
+  new MutationObserver(() => { if (PATH.added && !P.isSample) { PATH.added = false; pathAuto("photos", [0, 1, 2, 3], 4); } else if (!$("#v-photos").hidden) renderPath("photos"); }).observe($("#shootCount"), { childList: true, characterData: true, subtree: true });
+  $("#savePhoto").addEventListener("click", () => setTimeout(() => renderPath("photos"), 50));
+  $("#panoGo").addEventListener("click", () => pathAuto("visite", [0], 1));
+  new MutationObserver(() => { if (window.T && !T.isSample) pathAuto("visite", [0, 1], 2); }).observe($("#scenes"), { childList: true });
+  $("#vPlay").addEventListener("click", () => pathAuto("video", [0, 1, 2, 3], 4));
+  $("#addRoom").addEventListener("click", () => pathAuto("plan", [0, 1], 2));
+  ["#opBtns"].forEach(s => $(s).addEventListener("click", () => pathAuto("plan", [1, 2, 3], 4)));
+  window.addEventListener("hashchange", () => { const v = location.hash.slice(1); if (PATHS[v]) renderPath(v); });
+})();
+
+/* « i » : une explication courte pour chaque fonction, affichée en bas de l'écran */
+const TIPS = [
+  ["#mFusion", "after", "Une photo ou Fusion HDR", "« Une photo » : le cas normal, une photo par pièce. « Fusion HDR » : pour une pièce avec une fenêtre très lumineuse ; vous prenez la même vue 3 fois (normale, sombre, claire) sans bouger, et l'application les mélange pour que l'intérieur et l'extérieur soient bien visibles."],
+  ["#batchGo", "after", "Toute la séance d'un coup", "Pour gagner du temps : prenez toutes vos photos avec l'appareil photo du téléphone, puis choisissez-les toutes en une fois. « 1 photo par pièce » : chaque photo est retouchée automatiquement. « Plusieurs expositions » : les photos d'une même pièce sont regroupées grâce à leur heure de prise de vue, fusionnées en HDR, puis toutes ajoutées au reportage."],
+  ["#resetAuto", "before", "Réglages", "La retouche automatique suffit presque toujours. Les curseurs servent à corriger à la main : Luminosité (plus clair / plus sombre), Contraste, Chaleur (plus jaune / plus bleu), Couleurs (plus ou moins vives), Netteté, Redresser (si la photo penche). « Revenir à l'auto » annule vos réglages."],
+  ["#tHQ", "label", "Qualité maximale", "Activée : la photo est enregistrée en pleine résolution (jusqu'à 12 mégapixels), idéale pour les portails et l'impression. Désactivez-la seulement si votre téléphone est ancien et lent."],
+  ["#tLogo", "label", "Logo du réseau", "Ajoute le logo du réseau dans un coin de la photo. Il apparaît aussi sur la photo enregistrée et dans le reportage."],
+  ["#tSky", "label", "Ciel bleu", "Pour les photos d'extérieur (façade, jardin) : un ciel gris ou blanc est remplacé par un ciel bleu. Sans effet sur une photo d'intérieur."],
+  ["#blurBtn", "after", "Flouter une zone", "Touchez « Flouter une zone », puis touchez la photo à l'endroit à cacher : photo de famille, visage, plaque d'immatriculation, adresse. « Annuler le dernier flou » retire le dernier."],
+  ["#savePhoto", "after", "Reportage ou galerie ?", "« Ajouter au reportage » garde la photo DANS l'application : c'est elle qui sert pour la vidéo, la fiche vitrine et le kit annonce. « Enregistrer la photo » la met en plus dans la galerie de votre téléphone (app Photos), par exemple pour l'envoyer à quelqu'un."],
+  ["#panoGo", "after", "Prise de vue 360°", "Au centre de la pièce, touchez ce bouton, autorisez la caméra et les mouvements, puis tournez lentement sur vous-même vers la droite. Les 12 photos se prennent seules quand le point jaune entre dans le cercle, puis le panorama s'assemble."],
+  ["#editHot", "parent", "Flèches entre les pièces", "« Placer une flèche » : choisissez la pièce de destination, puis touchez la porte sur la photo. « Rotation auto » fait tourner doucement la vue quand personne ne touche l'écran."],
+  ["#exportTour", "after", "Exporter la visite", "Crée un fichier qui contient toute la visite. Il s'ouvre sur n'importe quel téléphone ou ordinateur, sans application : envoyez-le à l'acquéreur ou joignez-le à l'annonce."],
+  ["#fH", "after", "Format", "Vertical 9:16 : pour Instagram, Facebook, TikTok, WhatsApp et les stories. Horizontal 16:9 : pour YouTube, les portails et un écran d'ordinateur."],
+  ["label[for=vDesc]", "in", "Description", "2 ou 3 phrases courtes. Elles s'affichent une par une sur les photos, et le narrateur les lit si vous en choisissez un."],
+  ["#vClipLbl", "after", "Clips vidéo", "Ajoutez de courtes vidéos filmées avec le téléphone (12 s maximum chacune). Elles passent après les photos, avec la description et la musique. Le son d'origine est coupé."],
+  ["label[for=vNarr]", "in", "Narrateur", "Une voix lit la description : 2 voix d'homme, 2 voix de femme. La première fois, la voix se télécharge (environ une minute, en wifi de préférence). « Ma voix (micro) » : vous lisez vous-même pendant la création."],
+  ["#vRec", "after", "Aperçu ou Créer ?", "« Aperçu » joue la vidéo dans le cadre sans rien créer. « Créer la vidéo » fabrique le fichier : la vidéo se joue en entier, gardez l'application ouverte, puis enregistrez-la dans votre galerie."],
+  ["#roomType", "after", "Ajouter une pièce", "Choisissez le type, puis « Ajouter ». La pièce apparaît à droite des autres sur le dessin et dans la liste au-dessus, où vous saisissez ses mesures en mètres."],
+  ["#planEx", "before", "La liste des pièces", "Une ligne par pièce : nom · largeur · longueur (en mètres, par exemple 3,45) · case habitable. Largeur = de gauche à droite sur le plan, longueur = de haut en bas. Décochez la case pour un balcon, un garage ou une cave."],
+  ["#opBtns", "lbl", "Portes, fenêtres, ouvertures", "Touchez un élément, puis touchez le mur sur le plan. Faites-le glisser le long du mur ; sa largeur se règle dans la liste. « Ouverture » : mur ouvert entre deux pièces."],
+  ["#savePlan", "after", "Enregistrer le plan", "Enregistre l'image du plan (ou de la vue 3D si elle est affichée) dans la galerie de votre téléphone. Le plan reste aussi gardé dans l'application avec le dossier du bien."]
+];
+(function tipsInit() {
+  const mk = (title, text) => { const b = document.createElement("button"); b.type = "button"; b.className = "tipbtn"; b.setAttribute("aria-label", "Explication : " + title); b.textContent = "i"; b.onclick = e => { e.preventDefault(); e.stopPropagation(); openTip(title, text); }; return b; };
+  for (const [sel, where, title, text] of TIPS) { const el = $(sel); if (!el) continue; const b = mk(title, text);
+    if (where === "label") el.closest("label").querySelector("span").appendChild(b);
+    else if (where === "in") el.appendChild(b);
+    else if (where === "before") el.before(b);
+    else if (where === "parent") el.parentElement.appendChild(b);
+    else if (where === "lbl") el.parentElement.querySelector(".lbl").appendChild(b);
+    else { const row = el.closest(".row"); if (row && row !== el) row.appendChild(b); else { const w = document.createElement("div"); w.className = "tiprow"; el.before(w); w.appendChild(el); w.appendChild(b); } } }
+})();
+function openTip(title, text) {
+  let sh = $("#tipSheet"); if (!sh) { sh = document.createElement("div"); sh.id = "tipSheet"; sh.className = "tipsheet"; sh.setAttribute("role", "dialog"); document.body.appendChild(sh); }
+  sh.innerHTML = `<div class="tipcard"><div class="row" style="justify-content:space-between;flex-wrap:nowrap"><b>${title}</b><button type="button" class="ghost tipclose" aria-label="Fermer">✕</button></div><p>${text}</p></div>`;
+  sh.hidden = false; requestAnimationFrame(() => sh.classList.add("on"));
+  const close = () => { sh.classList.remove("on"); setTimeout(() => sh.hidden = true, 200); document.removeEventListener("pointerdown", out, true); };
+  const out = e => { if (!sh.contains(e.target)) close(); };
+  sh.querySelector(".tipclose").onclick = close; setTimeout(() => document.addEventListener("pointerdown", out, true), 0);
+}
+
 // Bouton « Comment faire ? » dans chaque onglet et dans le dossier
 (function bdButtons() {
   const help = k => { const bt = document.createElement("button"); bt.className = "helpbtn"; bt.type = "button"; bt.innerHTML = `<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9.5"/><path d="M9.6 9.4a2.5 2.5 0 1 1 3.4 2.3c-.7.3-1 .8-1 1.5v.6"/><circle cx="12" cy="16.9" r=".6" fill="currentColor"/></svg>Comment faire ?`; bt.onclick = () => openBD(k); return bt; };
@@ -3247,6 +3709,7 @@ const KB = [
   { k: "photos donnees ou sont stockees confidentialite securite serveur prive vie privee", q: "Où sont stockées mes photos ?", a: "Uniquement sur votre téléphone. Rien n'est envoyé sur un serveur. Pour les garder ou les retrouver sur un autre appareil, utilisez « Sauvegarder » dans le dossier du bien." },
   { k: "prendre photo appareil photo camera galerie choisir", q: "Comment prendre une photo ?", a: "Onglet Photos, touchez « Prendre ou choisir une photo ». Tenez le téléphone droit, à hauteur de poitrine, de préférence dans un angle de la pièce.", tab: "photos", guide: "photos" },
   { k: "photo sombre trop sombre lumiere eclairer claire retouche automatique", q: "Ma photo est trop sombre, que faire ?", a: "La retouche est automatique. Si c'est encore trop sombre, montez le curseur « Luminosité ». Allumez aussi toutes les lumières et ouvrez les volets avant la photo.", tab: "photos" },
+  { k: "lot lots plusieurs photos seance toutes d un coup import rafale serie gagner du temps", q: "Comment traiter toutes les photos d'une visite d'un coup ?", a: "Onglet Photos, touchez « Toute la séance d'un coup ». Choisissez « 1 photo par pièce » (chaque photo est retouchée) ou « Plusieurs expositions (HDR) » (les photos d'une même pièce sont regroupées par leur heure de prise de vue et fusionnées). Sélectionnez toutes les photos, vérifiez les regroupements, puis « Ajouter au reportage ».", tab: "photos", guide: "photos" },
   { k: "fusion hdr qualite floue double contour bouge trepied conseils reussir", q: "Comment réussir une fusion HDR de haute qualité ?", a: "Calez le téléphone (meuble, mur, trépied) : il ne doit pas bouger entre les 3 photos. Allumez les lumières, ouvrez les volets, personne dans le cadre, même zoom pour les 3 photos. Photo 1 normale ; photo 2 plus sombre (touchez la fenêtre et baissez le petit soleil jusqu'à voir dehors) ; photo 3 plus claire (touchez un coin sombre et montez le soleil). Le guide s'affiche pas à pas sous le bouton en mode « Fusion HDR », et vos photos sont gardées même si le téléphone recharge l'application.", tab: "photos", guide: "photos" },
   { k: "fenetre brulee blanche contre jour hdr fusion expositions", q: "La fenêtre est toute blanche, comment faire ?", a: "Touchez « Fusion HDR », puis prenez la même vue 2 ou 3 fois sans bouger le téléphone : une sombre, une normale, une claire. Pour changer la luminosité sur iPhone, touchez l'écran puis faites glisser le petit soleil. Les photos s'ajoutent une par une ; la fusion se lance à la 3e, ou avec « Fusionner ».", tab: "photos", guide: "photos" },
   { k: "ciel gris bleu facade exterieur", q: "Comment mettre un ciel bleu ?", a: "Sur une photo d'extérieur, cochez « Ciel bleu ». Le ciel gris ou blanc devient bleu. Ne l'utilisez pas à l'intérieur : un plafond clair pourrait devenir bleu.", tab: "photos" },

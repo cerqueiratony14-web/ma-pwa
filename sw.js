@@ -1,5 +1,5 @@
 // Mode hors ligne : l'application et ses bibliothèques restent disponibles sans réseau.
-const CACHE = "studio-habitat-v37";
+const CACHE = "studio-habitat-v39";
 const CORE = ["./", "index.html", "manifest.webmanifest", "icon-192.png", "icon-512.png", "apple-touch-icon.png"];
 const LIBS = ["https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"];
 self.addEventListener("install", e => {
@@ -18,7 +18,7 @@ self.addEventListener("fetch", e => {
     return;
   }
   // voix du narrateur et musiques (gros fichiers) : téléchargées une fois, gardées à part
-  if (url.origin === location.origin && (url.pathname.includes("/voices/") || url.pathname.includes("/music/"))) {
+  if (url.origin === location.origin && (url.pathname.includes("/voices/") || url.pathname.includes("/music/") || url.pathname.includes("/bd/"))) {
     e.respondWith(caches.open(VOICES).then(c => c.match(e.request).then(hit => hit || fetch(e.request).then(r => { if (r.ok && r.status === 200) c.put(e.request, r.clone()); return r; }))));
     return;
   }
