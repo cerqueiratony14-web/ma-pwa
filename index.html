@@ -302,6 +302,77 @@ hr{border:0;border-top:1px solid var(--line);margin:2px 0}
 .save-fallback .box{background:var(--surface);border-radius:22px;padding:16px;max-width:560px;width:100%;display:flex;flex-direction:column;gap:10px;max-height:100%;overflow:auto}
 .save-fallback img,.save-fallback video{max-width:100%;max-height:55vh;border-radius:8px;display:block;margin:0 auto}
 @media (prefers-reduced-motion: reduce){.tour .fade{transition:none}}
+
+/* ===== Habillage moderne ===== */
+html{scroll-behavior:smooth;-webkit-tap-highlight-color:transparent}
+:root{--radius:22px;--shadow:0 1px 2px rgba(2,6,44,.04),0 10px 30px -8px rgba(2,6,44,.12);--shadow-lg:0 2px 6px rgba(2,6,44,.06),0 20px 44px -12px rgba(2,6,44,.22);--page:#F4F5FB}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--page:#01041F}}
+:root[data-theme="dark"]{--page:#01041F}
+body{background:var(--page)}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
+section[data-view]:not([hidden]){animation:viewIn .38s cubic-bezier(.2,.8,.2,1)}
+@keyframes viewIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+.panel{border:0;box-shadow:var(--shadow);border-radius:var(--radius);padding:20px}
+.stage{border-radius:24px;box-shadow:var(--shadow-lg)}
+h2{font-size:26px}
+@media (max-width:760px){h2{font-size:24px}}
+.lede{font-size:14.5px;line-height:1.55}
+/* en-tête */
+header.top{border-radius:0 0 26px 26px;padding-top:14px!important;padding-bottom:14px!important;box-shadow:0 10px 30px -14px rgba(2,6,44,.25);border-bottom:0}
+header.top .appname b{font-size:19px}
+/* dossier */
+section.dossier{border-radius:var(--radius);box-shadow:var(--shadow);border:0}
+.dosbtns button,.dosbtns .btn{border-radius:999px}
+/* boutons */
+button,.btn{transition:transform .12s ease,box-shadow .2s ease,background .2s ease,border-color .2s ease,color .2s ease;border-radius:14px}
+button.primary,.btn.primary{background:linear-gradient(180deg,color-mix(in srgb,var(--accent) 88%,#fff) 0%,var(--accent) 100%);box-shadow:0 8px 20px -6px color-mix(in srgb,var(--accent) 55%,transparent)}
+button.primary:hover,.btn.primary:hover{box-shadow:0 12px 26px -8px color-mix(in srgb,var(--accent) 65%,transparent)}
+button:not(.primary):not(.tile):not(.mini):not(.bd-x):not(.linkbtn):hover{background:color-mix(in srgb,var(--accent) 5%,var(--surface))}
+button:focus-visible,.btn:focus-visible,a:focus-visible{outline:3px solid color-mix(in srgb,var(--accent) 35%,transparent);outline-offset:2px}
+/* champs */
+.field input[type=text],.field input[type=tel],.field input[type=email],.field input[type=number],.field select,.field textarea,input.txt,select.txt{border-radius:14px;background:var(--sunk);transition:box-shadow .2s,background .2s,border-color .2s}
+.field input:focus,.field select:focus,.field textarea:focus,select.txt:focus{box-shadow:0 0 0 4px color-mix(in srgb,var(--accent) 14%,transparent);border-color:var(--accent);background:var(--surface);outline:none}
+.field label,.lbl{letter-spacing:.06em}
+/* sections de la fiche */
+.fsec{display:flex;align-items:center;gap:10px;margin:14px 0 -2px;padding-top:14px;border-top:1px solid color-mix(in srgb,var(--line) 70%,transparent);font-family:var(--display);font-weight:700;font-size:16.5px;color:var(--ink)}
+.fsec svg{width:30px;height:30px;padding:6px;border-radius:10px;background:color-mix(in srgb,var(--accent) 10%,transparent);fill:none;stroke:var(--accent);stroke-width:2;stroke-linecap:round;stroke-linejoin:round;flex:none}
+.fiche .dict{border-radius:18px}
+/* tuiles d'action */
+.tiles{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.tile{flex-direction:column;align-items:flex-start;justify-content:flex-start;text-align:left;gap:4px;padding:14px;min-height:118px;border-radius:18px;border:1px solid color-mix(in srgb,var(--line) 70%,transparent);background:var(--surface);box-shadow:0 1px 2px rgba(2,6,44,.04)}
+.tile:hover{border-color:var(--accent);box-shadow:var(--shadow)}
+.tile b{font-size:15px;line-height:1.2;color:var(--ink)}.tile small{font-size:12.5px;color:var(--muted);font-weight:500;line-height:1.3}
+.tile .ti{width:40px;height:40px;border-radius:12px;display:flex;align-items:center;justify-content:center;background:color-mix(in srgb,var(--accent) 12%,transparent);margin-bottom:6px}
+.tile .ti svg{width:22px;height:22px;fill:none;stroke:var(--accent);stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.tile .t-gold{background:#FFF1C9}.tile .t-gold svg{stroke:#9A6B00}.tile .t-green{background:#E3F5EC}.tile .t-green svg{stroke:#0B7A4B}
+/* interrupteurs */
+.toggle input[type=checkbox]{appearance:none;-webkit-appearance:none;width:48px;height:28px;border-radius:999px;background:#C9CCE0;position:relative;cursor:pointer;transition:background .2s;flex:none;margin:0}
+.toggle input[type=checkbox]::after{content:"";position:absolute;top:3px;left:3px;width:22px;height:22px;border-radius:50%;background:#fff;box-shadow:0 2px 6px rgba(2,6,44,.25);transition:transform .22s cubic-bezier(.3,.7,.3,1)}
+.toggle input[type=checkbox]:checked{background:var(--accent)}.toggle input[type=checkbox]:checked::after{transform:translateX(20px)}
+.toggle{padding:4px 0;min-height:36px}
+/* curseurs */
+input[type=range]{-webkit-appearance:none;appearance:none;height:28px;background:transparent}
+input[type=range]::-webkit-slider-runnable-track{height:6px;border-radius:99px;background:linear-gradient(90deg,var(--accent),color-mix(in srgb,var(--accent) 35%,#C9CCE0))}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:24px;height:24px;border-radius:50%;background:#fff;border:3px solid var(--accent);margin-top:-9px;box-shadow:0 2px 8px rgba(2,6,44,.25)}
+input[type=range]::-moz-range-track{height:6px;border-radius:99px;background:#C9CCE0}input[type=range]::-moz-range-thumb{width:20px;height:20px;border-radius:50%;background:#fff;border:3px solid var(--accent)}
+/* contrôles segmentés et puces */
+.seg{border-radius:14px;padding:4px}.seg button{border-radius:11px}
+.chips button,.tick span{transition:background .2s,color .2s,border-color .2s,transform .12s}
+/* reportage et vignettes */
+.strip .th{border-radius:16px;box-shadow:0 1px 3px rgba(2,6,44,.08)}
+/* barre d'onglets */
+@media (max-width:760px){
+  nav.tabs{left:10px;right:10px;bottom:calc(8px + env(safe-area-inset-bottom,0px));border-radius:24px;padding:6px;background:color-mix(in srgb,var(--surface) 86%,transparent);-webkit-backdrop-filter:saturate(1.8) blur(18px);backdrop-filter:saturate(1.8) blur(18px);box-shadow:0 12px 32px -10px rgba(2,6,44,.35),0 0 0 1px color-mix(in srgb,var(--line) 60%,transparent)}
+  nav.tabs a{position:relative;z-index:1;transition:color .25s}
+  nav.tabs a[aria-current="page"] svg{transform:translateY(-1px)}
+  .wrap{padding-bottom:calc(110px + env(safe-area-inset-bottom,0px))}
+  .as-fab,#asFab{bottom:calc(92px + env(safe-area-inset-bottom,0px))!important}
+}
+.tabpill{position:absolute;top:6px;bottom:6px;left:0;width:0;border-radius:18px;background:color-mix(in srgb,var(--accent) 11%,transparent);transition:transform .35s cubic-bezier(.3,.8,.25,1),width .35s cubic-bezier(.3,.8,.25,1);z-index:0;pointer-events:none}
+@media (min-width:761px){nav.tabs{position:relative}.tabpill{display:none}}
+.field .tick,.tick{text-transform:none;letter-spacing:0;font-size:14px}.tick span{font-weight:600;padding:8px 14px}
+.tick input:checked+span{box-shadow:0 4px 12px -4px color-mix(in srgb,var(--accent) 60%,transparent)}
+@media (prefers-reduced-motion: reduce){section[data-view]:not([hidden]){animation:none}.tabpill{transition:none}html{scroll-behavior:auto}}
 </style>
 
 <div class="wrap">
@@ -332,7 +403,7 @@ hr{border:0;border-top:1px solid var(--line);margin:2px 0}
     <div id="biensWrap" hidden><div class="lbl">Mes biens <span class="badge" id="biensCount"></span></div><div class="biens" id="biens"></div><p class="note">Touchez un bien pour le reprendre là où vous l'aviez laissé. La liste reste sur ce téléphone ; pour un autre téléphone, utilisez « Sauvegarder ».</p></div>
   </section>
 
-  <nav class="tabs" aria-label="Outils">
+  <nav class="tabs" aria-label="Outils"><span class="tabpill" aria-hidden="true"></span>
     <a href="#bien"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 11l8-7 8 7v9H4z"/><path d="M9 20v-6h6v6"/></svg><span>Bien</span></a>
     <a href="#photos"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 8h3l2-3h6l2 3h3v11H4z"/><circle cx="12" cy="13" r="3.5"/></svg><span>Photos</span></a>
     <a href="#visite"><svg viewBox="0 0 24 24" aria-hidden="true"><ellipse cx="12" cy="12" rx="9" ry="4"/><path d="M12 3v18M3 12h18"/></svg><span>Visite 360°</span></a>
@@ -352,10 +423,12 @@ hr{border:0;border-top:1px solid var(--line);margin:2px 0}
           <button class="primary" id="fDictGo">Remplir la fiche avec ma description</button>
           <p class="status" id="fDictStatus"></p>
         </div>
+        <div class="fsec"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 11l8-7 8 7v9H4z"/><path d="M9 20v-6h6v6"/></svg><span>Le bien</span></div>
         <div class="row2">
           <div class="field"><label for="fType">Type de bien</label><select id="fType" class="txt"><option>Maison</option><option>Appartement</option><option>Terrain</option><option>Immeuble</option><option>Autre</option></select></div>
           <div class="field"><label for="fTrans">Transaction</label><select id="fTrans" class="txt"><option>Vente</option><option>Location</option><option>Viager</option></select></div>
         </div>
+        <div class="fsec"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21s-7-6.2-7-11.5a7 7 0 0 1 14 0C19 14.8 12 21 12 21z"/><circle cx="12" cy="9.5" r="2.5"/></svg><span>Adresse</span></div>
         <div class="field addr"><label for="fAddr">Adresse</label>
           <input type="text" id="fAddr" autocomplete="off" placeholder="Tapez le numéro et la rue…" role="combobox" aria-autocomplete="list" aria-expanded="false" aria-controls="fAddrList">
           <ul class="sugg" id="fAddrList" role="listbox" hidden></ul>
@@ -364,6 +437,7 @@ hr{border:0;border-top:1px solid var(--line);margin:2px 0}
           <div class="field"><label for="fCP">Code postal</label><input type="text" id="fCP" inputmode="numeric" maxlength="5"></div>
           <div class="field"><label for="fCity">Ville</label><input type="text" id="fCity"></div>
         </div>
+        <div class="fsec"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="7" width="18" height="10" rx="2"/><path d="M7 7v4M11 7v3M15 7v4M19 7v3"/></svg><span>Surfaces et pièces</span></div>
         <div class="row3">
           <div class="field"><label for="fSurf">Surface (m²)</label><input type="number" id="fSurf" inputmode="decimal" min="0"></div>
           <div class="field"><label for="fLand">Terrain (m²)</label><input type="number" id="fLand" inputmode="decimal" min="0"></div>
@@ -375,6 +449,7 @@ hr{border:0;border-top:1px solid var(--line);margin:2px 0}
           <div class="field"><label for="fHeat">Chauffage</label><select id="fHeat" class="txt"><option value="">—</option><option>Gaz</option><option>Électrique</option><option>Pompe à chaleur</option><option>Fioul</option><option>Bois / granulés</option><option>Collectif</option><option>Autre</option></select></div>
           <div class="field"><label for="fExpo">Exposition</label><select id="fExpo" class="txt"><option value="">—</option><option>Nord</option><option>Sud</option><option>Est</option><option>Ouest</option><option>Sud-Est</option><option>Sud-Ouest</option><option>Nord-Est</option><option>Nord-Ouest</option></select></div>
         </div>
+        <div class="fsec"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M17 6.5A7 7 0 1 0 17 17.5"/><path d="M4 10h9M4 14h9"/></svg><span>Prix et charges</span></div>
         <div class="row2">
           <div class="field"><label for="fPrice">Prix (€)</label><input type="number" id="fPrice" inputmode="numeric" min="0"></div>
           <div class="field"><label for="fFees">Honoraires</label><select id="fFees" class="txt"><option>honoraires inclus</option><option>honoraires charge vendeur</option><option>hors honoraires</option><option>charges comprises</option><option>hors charges</option></select></div>
@@ -383,12 +458,16 @@ hr{border:0;border-top:1px solid var(--line);margin:2px 0}
           <div class="field"><label for="fTax">Taxe foncière (€/an)</label><input type="number" id="fTax" inputmode="numeric" min="0"></div>
           <div class="field"><label for="fCopro">Charges copro (€/an)</label><input type="number" id="fCopro" inputmode="numeric" min="0"></div>
         </div>
+        <div class="fsec"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 19c0-8 5-14 15-14 0 10-6 15-14 15"/><path d="M5 19l7-7"/></svg><span>Performance énergétique</span></div>
         <div class="row2">
           <div class="field"><span class="lbl">DPE</span><div class="dpe mini" id="fDpe"></div></div>
           <div class="field"><span class="lbl">GES</span><div class="dpe mini" id="fGes"></div></div>
         </div>
-        <div class="field"><span class="lbl">Équipements</span><div class="ticks" id="fTicks"><label class="tick"><input type="checkbox" value="Jardin"><span>Jardin</span></label><label class="tick"><input type="checkbox" value="Terrasse"><span>Terrasse</span></label><label class="tick"><input type="checkbox" value="Balcon"><span>Balcon</span></label><label class="tick"><input type="checkbox" value="Garage"><span>Garage</span></label><label class="tick"><input type="checkbox" value="Parking"><span>Parking</span></label><label class="tick"><input type="checkbox" value="Cave"><span>Cave</span></label><label class="tick"><input type="checkbox" value="Piscine"><span>Piscine</span></label><label class="tick"><input type="checkbox" value="Ascenseur"><span>Ascenseur</span></label><label class="tick"><input type="checkbox" value="Cuisine équipée"><span>Cuisine équipée</span></label><label class="tick"><input type="checkbox" value="Double vitrage"><span>Double vitrage</span></label><label class="tick"><input type="checkbox" value="Plain-pied"><span>Plain-pied</span></label><label class="tick"><input type="checkbox" value="Vue dégagée"><span>Vue dégagée</span></label></div></div>
-        <div class="field"><label for="fDesc">Description</label><textarea id="fDesc" rows="5" placeholder="Points forts, quartier, travaux…"></textarea></div>
+        <div class="fsec"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3l2.6 5.6 6 .7-4.5 4.1 1.2 6L12 16.4 6.7 19.4l1.2-6L3.4 9.3l6-.7z"/></svg><span>Équipements</span></div>
+        <div class="field"><div class="ticks" id="fTicks"><label class="tick"><input type="checkbox" value="Jardin"><span>Jardin</span></label><label class="tick"><input type="checkbox" value="Terrasse"><span>Terrasse</span></label><label class="tick"><input type="checkbox" value="Balcon"><span>Balcon</span></label><label class="tick"><input type="checkbox" value="Garage"><span>Garage</span></label><label class="tick"><input type="checkbox" value="Parking"><span>Parking</span></label><label class="tick"><input type="checkbox" value="Cave"><span>Cave</span></label><label class="tick"><input type="checkbox" value="Piscine"><span>Piscine</span></label><label class="tick"><input type="checkbox" value="Ascenseur"><span>Ascenseur</span></label><label class="tick"><input type="checkbox" value="Cuisine équipée"><span>Cuisine équipée</span></label><label class="tick"><input type="checkbox" value="Double vitrage"><span>Double vitrage</span></label><label class="tick"><input type="checkbox" value="Plain-pied"><span>Plain-pied</span></label><label class="tick"><input type="checkbox" value="Vue dégagée"><span>Vue dégagée</span></label></div></div>
+        <div class="fsec"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 6h14M5 10h14M5 14h10M5 18h7"/></svg><span>Description</span></div>
+        <div class="field"><label for="fDesc" class="sr">Description</label><textarea id="fDesc" rows="5" placeholder="Points forts, quartier, travaux…"></textarea></div>
+        <div class="fsec"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 3h7l5 5v13H7z"/><path d="M14 3v5h5M10 13h6M10 17h6"/></svg><span>Mandat</span></div>
         <div class="row2">
           <div class="field"><label for="fMandat">N° de mandat</label><input type="text" id="fMandat"></div>
           <div class="field"><label for="fOwner">Propriétaire (privé)</label><input type="text" id="fOwner" placeholder="Nom, téléphone"></div>
@@ -399,23 +478,22 @@ hr{border:0;border-top:1px solid var(--line);margin:2px 0}
         <span class="lbl">Utiliser la fiche</span>
         <button class="primary" id="fApply">Remplir la vidéo, le plan et le dossier</button>
         <div class="applied" id="fApplied" hidden></div>
-        <p class="note">Recopie la fiche dans les autres onglets : titre, détails, prix, classe énergie et description de la vidéo, nom du plan et nom du dossier. Rien ne s'affiche ici : le résultat se voit dans les onglets Vidéo et Plan.</p>
+        <p class="note">Recopie la fiche dans la vidéo, le plan et le dossier : rien à retaper.</p>
         <hr>
-        <span class="lbl">Estimer le bien</span>
-        <button id="fAvis">Créer un avis de valeur</button>
-        <p class="note">Recherche les ventes récentes autour du bien (données publiques de l'État), calcule une fourchette de prix et prépare un avis de valeur en PDF à remettre au vendeur.</p>
-        <hr>
-        <span class="lbl">Diffuser le bien</span>
-        <button class="primary" id="fVitrine">Créer la fiche vitrine (PDF)</button>
-        <button id="fPoster">Créer une affiche (À vendre, Vendu…)</button>
-        <button id="fKit">Partager le kit annonce</button>
+        <span class="lbl">Estimer et diffuser</span>
+        <div class="tiles">
+          <button class="tile" id="fAvis" type="button"><i class="ti t-gold"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 19h16"/><path d="M7 16v-5M12 16V7M17 16v-8"/></svg></i><b>Avis de valeur</b><small>Ventes du secteur, PDF vendeur</small></button>
+          <button class="tile" id="fVitrine" type="button"><i class="ti"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 3h7l5 5v13H7z"/><path d="M14 3v5h5"/><path d="M9.5 15.5h5M9.5 12.5h5"/></svg></i><b>Fiche vitrine</b><small>PDF prêt à afficher</small></button>
+          <button class="tile" id="fPoster" type="button"><i class="ti"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="5" y="3" width="14" height="18" rx="2"/><path d="M5 15h14M9 3l10 10"/></svg></i><b>Affiche</b><small>À vendre, Vendu…</small></button>
+          <button class="tile" id="fKit" type="button"><i class="ti t-green"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 15V4M8 8l4-4 4 4"/><path d="M5 12v7h14v-7"/></svg></i><b>Kit annonce</b><small>Tout envoyer d'un coup</small></button>
+        </div>
         <label class="toggle" for="fCalcShow"><span>Afficher les calculs pour l'acquéreur sur la fiche vitrine</span><input type="checkbox" id="fCalcShow"></label>
         <div class="calcbox" id="fCalcBox" hidden>
           <div class="row2"><div class="field"><label for="fCalcKind">Logement</label><select id="fCalcKind" class="txt"><option value="ancien">Ancien (frais ≈ 8 %)</option><option value="neuf">Neuf (frais ≈ 2,5 %)</option></select></div><div class="field"><label for="fCalcApport">Apport (€)</label><input type="number" id="fCalcApport" inputmode="numeric" min="0" placeholder="0"></div></div>
           <div class="row2"><div class="field"><label for="fCalcTaux">Taux du crédit (%)</label><input type="text" id="fCalcTaux" inputmode="decimal" placeholder="3,5"></div><div class="field"><label for="fCalcDuree">Durée (ans)</label><select id="fCalcDuree" class="txt"><option>15</option><option selected>20</option><option>25</option></select></div></div>
           <p class="note" id="fCalcOut"></p>
         </div>
-        <p class="note">Le kit regroupe les photos du reportage, le texte de l'annonce, la fiche vitrine, le plan et la dernière vidéo créée.</p>
+        <p class="note">Le kit envoie photos, texte de l'annonce, fiche vitrine, plan et dernière vidéo, par mail ou WhatsApp.</p>
         <p class="status" id="fKitStatus"></p>
         <hr>
         <span class="lbl">Texte de l'annonce</span>
@@ -2010,9 +2088,13 @@ async function save3d() {
 
 /* ============ Sauvegarde sur ce téléphone ============ */
 let saveT = 0;
-function save() { clearTimeout(saveT); saveT = setTimeout(() => { try {
+function saveNow() { clearTimeout(saveT); saveT = 0; try {
   localStorage.setItem("studio-habitat", JSON.stringify({ v: { t: $("#vTitle").value, s: $("#vSub").value, p: $("#vPrice").value, a: $("#vAgent").value, dpe: V.dpe, d: $("#vDesc").value, m: musicIdx(), n: narr() },
-    plan: PL.isSample ? null : { title: $("#planTitle").value, rooms: PL.rooms } })); } catch (_) {} }, 400); }
+    plan: PL.isSample ? null : { title: $("#planTitle").value, rooms: PL.rooms } }));
+  localStorage.setItem("studio-habitat-fiche", JSON.stringify(ficheData())); } catch (_) {} }
+function save() { clearTimeout(saveT); saveT = setTimeout(saveNow, 400); }
+// enregistre tout de suite quand l'application passe en arrière-plan ou se ferme
+window.addEventListener("pagehide", saveNow); document.addEventListener("visibilitychange", () => { if (document.hidden) saveNow(); });
 function restore() { try { const d = JSON.parse(localStorage.getItem("studio-habitat") || "null"); if (!d) return;
   if (d.v) { $("#vTitle").value = d.v.t; $("#vSub").value = d.v.s; $("#vPrice").value = d.v.p; $("#vAgent").value = /votre nom · 06 00 00 00 00/i.test(d.v.a || "") ? "" : (d.v.a || ""); V.dpe = d.v.dpe || "C"; $("#vDesc").value = d.v.d || ""; if ("m" in d.v) $("#vMusic").value = String(d.v.m === true ? 0 : d.v.m === false ? -1 : d.v.m); $("#vNarr").value = d.v.n === true ? "mic" : (typeof d.v.n === "string" ? d.v.n : ""); narrNote(); [...$("#dpe").children].forEach(o => o.setAttribute("aria-pressed", o.textContent === V.dpe)); }
   if (d.plan && d.plan.rooms && d.plan.rooms.length) { PL.rooms = d.plan.rooms; PL.isSample = false; PL.sel = 0; $("#planTitle").value = d.plan.title || ""; $("#planEx").hidden = true; }
@@ -2309,7 +2391,7 @@ async function renderBiens() {
   const cur = bienKey(dosName()); box.innerHTML = "";
   all.forEach(b => { const el = document.createElement("div"); el.className = "bien" + (b.key === cur ? " cur" : "");
     el.innerHTML = `<button type="button" class="bopen">${b.thumb ? `<img src="${b.thumb}" alt="">` : `<span class="noimg">${b.name.slice(0, 1).toUpperCase()}</span>`}<b>${b.name.replace(/</g, "&lt;")}</b><small>${new Date(b.saved).toLocaleDateString("fr-FR")}${b.price ? " · " + b.price : ""}</small></button><button type="button" class="bdel" aria-label="Retirer ${b.name.replace(/"/g, "")} de la liste">✕</button>`;
-    el.querySelector(".bopen").onclick = async () => { if (b.key === cur) { dosMsg("Ce bien est déjà ouvert."); return; } dosMsg("Ouverture…"); await storeBien(); await applyDossier((await BIENS.tx("readonly", st => st.get(b.key))).dossier); renderBiens(); };
+    el.querySelector(".bopen").onclick = async () => { if (b.key === bienKey(dosName()) && hasContent()) { dosMsg("Ce bien est déjà ouvert."); return; } dosMsg("Ouverture…"); await storeBien(); await applyDossier((await BIENS.tx("readonly", st => st.get(b.key))).dossier); renderBiens(); };
     let armed = 0; el.querySelector(".bdel").onclick = async e => { const bt = e.currentTarget; if (Date.now() - armed > 3000) { armed = Date.now(); bt.textContent = "Retirer ?"; bt.classList.add("armed"); setTimeout(() => { bt.textContent = "✕"; bt.classList.remove("armed"); }, 3000); return; } await BIENS.del(b.key); renderBiens(); dosMsg(`« ${b.name} » retiré de la liste (vos fichiers sauvegardés ne sont pas touchés).`); };
     box.appendChild(el); });
 }
@@ -2398,7 +2480,7 @@ const DOS_VERSION = 1;
 function dosName() { return ($("#dosName").value || $("#planTitle").value || "Mon bien").trim().slice(0, 60); }
 function safeName(n) { return n.replace(/[\\/:*?"<>|]+/g, " ").replace(/\s+/g, " ").trim() || "Mon bien"; }
 function dosMsg(t, err) { const e = $("#dosStatus"); e.className = "status" + (err ? " err" : ""); e.textContent = t; }
-$("#dosName").addEventListener("input", () => { try { localStorage.setItem("studio-habitat-dossier", $("#dosName").value); } catch (_) {} });
+$("#dosName").addEventListener("input", () => { try { localStorage.setItem("studio-habitat-dossier", $("#dosName").value); } catch (_) {} clearTimeout(window._bnT); window._bnT = setTimeout(() => renderBiens(), 500); });
 try { $("#dosName").value = localStorage.getItem("studio-habitat-dossier") || ""; } catch (_) {}
 function buildDossier() {
   const photos = P.shoot.map(p => ({ name: p.name, data: p.canvas.toDataURL("image/jpeg", .85) }));
@@ -2473,7 +2555,7 @@ $("#dosNew").onclick = async () => {
   ficheLoad(null); try { localStorage.removeItem("studio-habitat-fiche"); } catch (_) {}
   if (T.viewer && !T.isSample) { T.scenes.length = 0; T.isSample = true; initSampleTour(); $("#tourEx").hidden = false; T.viewer.go(T.start); renderScenes(); }
   $("#dosName").value = ""; try { localStorage.setItem("studio-habitat-dossier", ""); } catch (_) {}
-  save(); dosMsg("Nouveau dossier prêt.");
+  save(); dosMsg("Nouveau dossier prêt."); renderBiens();
 };
 
 /* ============ Profil de l'agent (saisi une fois, repris partout) ============ */
@@ -3159,7 +3241,8 @@ function show() {
   if (v === "video") vStill(); else if (V.playing) { V.playing = false; $("#vPlay").textContent = "Aperçu"; }
   if (v === "plan") requestAnimationFrame(() => renderPlan());
 }
-window.addEventListener("hashchange", show);
+function moveTabPill() { const a = document.querySelector('nav.tabs a[aria-current="page"]'), p = document.querySelector(".tabpill"); if (!a || !p) return; const n = a.parentElement.getBoundingClientRect(), r = a.getBoundingClientRect(); p.style.width = r.width + "px"; p.style.transform = `translateX(${r.left - n.left}px)`; }
+window.addEventListener("hashchange", () => { show(); requestAnimationFrame(moveTabPill); }); window.addEventListener("resize", moveTabPill); setTimeout(moveTabPill, 60);
 window.addEventListener("resize", () => { if (!$("#v-plan").hidden) renderPlan(); });
 
 (async function init() {
