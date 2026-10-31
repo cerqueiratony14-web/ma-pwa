@@ -2162,6 +2162,10 @@ const BD_SCREENS = {
   folder: `<path d="M-30 -16 h22 l6 7 h32 v34 h-60z" fill="${BD_GOLD}" stroke="${BD_INK}" stroke-width="2" stroke-linejoin="round"/><rect x="-30" y="32" width="60" height="10" rx="3" fill="#EDEEF7"/><rect x="-26" y="34" width="34" height="6" rx="3" fill="#8D92B5"/>`,
   cloud: `<path d="M-20 14 a12 12 0 0 1 2 -24 a16 16 0 0 1 30 -2 a12 12 0 0 1 8 26z" fill="#E3EEFB" stroke="${BD_BLUE}" stroke-width="3"/><path d="M0 -2 v14 M-6 6 l6 6 l6 -6" stroke="${BD_BLUE}" stroke-width="3" fill="none" stroke-linecap="round"/><text x="0" y="36" text-anchor="middle" font-size="11" font-weight="700" fill="${BD_INK}">iCloud Drive</text>`,
   phones: `<rect x="-30" y="-24" width="24" height="44" rx="5" fill="${BD_BLUE}"/><rect x="6" y="-24" width="24" height="44" rx="5" fill="${BD_BLUE}"/><path d="M-4 -2 h10 M2 -6 l4 4 l-4 4" stroke="${BD_GOLD}" stroke-width="3" fill="none" stroke-linecap="round"/><rect x="-24" y="-16" width="12" height="9" fill="${BD_GOLD}"/><rect x="12" y="-16" width="12" height="9" fill="${BD_GOLD}"/>`,
+  music: `<circle cx="-12" cy="20" r="9" fill="${BD_BLUE}"/><circle cx="16" cy="12" r="9" fill="${BD_BLUE}"/><path d="M-3 20 v-40 l28 -8 v40" stroke="${BD_BLUE}" stroke-width="5" fill="none" stroke-linejoin="round"/><path d="M-3 -12 l28 -8" stroke="${BD_GOLD}" stroke-width="6"/>`,
+  voice: `<circle cx="-12" cy="-10" r="11" fill="${BD_BLUE}"/><path d="M-30 26 c0 -16 8 -24 18 -24 s18 8 18 24z" fill="${BD_BLUE}"/><path d="M12 -18 q8 8 0 16 M18 -24 q14 14 0 28 M24 -30 q20 20 0 40" stroke="${BD_GOLD}" stroke-width="3.5" fill="none" stroke-linecap="round"/><text x="0" y="44" text-anchor="middle" font-size="11" font-weight="700" fill="${BD_INK}">2 ♀ · 2 ♂</text>`,
+  mic: `<rect x="-10" y="-30" width="20" height="36" rx="10" fill="${BD_BLUE}"/><path d="M-18 -2 a18 18 0 0 0 36 0 M0 16 v12 M-10 28 h20" stroke="${BD_BLUE}" stroke-width="4" fill="none" stroke-linecap="round"/><path d="M24 -20 q6 6 0 12 M30 -26 q12 12 0 24" stroke="${BD_GOLD}" stroke-width="3" fill="none" stroke-linecap="round"/>`,
+  clip: `<rect x="-30" y="-24" width="60" height="44" rx="6" fill="${BD_INK}"/>${[-24, -12, 0, 12, 24].map(x => `<rect x="${x - 3}" y="-21" width="6" height="5" rx="1" fill="#fff"/><rect x="${x - 3}" y="12" width="6" height="5" rx="1" fill="#fff"/>`).join("")}<path d="M-6 -9 v18 l16 -9z" fill="${BD_GOLD}"/><circle cx="0" cy="34" r="8" fill="#D7221F"/>`,
   plus: `<rect x="-26" y="-26" width="52" height="52" rx="12" fill="#EDEEF7" stroke="${BD_BLUE}" stroke-width="3"/><path d="M0 -14 v28 M-14 0 h28" stroke="${BD_BLUE}" stroke-width="5" stroke-linecap="round"/>`
 };
 function bdWrap(t, max) { const w = t.split(" "), L = [""]; w.forEach(x => { if ((L[L.length - 1] + " " + x).trim().length > max) L.push(x); else L[L.length - 1] = (L[L.length - 1] + " " + x).trim(); }); return L; }
@@ -2194,19 +2198,23 @@ const BD = {
     ["sun", "Fusion HDR", [0, 24], "Pièce avec une fenêtre très lumineuse : prenez la même vue trois fois (sombre, normale, claire) sans bouger le téléphone, puis sélectionnez les trois photos."],
     ["sky", "Ciel bleu et floutage", [-21, 39], "Façade : cochez « Ciel bleu ». Photo de famille, visage ou plaque : « Flouter une zone », puis touchez l'endroit concerné."],
     ["check", "Enregistrer", [0, 29], "« Ajouter au reportage » pour la vidéo, ou « Enregistrer la photo » puis « Enregistrer l'image »."]] },
-  visite: { title: "Créer une visite 360°", steps: [
+  visite: { title: "Créer une visite 360°", ver: "3", steps: [
     ["pano", "Prise de vue 360°", [24, -6], "Au centre de la pièce, touchez « Prise de vue 360° », autorisez la caméra et les mouvements, puis « Commencer »."],
     ["camera", "Tourner sur place", [0, 4], "Tournez lentement vers la droite, téléphone droit : quand le point jaune entre dans le cercle, la photo se prend seule (12 photos)."],
     ["list", "Panorama assemblé", [22, 38], "L'application assemble le tour complet et ajoute la pièce. Renommez-la. Une photo de caméra 360 s'ajoute avec « Ajouter une photo 360 existante »."],
+    ["check", "Les bons réflexes", [22, -18], "Tournez sur place sans avancer, téléphone toujours droit et à la même hauteur. Évitez les personnes qui bougent. Si l'objectif 0,5× est disponible, il est choisi tout seul : sol et plafond sont mieux visibles."],
     ["arrow", "Relier les pièces", [0, -2], "« Placer une flèche » : choisissez la pièce de destination, puis touchez la porte sur la photo."],
     ["share", "Exporter la visite", [0, 36], "« Exporter la visite » puis « Enregistrer » : transmettez le fichier à l'acquéreur ou joignez-le à l'annonce."]] },
-  video: { title: "Monter la vidéo", steps: [
-    ["camera", "Sélectionner les photos", [0, 4], "Dans l'onglet « Photos », ajoutez les meilleures photos au reportage."],
-    ["video", "Choisir le format", [0, 17], "Si la fiche est remplie, les textes sont déjà en place. Choisissez Vertical (réseaux sociaux) ou Horizontal (annonce)."],
-    ["text", "Description et clips", [18, 38], "La description de la fiche défile sur les photos : modifiez-la si besoin. « Filmer ou ajouter un clip » ajoute de courtes vidéos au montage."],
-    ["sun", "Musique et narrateur", [0, 24], "Choisissez une des 10 musiques et un narrateur (2 voix de femme, 2 voix d'homme, ou votre voix au micro). « Écouter » pour les essayer."],
-    ["hourglass", "Créer la vidéo", [0, 0], "Touchez « Créer la vidéo » et laissez l'écran allumé pendant la création. La vidéo commence et finit avec le logo du réseau et vos coordonnées."],
-    ["share", "Enregistrer et publier", [0, 36], "« Enregistrer » puis « Enregistrer la vidéo » : elle est ajoutée à vos Photos."]] },
+  video: { title: "Monter la vidéo", ver: "3", steps: [
+    ["camera", "Sélectionner les photos", [0, 4], "Dans l'onglet « Photos », ajoutez les meilleures photos au reportage. Elles forment le montage, dans l'ordre."],
+    ["clip", "Filmer des clips", [0, 30], "Onglet « Vidéo », touchez « Filmer ou ajouter un clip » : filmez quelques secondes (12 s maximum par clip). Les clips s'enchaînent après les photos."],
+    ["text", "Le texte qui défile", [18, 38], "Touchez le bouton de la fiche du bien : sa description est reprise dans « Description qui défile sur les photos ». Modifiez-la si besoin : une phrase par photo, elle s'affiche mot après mot."],
+    ["music", "Choisir la musique", [22, 30], "Dans « Musique de fond », choisissez un des 10 morceaux (piano, jazz, pop, électro…) et touchez « ▶ Écouter » pour l'essayer. « Sans musique » pour l'enlever."],
+    ["voice", "Choisir le narrateur", [26, 4], "Dans « Narrateur », choisissez Voix femme 1 ou 2, Voix homme 1 ou 2, puis « ▶ Écouter ». La voix lit le titre, le prix, la description et vos coordonnées. Première fois : la voix se télécharge une seule fois, en Wi-Fi de préférence."],
+    ["mic", "Ou votre propre voix", [0, 6], "Choisissez « Ma voix (micro) » et autorisez le micro. Pendant la création, lisez à voix haute le texte qui s'affiche : votre voix est enregistrée, la musique baisse toute seule."],
+    ["video", "Format et contact", [0, 17], "Choisissez Vertical (réseaux sociaux) ou Horizontal (annonce) et vérifiez « Contact » : la vidéo s'ouvre sur le logo du réseau et se termine par le logo et vos coordonnées."],
+    ["hourglass", "Créer la vidéo", [0, 0], "Touchez « Aperçu » pour vérifier, puis « Créer la vidéo ». Laissez l'écran allumé et l'application ouverte pendant la création."],
+    ["share", "Enregistrer et publier", [0, 36], "« Enregistrer » puis « Enregistrer la vidéo » : elle arrive dans vos Photos, prête pour Instagram, Facebook, WhatsApp ou l'annonce."]] },
   plan: { title: "Dessiner le plan", steps: [
     ["plan", "Ajouter les pièces", [18, 20], "Choisissez le type de pièce dans la liste, puis touchez « Ajouter »."],
     ["ruler", "Saisir les cotes", [0, 0], "Saisissez largeur et longueur en mètres. Sur le dessin, faites glisser une pièce pour la placer et tirez le coin orange pour l'agrandir."],
@@ -2226,7 +2234,7 @@ function openBD(key) {
     <div class="bd-foot"><div class="bd-dots">${b.steps.map((_, k) => `<i data-k="${k}"></i>`).join("")}</div><button class="primary bd-next">Suivant</button></div></div>`;
   document.body.appendChild(ov);
   const track = ov.querySelector(".bd-track"), dots = [...ov.querySelectorAll(".bd-dots i")], next = ov.querySelector(".bd-next");
-  const close = () => { ov.remove(); try { localStorage.setItem("bd-" + key, "1"); } catch (_) {} };
+  const close = () => { ov.remove(); try { localStorage.setItem("bd-" + key + (b.ver || ""), "1"); } catch (_) {} };
   const sync = () => { i = Math.round(track.scrollLeft / track.clientWidth); dots.forEach((d, k) => d.classList.toggle("on", k === i)); next.textContent = i >= b.steps.length - 1 ? "J'ai compris" : "Suivant"; };
   track.addEventListener("scroll", () => requestAnimationFrame(sync));
   next.onclick = () => { if (i >= b.steps.length - 1) return close(); track.scrollTo({ left: (i + 1) * track.clientWidth, behavior: matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth" }); };
@@ -2241,7 +2249,7 @@ function openBD(key) {
   ["bien", "photos", "visite", "video", "plan"].forEach(k => { const h = document.querySelector(`#v-${k} h2`); const wrap = document.createElement("div"); wrap.className = "h2row"; h.before(wrap); wrap.appendChild(h); wrap.appendChild(help(k)); });
   const dl = document.querySelector(".dossier .field label"); const row = document.createElement("div"); row.className = "h2row small"; dl.before(row); row.appendChild(dl); row.appendChild(help("dossier"));
 })();
-function bdFirstTime(v) { let seen = false; try { seen = localStorage.getItem("bd-" + v) === "1"; } catch (_) { seen = true; } if (!seen && BD[v]) setTimeout(() => { if (!document.querySelector(".bd-ov")) openBD(v); }, 500); }
+function bdFirstTime(v) { let seen = false; try { seen = localStorage.getItem("bd-" + v + ((BD[v] && BD[v].ver) || "")) === "1"; } catch (_) { seen = true; } if (!seen && BD[v]) setTimeout(() => { if (!document.querySelector(".bd-ov")) openBD(v); }, 500); }
 
 /* ============ Assistant (dictée intelligente + questions sur l'application) ============ */
 // Tout fonctionne sur le téléphone : aucune IA payante, aucun envoi de données.
