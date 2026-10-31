@@ -482,6 +482,14 @@ label .tipbtn,.lbl .tipbtn{width:24px;height:24px;min-height:24px;font-size:13px
 .bnum{flex:none;font-size:12.5px;font-weight:700;width:58px}.bthumbs{display:flex;gap:4px;overflow:hidden}.bthumbs img{width:54px;height:40px;object-fit:cover;border-radius:6px}
 .bwarn{font-size:11.5px;color:var(--warn)}
 .bbar{height:6px;border-radius:3px;background:var(--sunk);overflow:hidden}.bbar i{display:block;height:100%;width:0;background:var(--accent);transition:width .3s}
+.vidcard{background:var(--surface);border-radius:var(--radius);box-shadow:var(--shadow);padding:12px;margin:0 0 14px;display:flex;flex-direction:column;gap:8px}
+.vidhead{display:grid;grid-template-columns:1fr auto;column-gap:10px;align-items:center}.vidhead b{font-family:var(--display);font-size:16px}.vidhead .note{grid-column:1;grid-row:2;margin:0}.vidhead .linkbtn{grid-column:2;grid-row:1/3;font-size:14px}
+.vidcard video{width:100%;aspect-ratio:16/9;border-radius:12px;background:#02062C;display:block}
+.vidchaps{display:flex;gap:6px;overflow-x:auto;scrollbar-width:none;padding-bottom:2px}.vidchaps::-webkit-scrollbar{display:none}
+.vidchaps button{flex:none;min-height:34px;padding:4px 11px 4px 5px;border-radius:99px;font-size:13px;gap:6px;white-space:nowrap}
+.vidchaps button span{width:22px;height:22px;border-radius:50%;display:grid;place-items:center;background:var(--sunk);font-size:11.5px;font-weight:700}
+.vidchaps button.on{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}.vidchaps button.on span{background:var(--accent-ink);color:var(--accent)}
+.vidshow{margin:0 0 14px;min-height:40px;font-size:14px}
 </style>
 
 <div class="wrap">
@@ -516,6 +524,10 @@ label .tipbtn,.lbl .tipbtn{width:24px;height:24px;min-height:24px;font-size:13px
   <!-- PHOTOS -->
   <section id="v-accueil" data-view="accueil" hidden>
     <div class="hello"><div><h2 id="helloT">Bonjour</h2><p class="lede" id="helloS">Que voulez-vous préparer aujourd'hui ?</p></div></div>
+    <div class="vidcard" id="vidHome"><div class="vidhead"><b>Découvrir l'application en vidéo</b><span class="note">6 min · avec le son ou sous-titrée</span><button type="button" class="linkbtn" id="vidHide">Masquer</button></div>
+      <video id="vidPlayer" controls playsinline preload="none" poster="video/presentation.jpg" src="video/presentation.mp4"></video>
+      <div class="vidchaps" id="vidChaps"></div></div>
+    <button type="button" class="ghost vidshow" id="vidShow" hidden>▶ Vidéo de présentation (6 min)</button>
   <div class="dossier" aria-label="Dossier du bien">
     <div class="field"><label for="dosName">Dossier du bien</label><input type="text" id="dosName" placeholder="Ex. Maison Touques, T3 Deauville" autocomplete="off"></div>
     <div class="dosbtns">
@@ -3709,6 +3721,7 @@ const KB = [
   { k: "photos donnees ou sont stockees confidentialite securite serveur prive vie privee", q: "Où sont stockées mes photos ?", a: "Uniquement sur votre téléphone. Rien n'est envoyé sur un serveur. Pour les garder ou les retrouver sur un autre appareil, utilisez « Sauvegarder » dans le dossier du bien." },
   { k: "prendre photo appareil photo camera galerie choisir", q: "Comment prendre une photo ?", a: "Onglet Photos, touchez « Prendre ou choisir une photo ». Tenez le téléphone droit, à hauteur de poitrine, de préférence dans un angle de la pièce.", tab: "photos", guide: "photos" },
   { k: "photo sombre trop sombre lumiere eclairer claire retouche automatique", q: "Ma photo est trop sombre, que faire ?", a: "La retouche est automatique. Si c'est encore trop sombre, montez le curseur « Luminosité ». Allumez aussi toutes les lumières et ouvrez les volets avant la photo.", tab: "photos" },
+  { k: "video presentation tutoriel tuto decouvrir apprendre formation demarrer debuter", q: "Y a-t-il une vidéo pour apprendre à utiliser l'application ?", a: "Oui : sur la page d'accueil, « Découvrir l'application en vidéo » (6 minutes, avec le son ou sous-titrée). Les boutons sous la vidéo permettent d'aller directement à un chapitre : photos, visite 360°, vidéo, plan, avis de valeur… Si vous l'avez masquée, touchez « Vidéo de présentation » sur l'accueil.", tab: "accueil" },
   { k: "lot lots plusieurs photos seance toutes d un coup import rafale serie gagner du temps", q: "Comment traiter toutes les photos d'une visite d'un coup ?", a: "Onglet Photos, touchez « Toute la séance d'un coup ». Choisissez « 1 photo par pièce » (chaque photo est retouchée) ou « Plusieurs expositions (HDR) » (les photos d'une même pièce sont regroupées par leur heure de prise de vue et fusionnées). Sélectionnez toutes les photos, vérifiez les regroupements, puis « Ajouter au reportage ».", tab: "photos", guide: "photos" },
   { k: "fusion hdr qualite floue double contour bouge trepied conseils reussir", q: "Comment réussir une fusion HDR de haute qualité ?", a: "Calez le téléphone (meuble, mur, trépied) : il ne doit pas bouger entre les 3 photos. Allumez les lumières, ouvrez les volets, personne dans le cadre, même zoom pour les 3 photos. Photo 1 normale ; photo 2 plus sombre (touchez la fenêtre et baissez le petit soleil jusqu'à voir dehors) ; photo 3 plus claire (touchez un coin sombre et montez le soleil). Le guide s'affiche pas à pas sous le bouton en mode « Fusion HDR », et vos photos sont gardées même si le téléphone recharge l'application.", tab: "photos", guide: "photos" },
   { k: "fenetre brulee blanche contre jour hdr fusion expositions", q: "La fenêtre est toute blanche, comment faire ?", a: "Touchez « Fusion HDR », puis prenez la même vue 2 ou 3 fois sans bouger le téléphone : une sombre, une normale, une claire. Pour changer la luminosité sur iPhone, touchez l'écran puis faites glisser le petit soleil. Les photos s'ajoutent une par une ; la fusion se lance à la 3e, ou avec « Fusionner ».", tab: "photos", guide: "photos" },
@@ -3973,6 +3986,21 @@ function moveTabPill() { const a = document.querySelector('nav.tabs a[aria-curre
 window.addEventListener("hashchange", () => { show(); requestAnimationFrame(moveTabPill); }); window.addEventListener("resize", moveTabPill); setTimeout(moveTabPill, 60);
 window.addEventListener("resize", () => { if (!$("#v-plan").hidden) renderPlan(); });
 
+
+/* Vidéo de présentation sur l'accueil, avec accès direct aux chapitres */
+(function homeVideo() {
+  const CH = [["Bienvenue", 4.2], ["Fiche du bien", 23.7], ["Photos", 53.2], ["Visite 360°", 120.2], ["Vidéo", 166.6], ["Plan 2D/3D", 215.1], ["Avis de valeur", 278], ["Affiches", 299.4], ["Mes biens", 318.5], ["Aide", 334.1]];
+  const v = $("#vidPlayer"), box = $("#vidChaps"), card = $("#vidHome"), show = $("#vidShow");
+  box.innerHTML = CH.map(([n, t], i) => `<button type="button" data-t="${t}"><span>${i + 1}</span>${n}</button>`).join("");
+  box.querySelectorAll("button").forEach(b => b.onclick = () => { const t = +b.dataset.t; const go = () => { v.currentTime = t; v.play().catch(() => {}); }; if (v.readyState >= 1) go(); else { v.preload = "auto"; v.addEventListener("loadedmetadata", go, { once: true }); v.load(); } });
+  v.addEventListener("timeupdate", () => { let k = 0; CH.forEach(([, t], i) => { if (v.currentTime >= t - .2) k = i; }); box.querySelectorAll("button").forEach((b, i) => b.classList.toggle("on", i === k && v.currentTime > 1)); });
+  const hidden = () => { try { return localStorage.getItem("vid-home-hide") === "1"; } catch (_) { return false; } };
+  const sync = () => { card.hidden = hidden(); show.hidden = !hidden(); };
+  $("#vidHide").onclick = () => { v.pause(); try { localStorage.setItem("vid-home-hide", "1"); } catch (_) {} sync(); };
+  show.onclick = () => { try { localStorage.removeItem("vid-home-hide"); } catch (_) {} sync(); card.scrollIntoView({ block: "center", behavior: "smooth" }); };
+  v.addEventListener("ended", () => { try { localStorage.setItem("vid-home-hide", "1"); } catch (_) {} });
+  sync();
+})();
 // si le téléphone recharge l'application pendant la prise de vue, on revient sur la même page
 document.addEventListener("click", e => { if (e.target.closest && e.target.closest('input[type=file], label.file')) try { sessionStorage.setItem("sh-return", JSON.stringify({ h: location.hash || "#accueil", t: Date.now() })); } catch (_) {} }, true);
 document.addEventListener("change", e => { if (e.target.type === "file") try { sessionStorage.removeItem("sh-return"); } catch (_) {} }, true);
