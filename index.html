@@ -1544,9 +1544,9 @@ function vDraw(x, W, H, tl, t) {
     if (e > tl.close - .6) { x.globalAlpha = (e - (tl.close - .6)) / .6; x.fillStyle = "#000"; x.fillRect(0, 0, W, H); x.globalAlpha = 1; }
   }
 }
-/* Musiques de fond : 10 morceaux originaux, libres de droits (fichiers music/01.m4a … 10.m4a) */
-const MUSICS = ["Douceur (piano)", "Élégance (valse, cordes)", "Lounge jazz", "Pop lumineuse", "Cinématique", "Chill lo-fi", "Bord de mer", "Moderne (électro)", "Folk acoustique", "Énergie"].map(n => ({ n }));
-(function () { const sel = $("#vMusic"); sel.innerHTML = '<option value="-1">Sans musique</option>' + MUSICS.map((m, i) => `<option value="${i}">${i + 1}. ${m.n}</option>`).join(""); sel.value = "0"; })();
+/* Musiques de fond : 15 morceaux libres de droits (fichiers music/01.m4a … 15.m4a) */
+const MUSICS = Array.from({ length: 15 }, (_, i) => ({ n: "Musique " + (i + 1) }));
+(function () { const sel = $("#vMusic"); sel.innerHTML = '<option value="-1">Sans musique</option>' + MUSICS.map((m, i) => `<option value="${i}">${m.n}</option>`).join(""); sel.value = "0"; })();
 const musicIdx = () => +$("#vMusic").value, MUSIC_RAW = {};
 async function musicLoad(ctx, idx) {
   if (!MUSIC_RAW[idx]) { const r = await fetch(`music/${String(idx + 1).padStart(2, "0")}.m4a`); if (!r.ok) throw new Error("musique"); MUSIC_RAW[idx] = await r.arrayBuffer(); }
@@ -1587,10 +1587,10 @@ $("#vDur").addEventListener("input", e => { e.target.nextElementSibling.textCont
 const TTS = {
   base: "voices/",
   voices: {
-    f1: { label: "Voix femme 1", file: "siwis", sid: null, mb: 63 },
-    f2: { label: "Voix femme 2", file: "upmc", sid: 0, mb: 77 },
-    m1: { label: "Voix homme 1", file: "upmc", sid: 1, mb: 77 },
-    m2: { label: "Voix homme 2", file: "tom", sid: null, mb: 63 }
+    f1: { label: "Voix femme 1", file: "siwis", sid: null, mb: 63, rate: .8 },
+    f2: { label: "Voix femme 2", file: "upmc", sid: 0, mb: 77, rate: .87 },
+    m1: { label: "Voix homme 1", file: "upmc", sid: 1, mb: 77, rate: .87 },
+    m2: { label: "Voix homme 2", file: "tom", sid: null, mb: 63, rate: .8 }
   },
   sessions: {}, configs: {}, cache: new Map(), ort: null, phon: null
 };
@@ -1645,7 +1645,7 @@ async function ttsSpeak(texts, key, onProg) {
     for (let i = 0; i < uniq.length; i++) {
       const id = ids[i] || [], n = id.length;
       const feeds = { input: new ort.Tensor("int64", BigInt64Array.from(id.map(BigInt)), [1, n]), input_lengths: new ort.Tensor("int64", BigInt64Array.from([BigInt(n)]), [1]),
-        scales: new ort.Tensor("float32", Float32Array.from([inf.noise_scale ?? .667, (inf.length_scale ?? 1) * 1.04, inf.noise_w ?? .8]), [3]) };
+        scales: new ort.Tensor("float32", Float32Array.from([.8, (inf.length_scale ?? 1) * (v.rate || .85), .95]), [3]) };
       if (v.sid != null) feeds.sid = new ort.Tensor("int64", BigInt64Array.from([BigInt(v.sid)]), [1]);
       const out = await sess.run(feeds), data = (out.output || Object.values(out)[0]).data;
       const f = Float32Array.from(data); let pk = 0; for (const x of f) pk = Math.max(pk, Math.abs(x)); if (pk > 1e-4) { const g = .85 / pk; for (let j = 0; j < f.length; j++) f[j] *= g; }
@@ -2209,7 +2209,7 @@ const BD = {
     ["camera", "Sélectionner les photos", [0, 4], "Dans l'onglet « Photos », ajoutez les meilleures photos au reportage. Elles forment le montage, dans l'ordre."],
     ["clip", "Filmer des clips", [0, 30], "Onglet « Vidéo », touchez « Filmer ou ajouter un clip » : filmez quelques secondes (12 s maximum par clip). Les clips s'enchaînent après les photos."],
     ["text", "Le texte qui défile", [18, 38], "Touchez le bouton de la fiche du bien : sa description est reprise dans « Description qui défile sur les photos ». Modifiez-la si besoin : une phrase par photo, elle s'affiche mot après mot."],
-    ["music", "Choisir la musique", [22, 30], "Dans « Musique de fond », choisissez un des 10 morceaux (piano, jazz, pop, électro…) et touchez « ▶ Écouter » pour l'essayer. « Sans musique » pour l'enlever."],
+    ["music", "Choisir la musique", [22, 30], "Dans « Musique de fond », choisissez une des 15 musiques et touchez « ▶ Écouter » pour l'essayer. « Sans musique » pour l'enlever."],
     ["voice", "Choisir le narrateur", [26, 4], "Dans « Narrateur », choisissez Voix femme 1 ou 2, Voix homme 1 ou 2, puis « ▶ Écouter ». La voix lit le titre, le prix, la description et vos coordonnées. Première fois : la voix se télécharge une seule fois, en Wi-Fi de préférence."],
     ["mic", "Ou votre propre voix", [0, 6], "Choisissez « Ma voix (micro) » et autorisez le micro. Pendant la création, lisez à voix haute le texte qui s'affiche : votre voix est enregistrée, la musique baisse toute seule."],
     ["video", "Format et contact", [0, 17], "Choisissez Vertical (réseaux sociaux) ou Horizontal (annonce) et vérifiez « Contact » : la vidéo s'ouvre sur le logo du réseau et se termine par le logo et vos coordonnées."],
@@ -2364,7 +2364,7 @@ const KB = [
   { k: "video creer faire montage film", q: "Comment créer la vidéo ?", a: "Ajoutez d'abord vos photos au reportage. Dans l'onglet Vidéo, vérifiez les textes, choisissez le format, puis touchez « Créer la vidéo » en laissant l'écran allumé.", tab: "video", guide: "video" },
   { k: "format vertical horizontal instagram tiktok facebook reseaux sociaux youtube", q: "Quel format de vidéo choisir ?", a: "Vertical pour Instagram, TikTok et Facebook. Horizontal pour l'annonce, YouTube ou un écran d'ordinateur.", tab: "video" },
   { k: "video longue duree courte temps par photo", q: "Comment changer la durée de la vidéo ?", a: "Réglez le curseur « Par photo », de 2 à 6 secondes. Chaque photo reste aussi le temps de lire ou d'entendre sa description. La durée totale s'affiche sous les boutons.", tab: "video" },
-  { k: "musique son audio chanson bande sonore mettre ajouter choisir", q: "Comment ajouter de la musique ?", a: "Onglet Vidéo, choisissez une des 10 musiques dans « Musique de fond » et touchez « Écouter » pour l'essayer. Elles sont libres de droits. Choisissez « Sans musique » pour l'enlever.", tab: "video", guide: "video" },
+  { k: "musique son audio chanson bande sonore mettre ajouter choisir", q: "Comment ajouter de la musique ?", a: "Onglet Vidéo, choisissez une des 15 musiques dans « Musique de fond » et touchez « Écouter » pour l'essayer. Elles sont libres de droits. Choisissez « Sans musique » pour l'enlever.", tab: "video", guide: "video" },
   { k: "narrateur voix off commentaire parle lire voix homme femme synthese", q: "Comment ajouter un narrateur ?", a: "Onglet Vidéo, choisissez un narrateur : 2 voix de femme, 2 voix d'homme, ou « Ma voix (micro) ». La voix lit la présentation du bien, la description et vos coordonnées. À la première utilisation, la voix se télécharge une seule fois, de préférence en Wi-Fi.", tab: "video", guide: "video" },
   { k: "micro ma voix enregistrer commentaire moi meme", q: "Comment commenter la vidéo avec ma voix ?", a: "Choisissez « Ma voix (micro) » comme narrateur, autorisez le micro, puis touchez « Créer la vidéo » et lisez à voix haute la description qui s'affiche. La musique baisse automatiquement.", tab: "video" },
   { k: "clip filmer video tourner sequence ajouter clip", q: "Comment ajouter des clips filmés ?", a: "Onglet Vidéo, touchez « Filmer ou ajouter un clip ». Les clips s'enchaînent après les photos, 12 secondes maximum chacun, avec la description, la musique et le narrateur.", tab: "video" },
