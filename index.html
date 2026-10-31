@@ -201,6 +201,8 @@ hr{border:0;border-top:1px solid var(--line);margin:2px 0}
 .plan{width:100%;aspect-ratio:4/3;max-height:68vh;touch-action:none}
 .plan canvas{display:block;width:100%;height:100%;cursor:default}
 .rooms{display:flex;flex-direction:column;gap:6px}
+.fusebox{border:1px dashed var(--accent);border-radius:16px;padding:12px;display:flex;flex-direction:column;gap:8px;background:color-mix(in srgb,var(--accent) 4%,var(--surface))}
+.fusethumbs{display:flex;gap:8px}.fusethumbs figure{margin:0;position:relative}.fusethumbs img{width:76px;height:58px;object-fit:cover;border-radius:10px;display:block}.fusethumbs figcaption{position:absolute;top:3px;left:3px;background:var(--accent);color:var(--accent-ink);font-size:11px;font-weight:700;border-radius:99px;padding:0 6px}
 .opbtns{display:grid;grid-template-columns:1fr 1fr;gap:6px}.opbtns button{min-height:40px;font-size:14px;padding:6px 10px}
 .opbtns button[aria-pressed="true"]{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
 .opsbox{display:flex;flex-direction:column;gap:8px}.opslist{display:flex;flex-direction:column;gap:6px}
@@ -559,6 +561,7 @@ input[type=range]::-moz-range-track{height:6px;border-radius:99px;background:#C9
           <input type="file" id="pick" accept="image/*,image/heic,image/heif">
         </label>
         <p class="note" id="modeNote">Une seule photo par pièce suffit. Tenez le téléphone droit, à hauteur de poitrine.</p>
+        <div class="fusebox" id="fuseBox" hidden><div class="fusethumbs" id="fuseThumbs"></div><p class="note" id="fuseMsg"></p><div class="row"><button class="primary" type="button" id="fuseGo">Fusionner</button><button type="button" class="ghost" id="fuseReset">Recommencer</button></div></div>
         <div class="status" id="pStatus"></div>
         <hr>
         <div class="row" style="justify-content:space-between"><span class="lbl">Réglages</span><button class="ghost" id="resetAuto">Revenir à l'auto</button></div>
@@ -1086,8 +1089,9 @@ function meanL(img) { let s = 0; const d = img.d, n = img.w * img.h; for (let i 
 function setMode(m) {
   P.mode = m; $("#mSingle").setAttribute("aria-pressed", m === "single"); $("#mFusion").setAttribute("aria-pressed", m === "fusion");
   const pick = $("#pick");
-  if (m === "fusion") { pick.multiple = true; $("#pickLbl").firstChild.textContent = "Choisir 2 à 5 expositions ";
-    $("#modeNote").textContent = "Téléphone posé ou sur trépied, prenez la même vue en sombre, normal et clair. Les photos doivent être cadrées à l'identique."; }
+  P.fq = []; renderFuse();
+  if (m === "fusion") { pick.multiple = true; $("#pickLbl").firstChild.textContent = "Prendre ou choisir les expositions (2 à 5) ";
+    $("#modeNote").textContent = "Sans bouger le téléphone (posé ou sur trépied), prenez la même vue 2 ou 3 fois : sombre, normale, claire. Les photos s'ajoutent une par une ci-dessous."; }
   else { pick.multiple = false; $("#pickLbl").firstChild.textContent = "Prendre ou choisir une photo ";
     $("#modeNote").textContent = "Une seule photo par pièce suffit. Tenez le téléphone droit, à hauteur de poitrine."; }
 }
@@ -1098,15 +1102,27 @@ $("#pick").onchange = async e => {
   const st = $("#pStatus"); st.className = "status"; st.textContent = "Chargement…";
   try {
     if (P.mode === "fusion") {
-      if (files.length < 2) { st.className = "status err"; st.textContent = "Choisissez au moins 2 photos de la même vue pour la fusion."; return; }
       const cs = []; for (const f of files.slice(0, 5)) cs.push(await fileToCanvas(f, 1600));
-      await runFusion(cs, false);
+      if (cs.length >= 2) { P.fq = []; renderFuse(); await runFusion(cs, false); }
+      else { // photo prise avec l'appareil : on les garde une par une jusqu'à 3
+        P.fq = (P.fq || []).concat(cs).slice(0, 5); renderFuse(); st.textContent = "";
+        if (P.fq.length >= 3) { const q = P.fq; P.fq = []; renderFuse(); await runFusion(q, false); }
+        else { $("#fuseBox").scrollIntoView({ block: "nearest", behavior: "smooth" }); return; }
+      }
     } else {
       const c = await fileToCanvas(files[0], 2048); await setPhotoSource(canvasToFloat(c), null, false); st.textContent = "";
     }
     resetSliders();
   } catch (err) { st.className = "status err"; st.textContent = "Cette photo n'a pas pu être ouverte. Réessayez, ou prenez la photo directement avec « Prendre une photo »."; }
 };
+function renderFuse() {
+  const box = $("#fuseBox"); if (!box) return; const q = P.fq || []; box.hidden = !q.length;
+  $("#fuseThumbs").innerHTML = q.map((c, i) => `<figure><img src="${drawToCanvas(c, 160).toDataURL("image/jpeg", .7)}" alt="Exposition ${i + 1}"><figcaption>${i + 1}</figcaption></figure>`).join("");
+  $("#fuseMsg").textContent = q.length === 1 ? "Photo 1 gardée. Sans bouger, reprenez la même vue plus sombre ou plus claire : sur iPhone, touchez l'écran puis faites glisser le petit soleil vers le bas ou vers le haut." : `${q.length} photos gardées. Touchez « Fusionner », ou prenez une 3e photo (elle sera fusionnée automatiquement).`;
+  $("#fuseGo").disabled = q.length < 2; $("#fuseGo").textContent = q.length >= 2 ? `Fusionner les ${q.length} photos` : "Fusionner (2 photos minimum)";
+}
+$("#fuseGo").onclick = async () => { const q = P.fq || []; if (q.length < 2) return; P.fq = []; renderFuse(); await runFusion(q, false); resetSliders(); };
+$("#fuseReset").onclick = () => { P.fq = []; renderFuse(); $("#pStatus").textContent = ""; };
 function resetSliders() { $("#sBright").value = 0; $("#sContrast").value = 0; $("#sWarm").value = 0; $("#sVib").value = 0; $("#sSharp").value = 35; $("#sRot").value = 0; renderPhoto(); }
 $("#resetAuto").onclick = resetSliders;
 for (const id of pIds) $("#" + id).addEventListener("input", renderPhoto);
@@ -2908,7 +2924,7 @@ const BD = {
   photos: { title: "Réaliser les photos", ver: "4", steps: [
     ["camera", "Prendre la photo", [0, 4], "Touchez « Prendre ou choisir une photo ». Tenez le téléphone droit, à hauteur de poitrine."],
     ["compare", "Retouche automatique", [0, 0], "Lumière et couleurs sont corrigées automatiquement. Faites glisser le curseur pour comparer avant et après."],
-    ["sun", "Fusion HDR", [0, 24], "Pièce avec une fenêtre très lumineuse : prenez la même vue trois fois (sombre, normale, claire) sans bouger le téléphone, puis sélectionnez les trois photos."],
+    ["sun", "Fusion HDR", [0, 24], "Pièce avec une fenêtre très lumineuse : touchez « Fusion HDR », puis prenez la même vue 2 ou 3 fois sans bouger (sombre, normale, claire). Les photos s'ajoutent une par une et la fusion se lance à la 3e, ou avec « Fusionner »."],
     ["sky", "Ciel bleu et floutage", [-21, 39], "Façade : cochez « Ciel bleu ». Photo de famille, visage ou plaque : « Flouter une zone », puis touchez l'endroit concerné."],
     ["check", "Enregistrer", [0, 29], "« Ajouter au reportage » pour la vidéo, ou « Enregistrer la photo » puis « Enregistrer l'image »."],
     ["order", "Choisir l'ordre des photos", [-14, 30], "Dans le reportage, les flèches ◀ ▶ déplacent une photo ; vous pouvez aussi appuyer longuement sur une photo puis la faire glisser. L'ordre est celui de la vidéo, de la fiche vitrine et du kit."],
@@ -3104,7 +3120,7 @@ const KB = [
   { k: "photos donnees ou sont stockees confidentialite securite serveur prive vie privee", q: "Où sont stockées mes photos ?", a: "Uniquement sur votre téléphone. Rien n'est envoyé sur un serveur. Pour les garder ou les retrouver sur un autre appareil, utilisez « Sauvegarder » dans le dossier du bien." },
   { k: "prendre photo appareil photo camera galerie choisir", q: "Comment prendre une photo ?", a: "Onglet Photos, touchez « Prendre ou choisir une photo ». Tenez le téléphone droit, à hauteur de poitrine, de préférence dans un angle de la pièce.", tab: "photos", guide: "photos" },
   { k: "photo sombre trop sombre lumiere eclairer claire retouche automatique", q: "Ma photo est trop sombre, que faire ?", a: "La retouche est automatique. Si c'est encore trop sombre, montez le curseur « Luminosité ». Allumez aussi toutes les lumières et ouvrez les volets avant la photo.", tab: "photos" },
-  { k: "fenetre brulee blanche contre jour hdr fusion expositions", q: "La fenêtre est toute blanche, comment faire ?", a: "Utilisez « Fusion HDR » : prenez la même vue trois fois sans bouger le téléphone, une sombre, une normale, une claire. Pour changer la luminosité, touchez l'écran puis faites glisser le petit soleil. Sélectionnez ensuite les trois photos.", tab: "photos", guide: "photos" },
+  { k: "fenetre brulee blanche contre jour hdr fusion expositions", q: "La fenêtre est toute blanche, comment faire ?", a: "Touchez « Fusion HDR », puis prenez la même vue 2 ou 3 fois sans bouger le téléphone : une sombre, une normale, une claire. Pour changer la luminosité sur iPhone, touchez l'écran puis faites glisser le petit soleil. Les photos s'ajoutent une par une ; la fusion se lance à la 3e, ou avec « Fusionner ».", tab: "photos", guide: "photos" },
   { k: "ciel gris bleu facade exterieur", q: "Comment mettre un ciel bleu ?", a: "Sur une photo d'extérieur, cochez « Ciel bleu ». Le ciel gris ou blanc devient bleu. Ne l'utilisez pas à l'intérieur : un plafond clair pourrait devenir bleu.", tab: "photos" },
   { k: "flouter flou visage photo famille plaque immatriculation cacher masquer", q: "Comment flouter un visage ou une photo de famille ?", a: "Touchez « Flouter une zone », puis touchez l'endroit à masquer sur la photo. Vous pouvez flouter plusieurs zones. « Annuler le dernier flou » si vous vous trompez.", tab: "photos" },
   { k: "photo penchee droite redresser verticales tordue", q: "Ma photo est penchée", a: "Utilisez le curseur « Redresser » pour remettre les murs bien droits. L'image est recadrée automatiquement.", tab: "photos" },
