@@ -3327,7 +3327,7 @@ function bdTails(root) {
       const rx = el.offsetWidth / 2 + (kind === "burst" ? 10 : 7), ry = el.offsetHeight / 2 + (kind === "burst" ? 12 : 6);
       const d = kind === "box" ? `M${cx - rx} ${cy - ry} h${rx * 2} v${ry * 2} h${-rx * 2} Z` : bdBubblePath(cx, cy, rx, ry, mx / 100 * W, my / 100 * H, kind);
       out += `<g class="sbg ${n ? "rep" : "main"}"><path d="${d}" transform="translate(2.5 3)" fill="#02062C"/><path d="${d}" fill="#fff" stroke="#02062C" stroke-width="2.6" stroke-linejoin="round"/>
-        ${kind === "oval" ? `<path d="M${(cx - rx * .62).toFixed(1)} ${(cy + ry * .8).toFixed(1)} Q${cx.toFixed(1)} ${(cy + ry * 1.0).toFixed(1)} ${(cx + rx * .62).toFixed(1)} ${(cy + ry * .8).toFixed(1)}" fill="none" stroke="#DADDE8" stroke-width="3.5" stroke-linecap="round"/>` : ""}</g>`;
+        </g>`;
     });
     svg.innerHTML = out;
   });
