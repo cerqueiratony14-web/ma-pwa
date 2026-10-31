@@ -489,7 +489,7 @@ hr{border:0;border-top:1px solid var(--line);margin:2px 0}
         <div class="field"><label for="vPrice">Prix</label><input type="text" id="vPrice" value="349 000 € honoraires inclus"></div>
         <div class="field"><span class="lbl">Classe énergie (DPE)</span><div class="dpe" id="dpe"></div></div>
         <div class="field"><label for="vDesc">Description qui défile sur les photos</label><textarea id="vDesc" rows="4" placeholder="Ex. : Grand séjour lumineux ouvert sur le jardin. Cuisine équipée avec îlot. Suite parentale avec dressing."></textarea></div>
-        <div class="field"><label for="vAgent">Contact (carton final)</label><input type="text" id="vAgent" value="Votre nom · 06 00 00 00 00"></div>
+        <div class="field"><label for="vAgent">Contact (carton final)</label><input type="text" id="vAgent" value="" placeholder="Ex. : Marie Dupont · 06 12 34 56 78"></div>
         <div class="field"><span class="lbl">Clips vidéo <span class="note">(facultatif)</span></span>
           <label class="btn file" id="vClipLbl">Filmer ou ajouter un clip<input type="file" id="vClip" accept="video/*" multiple></label>
           <div id="vClips" class="cliplist"></div>
@@ -1478,7 +1478,7 @@ function drawCard(x, W, H, kind, t) {
     const y0 = portrait ? H * .46 : H * .54;
     x.font = `700 ${72 * u}px "Bricolage Grotesque", system-ui, sans-serif`; x.fillText("Pour visiter", cx, y0);
     x.fillStyle = "#F0B00A"; x.fillRect(cx - 60 * u, y0 + 40 * u, 120 * u, 7 * u);
-    const parts = $("#vAgent").value.split(/\s*[·|•]\s*/).filter(Boolean); let yy = y0 + 130 * u;
+    const parts = (contactMissing() ? "Votre conseiller Les Professionnels de l'Immobilier" : $("#vAgent").value).split(/\s*[·|•]\s*/).filter(Boolean); let yy = y0 + 130 * u;
     parts.forEach((p, i) => { x.fillStyle = i === 0 ? "#FFFFFF" : "#F0B00A"; x.font = `${i === 0 ? 700 : 600} ${(i === 0 ? 58 : 54) * u}px "Public Sans", system-ui, sans-serif`; yy += wrapText(x, p, cx, yy, maxW, 68 * u) * 68 * u + 12 * u; });
 
   }
@@ -1712,8 +1712,10 @@ $("#vMusicTry").onclick = async () => {
   catch (_) { const st = $("#vStatus"); st.className = "status err"; st.textContent = "La musique n'a pas pu être chargée. Vérifiez la connexion et réessayez."; }
   V.tryT = setTimeout(() => { if (V.tryCtx === ctx) { try { ctx.close(); } catch (_) {} V.tryCtx = null; b.textContent = "▶ Écouter"; } }, 20200);
 }; $("#vDesc").addEventListener("input", () => { save(); if (!V.playing) vStill(); });
+function contactMissing() { const a = $("#vAgent").value.trim(); return !a || /votre nom|06 00 00 00 00/i.test(a); }
 $("#vRec").onclick = async () => {
   const st = $("#vStatus"); st.className = "status";
+  if (contactMissing()) { st.className = "status err"; st.textContent = "Renseignez d'abord votre nom et votre téléphone dans « Contact » : ils s'affichent à la fin de la vidéo."; const f = $("#vAgent"); f.scrollIntoView({ block: "center", behavior: "smooth" }); setTimeout(() => f.focus(), 400); return; }
   const wantMusic = musicIdx() >= 0, wantVoice = narr() === "mic", synth = isSynth(narr()), withAudio = wantMusic || wantVoice || synth;
   const types = withAudio ? ["video/mp4;codecs=avc1,mp4a.40.2", "video/mp4", "video/webm;codecs=vp9,opus", "video/webm;codecs=vp8,opus", "video/webm"]
                           : ["video/mp4;codecs=avc1", "video/mp4", "video/webm;codecs=vp9", "video/webm;codecs=vp8", "video/webm"];
@@ -1954,7 +1956,7 @@ function save() { clearTimeout(saveT); saveT = setTimeout(() => { try {
   localStorage.setItem("studio-habitat", JSON.stringify({ v: { t: $("#vTitle").value, s: $("#vSub").value, p: $("#vPrice").value, a: $("#vAgent").value, dpe: V.dpe, d: $("#vDesc").value, m: musicIdx(), n: narr() },
     plan: PL.isSample ? null : { title: $("#planTitle").value, rooms: PL.rooms } })); } catch (_) {} }, 400); }
 function restore() { try { const d = JSON.parse(localStorage.getItem("studio-habitat") || "null"); if (!d) return;
-  if (d.v) { $("#vTitle").value = d.v.t; $("#vSub").value = d.v.s; $("#vPrice").value = d.v.p; $("#vAgent").value = d.v.a; V.dpe = d.v.dpe || "C"; $("#vDesc").value = d.v.d || ""; if ("m" in d.v) $("#vMusic").value = String(d.v.m === true ? 0 : d.v.m === false ? -1 : d.v.m); $("#vNarr").value = d.v.n === true ? "mic" : (typeof d.v.n === "string" ? d.v.n : ""); narrNote(); [...$("#dpe").children].forEach(o => o.setAttribute("aria-pressed", o.textContent === V.dpe)); }
+  if (d.v) { $("#vTitle").value = d.v.t; $("#vSub").value = d.v.s; $("#vPrice").value = d.v.p; $("#vAgent").value = /votre nom · 06 00 00 00 00/i.test(d.v.a || "") ? "" : (d.v.a || ""); V.dpe = d.v.dpe || "C"; $("#vDesc").value = d.v.d || ""; if ("m" in d.v) $("#vMusic").value = String(d.v.m === true ? 0 : d.v.m === false ? -1 : d.v.m); $("#vNarr").value = d.v.n === true ? "mic" : (typeof d.v.n === "string" ? d.v.n : ""); narrNote(); [...$("#dpe").children].forEach(o => o.setAttribute("aria-pressed", o.textContent === V.dpe)); }
   if (d.plan && d.plan.rooms && d.plan.rooms.length) { PL.rooms = d.plan.rooms; PL.isSample = false; PL.sel = 0; $("#planTitle").value = d.plan.title || ""; $("#planEx").hidden = true; }
 } catch (_) {} }
 $("#planTitle").addEventListener("input", save);
@@ -2231,7 +2233,7 @@ const BD = {
     ["cube", "Vue 3D", [0, 0], "Touchez « 3D », faites pivoter avec le doigt, puis « Enregistrer l'image 3D »."]] },
   dossier: { title: "Sauvegarder les dossiers", steps: [
     ["folder", "Nommer le dossier", [-4, 37], "Donnez un nom au dossier du bien, par exemple « Maison Touques »."],
-    ["cloud", "Sauvegarder dans iCloud", [0, 5], "« Sauvegarder », puis « Enregistrer dans Fichiers » et choisissez iCloud Drive."],
+    ["cloud", "Sauvegarder le dossier", [0, 5], "« Sauvegarder », puis « Enregistrer dans Fichiers » et choisissez iCloud Drive. Sur Android : Google Drive ou « Fichiers »."],
     ["phones", "Ouvrir sur un autre appareil", [18, -2], "Touchez « Ouvrir » et sélectionnez le fichier du dossier : toutes les données sont restaurées."],
     ["plus", "Nouveau dossier", [0, 0], "Touchez « Nouveau » deux fois pour démarrer un dossier vide. Pensez à sauvegarder le précédent."]] }
 };
@@ -2351,8 +2353,10 @@ function applyDictee(text) {
 
 // Base de questions / réponses sur l'application
 const KB = [
-  { k: "installer installation ecran accueil icone telecharger application iphone android", q: "Comment installer l'application ?", a: "Ouvrez le lien de l'application dans Safari sur iPhone, ou dans Chrome sur Android. Touchez Partager, puis « Sur l'écran d'accueil », puis « Ajouter ». L'icône apparaît comme une application normale." },
-  { k: "gratuit gratuite payant prix cout coute combien abonnement payer tarif", q: "L'application est-elle payante ?", a: "Non. L'application est entièrement gratuite, sans abonnement ni achat. Seule une caméra 360°, si vous voulez de vraies visites à 360 degrés, est un achat facultatif." },
+  { k: "installer installation ecran accueil icone telecharger application iphone android", q: "Comment installer l'application ?", a: "Sur iPhone : ouvrez le lien dans Safari, touchez Partager, puis « Sur l\'écran d\'accueil » et « Ajouter ». Sur Android : ouvrez le lien dans Chrome, touchez le menu ⋮ en haut à droite, puis « Installer l\'application » ou « Ajouter à l\'écran d\'accueil ». L\'icône apparaît comme une application normale." },
+  { k: "android samsung google chrome marche fonctionne smartphone", q: "L'application marche-t-elle sur Android ?", a: "Oui, avec Chrome. Ouvrez le lien dans Chrome, menu ⋮, puis « Installer l'application ». Tout fonctionne comme sur iPhone ; les dossiers se sauvegardent dans Google Drive ou « Fichiers ». Évitez le navigateur Samsung ou Firefox, certaines fonctions y sont limitées." },
+  { k: "contact fin video nom telephone carton final coordonnees", q: "Comment mettre mes coordonnées à la fin de la vidéo ?", a: "Onglet Vidéo, champ « Contact » : tapez votre nom et votre téléphone séparés par un point, par exemple « Marie Dupont · 06 12 34 56 78 ». Ils s'affichent à la fin, sous le logo, et le narrateur les lit. Ils restent enregistrés pour les vidéos suivantes.", tab: "video" },
+  { k: "gratuit gratuite payant prix cout coute combien abonnement payer tarif", q: "L'application est-elle payante ?", a: "Non. L'application est entièrement gratuite, sans abonnement ni achat. Les musiques, les voix du narrateur et la prise de vue 360° sont incluses." },
   { k: "hors ligne sans internet reseau connexion offline", q: "Fonctionne-t-elle sans internet ?", a: "Oui. Après une première ouverture avec internet, tout fonctionne hors connexion. Seules les suggestions d'adresse demandent du réseau." },
   { k: "mise a jour nouvelle version actualiser update", q: "Comment avoir la dernière version ?", a: "Ouvrez l'application avec une connexion internet : elle se met à jour toute seule. Si l'icône a changé, supprimez l'ancienne de l'écran d'accueil et réinstallez-la depuis Safari." },
   { k: "photos donnees ou sont stockees confidentialite securite serveur prive vie privee", q: "Où sont stockées mes photos ?", a: "Uniquement sur votre téléphone. Rien n'est envoyé sur un serveur. Pour les garder ou les retrouver sur un autre appareil, utilisez « Sauvegarder » dans le dossier du bien." },
@@ -2367,7 +2371,7 @@ const KB = [
   { k: "visite 360 virtuelle creer faire", q: "Comment créer une visite 360° ?", a: "Onglet Visite 360°, touchez « Prise de vue 360° » au centre de chaque pièce et tournez sur vous-même : l'application assemble le panorama. Renommez les pièces, placez des flèches entre elles, puis exportez la visite.", tab: "visite", guide: "visite" },
   { k: "prise vue 360 photo 360 tourner panorama assembler prendre 360 degres", q: "Comment prendre une photo 360° ?", a: "Placez-vous au centre de la pièce et touchez « Prise de vue 360° ». Autorisez la caméra et les mouvements, touchez « Commencer », puis tournez lentement vers la droite, téléphone droit. Les 12 photos se prennent toutes seules quand le point jaune est dans le cercle, puis le panorama est assemblé.", tab: "visite", guide: "visite" },
   { k: "panorama raccord flou decale fantome rate mauvais assemblage", q: "Le panorama a des raccords visibles", a: "Tournez sur place sans avancer, en gardant le téléphone à la même hauteur, et évitez les personnes qui bougent dans la pièce. Évitez aussi de photographier trop près d'un mur.", tab: "visite" },
-  { k: "camera 360 besoin materiel acheter", q: "Faut-il une caméra 360° ?", a: "Non. La prise de vue 360° de l'application suffit : elle couvre tout le tour de la pièce, sans le plafond ni le sol. Une caméra 360 donne en plus le plafond et le sol ; ses photos s'ajoutent avec « Ajouter une photo 360 existante ».", tab: "visite" },
+  { k: "camera 360 besoin materiel acheter", q: "Faut-il une caméra 360° ?", a: "Non. La prise de vue 360° de l\'application suffit : elle fait tout le tour de la pièce et, avec l\'objectif 0,5× choisi automatiquement, une bonne partie du sol et du plafond. Une caméra 360 donne en plus le plafond et le sol complets ; ses photos s\'ajoutent avec « Ajouter une photo 360 existante ».", tab: "visite" },
   { k: "fleche fleches relier lien porte hotspot changer de piece", q: "Comment relier les pièces entre elles ?", a: "Touchez « Placer une flèche », choisissez la pièce de destination, puis touchez l'endroit de la photo, par exemple une porte. En touchant la flèche, on passe dans l'autre pièce.", tab: "visite", guide: "visite" },
   { k: "envoyer visite client acquereur exporter partager", q: "Comment envoyer la visite à un client ?", a: "Touchez « Exporter la visite », puis « Enregistrer ». Vous obtenez une page à envoyer par mail ou message, ou à joindre à l'annonce. Elle s'ouvre sur n'importe quel téléphone ou ordinateur.", tab: "visite" },
   { k: "video creer faire montage film", q: "Comment créer la vidéo ?", a: "Ajoutez d'abord vos photos au reportage. Dans l'onglet Vidéo, vérifiez les textes, choisissez le format, puis touchez « Créer la vidéo » en laissant l'écran allumé.", tab: "video", guide: "video" },
@@ -2390,7 +2394,7 @@ const KB = [
   { k: "texte annonce copier description leboncoin seloger portail", q: "Comment obtenir le texte de l'annonce ?", a: "Remplissez la fiche du bien. Le texte de l'annonce se rédige tout seul : touchez « Copier le texte de l'annonce » et collez-le sur le portail.", tab: "bien" },
   { k: "proprietaire nom vendeur prive confidentiel annonce", q: "Le nom du propriétaire apparaît-il ?", a: "Non. Le champ « Propriétaire » reste sur votre téléphone et dans vos dossiers. Il n'apparaît jamais dans l'annonce, la vidéo ou le plan.", tab: "bien" },
   { k: "remplir video plan automatiquement fiche reporter", q: "La fiche remplit-elle la vidéo et le plan ?", a: "Oui. Touchez « Remplir la vidéo, le plan et le dossier » : le titre, les détails, le prix, la classe énergie et la description passent dans la vidéo, le titre dans le plan et le nom dans le dossier. Un encadré vert sous le bouton confirme ce qui a été recopié, avec « Voir la vidéo » et « Voir le plan ».", tab: "bien" },
-  { k: "sauvegarder dossier icloud garder conserver backup", q: "Comment sauvegarder mon dossier ?", a: "En haut de l'écran, nommez le dossier du bien et touchez « Sauvegarder ». Choisissez ensuite « Enregistrer dans Fichiers », puis iCloud Drive.", guide: "dossier" },
+  { k: "sauvegarder dossier icloud garder conserver backup", q: "Comment sauvegarder mon dossier ?", a: "En haut de l\'écran, nommez le dossier du bien et touchez « Sauvegarder ». Sur iPhone, choisissez « Enregistrer dans Fichiers », puis iCloud Drive. Sur Android, enregistrez-le dans Google Drive ou dans « Fichiers ».", guide: "dossier" },
   { k: "ouvrir dossier autre telephone recuperer restaurer changer de telephone", q: "Comment retrouver un dossier sur un autre téléphone ?", a: "Touchez « Ouvrir » dans le dossier du bien, puis choisissez le fichier « Dossier - … » dans iCloud Drive. Photos, plan, fiche et visite reviennent.", guide: "dossier" },
   { k: "nouveau dossier autre bien vider effacer recommencer", q: "Comment passer au bien suivant ?", a: "Sauvegardez d'abord le dossier en cours. Touchez ensuite « Nouveau » deux fois : l'écran est vidé pour le bien suivant.", guide: "dossier" },
   { k: "perdu disparu effacees supprime application photos perdues", q: "J'ai perdu mes photos", a: "Si l'application a été supprimée de l'écran d'accueil, le reportage en cours est effacé. Si vous aviez sauvegardé le dossier, touchez « Ouvrir » et choisissez le fichier dans iCloud Drive." },
@@ -2567,7 +2571,7 @@ async function vitrineBlob() {
 const kitName = () => safeName(dosName());
 $("#fVitrine").onclick = async () => {
   const st = $("#fKitStatus"); st.className = "status"; st.textContent = "Création de la fiche vitrine…"; await frame();
-  try { const r = await offerFile(`Fiche vitrine - ${kitName()}.pdf`, await vitrineBlob(), "pdf"); st.textContent = r === "declined" ? "Enregistrement annulé." : "Fiche vitrine prête."; }
+  try { const r = await offerFile(`Fiche vitrine - ${kitName()}.pdf`, await vitrineBlob(), "pdf"); st.textContent = r === "declined" ? "Enregistrement annulé." : "Fiche vitrine prête." + (contactMissing() ? " Astuce : ajoutez votre nom et téléphone dans l'onglet Vidéo, champ « Contact », pour qu'ils apparaissent sur la fiche." : ""); }
   catch (_) { st.className = "status err"; st.textContent = "La fiche vitrine n'a pas pu être créée. Réessayez."; }
 };
 $("#fKit").onclick = async () => {
