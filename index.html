@@ -104,6 +104,8 @@ label.file{position:relative;overflow:hidden}
 .pano-bar button{flex:1}.pano-bar .ghost{color:#fff;border-color:rgba(255,255,255,.6);background:transparent}
 .pano-flash{position:absolute;inset:0;background:#fff;opacity:0;pointer-events:none}.pano-flash.on{animation:panoFlash .35s}
 @keyframes panoFlash{from{opacity:.75}to{opacity:0}}
+.applied{background:#E8F6EF;border:1px solid #9BD3B6;color:#0B4F33;border-radius:14px;padding:12px 14px;font-size:14px;line-height:1.45}
+.applied b{display:block;margin-bottom:4px}.applied ul{margin:4px 0 8px 18px;padding:0}.applied .row{gap:8px}.applied button{min-height:38px;padding:8px 12px;font-size:14px}
 .cliplist{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}.cliplist span{display:inline-flex;align-items:center;gap:6px;background:#EEF0FB;color:#02062C;border-radius:999px;padding:5px 6px 5px 12px;font-size:13px;font-weight:600}
 .cliplist button{border:0;background:#02062C;color:#fff;border-radius:999px;width:24px;height:24px;padding:0;font-size:14px;line-height:24px;min-height:0}
 label.file input{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%}
@@ -363,7 +365,8 @@ hr{border:0;border-top:1px solid var(--line);margin:2px 0}
       <div class="panel">
         <span class="lbl">Utiliser la fiche</span>
         <button class="primary" id="fApply">Remplir la vidéo, le plan et le dossier</button>
-        <p class="note">Le titre, les détails, le prix et la classe énergie de la vidéo, le nom du plan et le nom du dossier sont mis à jour.</p>
+        <div class="applied" id="fApplied" hidden></div>
+        <p class="note">Recopie la fiche dans les autres onglets : titre, détails, prix, classe énergie et description de la vidéo, nom du plan et nom du dossier. Rien ne s'affiche ici : le résultat se voit dans les onglets Vidéo et Plan.</p>
         <hr>
         <span class="lbl">Diffuser le bien</span>
         <button class="primary" id="fVitrine">Créer la fiche vitrine (PDF)</button>
@@ -2031,7 +2034,13 @@ $("#fApply").onclick = () => {
   if (d.dpe) { V.dpe = d.dpe; [...$("#dpe").children].forEach(o => o.setAttribute("aria-pressed", o.textContent === V.dpe)); }
   $("#planTitle").value = t; $("#dosName").value = [d.fType, d.fCity || d.fAddr].filter(Boolean).join(" ");
   try { localStorage.setItem("studio-habitat-dossier", $("#dosName").value); } catch (_) {}
-  save(); renderPlan(true); const st = $("#fStatus"); st.className = "status"; st.textContent = "Vidéo, plan et nom du dossier mis à jour.";
+  save(); renderPlan(true); V.speech = null;
+  const box = $("#fApplied"), it = [`Vidéo : « ${t} »${nb(d.fPrice) ? " · " + $("#vPrice").value : ""}${d.dpe ? " · DPE " + d.dpe : ""}`];
+  if (d.fDesc && d.fDesc.trim()) it.push("Vidéo : description qui défile sur les photos");
+  it.push(`Plan : « ${t} »`); if ($("#dosName").value) it.push(`Dossier : « ${$("#dosName").value} »`);
+  box.innerHTML = `<b>✓ C'est fait, la fiche a été recopiée</b><ul>${it.map(x => `<li>${x.replace(/</g, "&lt;")}</li>`).join("")}</ul><div class="row"><button type="button" data-go="video">Voir la vidéo</button><button type="button" data-go="plan">Voir le plan</button></div>`;
+  box.hidden = false; box.querySelectorAll("[data-go]").forEach(bt => bt.onclick = () => { location.hash = bt.dataset.go; window.scrollTo(0, 0); });
+  box.scrollIntoView({ block: "nearest", behavior: "smooth" }); if (navigator.vibrate) navigator.vibrate(20);
 };
 $("#fCopy").onclick = async () => {
   const st = $("#fStatus"); st.className = "status";
@@ -2191,7 +2200,7 @@ const BD = {
     ["house", "Ouvrir la fiche du bien", [0, 20], "Ouvrez l'onglet « Bien » en bas de l'écran."],
     ["pin", "Saisir l'adresse", [0, -8], "Tapez le numéro et la rue, puis touchez la bonne suggestion : le code postal et la ville se remplissent seuls."],
     ["form", "Compléter les caractéristiques", [-12, 38], "Renseignez surfaces, pièces, prix, DPE et équipements."],
-    ["text", "Générer l'annonce", [18, 38], "Touchez « Remplir la vidéo, le plan et le dossier », puis « Copier le texte de l'annonce »."]] },
+    ["text", "Générer l'annonce", [18, 38], "Touchez « Remplir la vidéo, le plan et le dossier » : un encadré vert confirme ce qui a été recopié (vidéo, description, plan, dossier). Puis « Copier le texte de l'annonce »."]] },
   photos: { title: "Réaliser les photos", steps: [
     ["camera", "Prendre la photo", [0, 4], "Touchez « Prendre ou choisir une photo ». Tenez le téléphone droit, à hauteur de poitrine."],
     ["compare", "Retouche automatique", [0, 0], "Lumière et couleurs sont corrigées automatiquement. Faites glisser le curseur pour comparer avant et après."],
@@ -2380,7 +2389,7 @@ const KB = [
   { k: "adresse suggestion trouve pas introuvable", q: "L'adresse n'est pas proposée", a: "Les suggestions demandent une connexion internet. Sans réseau, ou si l'adresse n'apparaît pas, tapez-la entièrement, ainsi que le code postal et la ville.", tab: "bien" },
   { k: "texte annonce copier description leboncoin seloger portail", q: "Comment obtenir le texte de l'annonce ?", a: "Remplissez la fiche du bien. Le texte de l'annonce se rédige tout seul : touchez « Copier le texte de l'annonce » et collez-le sur le portail.", tab: "bien" },
   { k: "proprietaire nom vendeur prive confidentiel annonce", q: "Le nom du propriétaire apparaît-il ?", a: "Non. Le champ « Propriétaire » reste sur votre téléphone et dans vos dossiers. Il n'apparaît jamais dans l'annonce, la vidéo ou le plan.", tab: "bien" },
-  { k: "remplir video plan automatiquement fiche reporter", q: "La fiche remplit-elle la vidéo et le plan ?", a: "Oui. Touchez « Remplir la vidéo, le plan et le dossier » : titre, détails, prix et DPE sont reportés automatiquement.", tab: "bien" },
+  { k: "remplir video plan automatiquement fiche reporter", q: "La fiche remplit-elle la vidéo et le plan ?", a: "Oui. Touchez « Remplir la vidéo, le plan et le dossier » : le titre, les détails, le prix, la classe énergie et la description passent dans la vidéo, le titre dans le plan et le nom dans le dossier. Un encadré vert sous le bouton confirme ce qui a été recopié, avec « Voir la vidéo » et « Voir le plan ».", tab: "bien" },
   { k: "sauvegarder dossier icloud garder conserver backup", q: "Comment sauvegarder mon dossier ?", a: "En haut de l'écran, nommez le dossier du bien et touchez « Sauvegarder ». Choisissez ensuite « Enregistrer dans Fichiers », puis iCloud Drive.", guide: "dossier" },
   { k: "ouvrir dossier autre telephone recuperer restaurer changer de telephone", q: "Comment retrouver un dossier sur un autre téléphone ?", a: "Touchez « Ouvrir » dans le dossier du bien, puis choisissez le fichier « Dossier - … » dans iCloud Drive. Photos, plan, fiche et visite reviennent.", guide: "dossier" },
   { k: "nouveau dossier autre bien vider effacer recommencer", q: "Comment passer au bien suivant ?", a: "Sauvegardez d'abord le dossier en cours. Touchez ensuite « Nouveau » deux fois : l'écran est vidé pour le bien suivant.", guide: "dossier" },
